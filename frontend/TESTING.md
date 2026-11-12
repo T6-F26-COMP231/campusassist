@@ -6,6 +6,8 @@ Section 6 is an exploratory pass over responsive layout, accessibility and error
 
 Quick key: ✅ = expected result from the report's acceptance test.
 
+> **Removed screens:** stories 2 (Search by name), 10 (Help Status), 18 (Request Details) and 19 (Directions to User) are no longer in the app, so their tests are skipped. The Search tab and its links, the help status page and the helper's Details and Directions buttons are gone too.
+
 ---
 
 ## 1. Single-tab walkthroughs
@@ -15,8 +17,6 @@ Quick key: ✅ = expected result from the report's acceptance test.
 | Story | Do this | ✅ Expected |
 |---|---|---|
 | 1 Home | Open Home. Tap each of the 5 rows | All 5 features reachable, each opens in one tap |
-| 2 Search by name | Search → type `Bookstore` | Campus Bookstore and Bookstore Annex listed |
-| 2 | Type `zzz` | "No results found" message |
 | 3 Filter | Tap **Elevators** chip | Only places flagged with an elevator are listed |
 | 3 | Tap **Clear filters** | All places shown again |
 | 4 Details | Open *Student HUB* | Elevator listed with a ✓ |
@@ -67,12 +67,12 @@ Quick key: ✅ = expected result from the report's acceptance test.
 
 | Story | Do this | ✅ Expected |
 |---|---|---|
-| 31 No account | Search `Hub` and open a place → Get Directions | Works without an account |
+| 31 No account | Find an event or entrance → Get Directions | Works without an account |
 | 31 | On Visitor Home tap **Sign In** (messaging card) | Asked to sign in |
 | 32 Event room | Find an event → `Career Fair` → Get Directions | Room B230 shown; directions start (after a start point) |
 | 33 Entrances | Find an accessible entrance → pick *Block B Concourse* | Nearest accessible entrance first; the stairs-only North Entrance is never listed |
 | 33 | Approve a barrier on the Block A Main Entrance (admin tab) | That entrance disappears with a "hidden because of a verified barrier" note |
-| 34 Guest help | Request in-person help → choose a location → Send | Redirects to a status page with no sign-in |
+| 34 Guest help | Request in-person help → choose a location → Send | Request is sent and you return to Visitor Home with no sign-in |
 | 34 | Send without a location | Request not sent, asked for a location |
 
 ### Faculty Staff (sign in as `staff@campus.test`)
@@ -93,15 +93,13 @@ Open a second tab at the same address. Use a private/incognito window if you wan
 ### A. Help request → helper → chat → complete (stories 8–11, 17–22, 9)
 
 1. **Tab 1** (student): Request Help → pick *Room B101* as the location → note "Lost, need to get to Block C" → Send.
-   ✅ Status page shows *Pending* and the timeline.
+   ✅ Request is sent and you return to Home (the status page was removed).
 2. **Tab 2** (alex): the request appears under Open Requests Nearby with a distance. Change **My location** and the distance updates.
    ✅ Story 17.
-3. In **Tab 1**, tap *Message helper* and send a message before anyone has accepted.
-   ✅ "The message cannot be sent: no helper has been assigned yet" (story 11 test 2).
+3. Messaging before acceptance (story 11 test 2) can no longer be reached from the user side, since the status page's *Message helper* button was removed.
 4. **Tab 2**: Accept Request.
-   ✅ Tab 1 flips to *Accepted* instantly (story 10). Two-helper check: sign in as `bea@campus.test` in a third tab before accepting. After Alex accepts, Bea's accept shows "Another helper has already accepted" (story 18 test 2).
-5. **Tab 2**: Directions to user.
-   ✅ Same step format as a Campus User's directions (story 19).
+   ✅ Alex is taken to the active request. Two-helper check: sign in as `bea@campus.test` in a third tab before accepting. After Alex accepts, Bea's accept shows "Another helper has already accepted".
+5. *(Skipped: Directions to user was removed, story 19.)*
 6. **Tab 2**: pick **On the way**, then **Arrived**, pressing Update Status each time.
    ✅ Tab 1 updates to "On the way", then "Arrived" (story 20).
 7. Chat from both tabs.
@@ -136,7 +134,7 @@ Open a second tab at the same address. Use a private/incognito window if you wan
 - **Keyboard only:** Tab through any form. A thick charcoal outline with a lime halo marks the focused control. Dialogs close on Esc and return focus.
 - **Colour contrast:** DevTools → Elements → pick any text → contrast ratio should be ≥ 4.5:1 (try the muted grey, lime badges, error notices). Also test with the OS dark theme.
 - **Screen reader:** result counts, request status, chat and error notices are `aria-live` / `role="alert"` regions; map graphics have text alternatives and the steps are an ordered list.
-- **Automated:** run Lighthouse (Accessibility) or the axe DevTools extension on these pages: Landing, Search, Directions, Request Help, Admin Report Details. The report targets zero errors.
+- **Automated:** run Lighthouse (Accessibility) or the axe DevTools extension on these pages: Landing, Directions, Request Help, Admin Report Details. The report targets zero errors.
 
 ## 5. Automated tests
 

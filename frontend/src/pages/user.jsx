@@ -1,27 +1,15 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { places, getNode, findRoute } from '../lib/graph.js';
 import { FEATURES, BARRIER_TYPES } from '../lib/data.js';
-import { useData, useSession, setSession, blockedFeatures, submitBarrier, submitRequest, addSchedule, removeSchedule, STATUS_LABEL, ACTIVE } from '../lib/store.js';
+import { useData, useSession, setSession, blockedFeatures, submitBarrier, submitRequest, addSchedule, removeSchedule } from '../lib/store.js';
 import { Screen, useAuth } from '../components/Screen.jsx';
 import LocationPicker from '../components/LocationPicker.jsx';
 import RoutePanel from '../components/RoutePanel.jsx';
 import MapPreview from '../components/MapPreview.jsx';
-import { Badge, Button, Card, Empty, Field, Icon, LinkButton, Notice, fmtDateTime } from '../components/ui.jsx';
+import { Button, Card, Empty, Field, Icon, LinkButton, Notice, fmtDateTime } from '../components/ui.jsx';
 
 /* ------------------------------ Home (Figure 9) ------------------------------ */
-export function ActiveRequestBanner() {
-  const data = useData();
-  const s = useSession();
-  const r = data.requests.find((x) => x.id === s.myRequestId);
-  if (!r || ![ 'pending', ...ACTIVE ].includes(r.status)) return null;
-  return (
-    <Link to={`/help/${r.id}`} className="banner">
-      <Icon name="person" /><span className="grow"><strong>Your help request is {STATUS_LABEL[r.status].toLowerCase()}</strong><small>{r.id} · tap to view status</small></span><Icon name="arrow" size={18} />
-    </Link>
-  );
-}
-
 export function BarrierList() {
   const data = useData();
   const list = data.barriers.filter((b) => b.status === 'approved');
@@ -40,7 +28,6 @@ export function BarrierList() {
 export function Home() {
   const { name } = useAuth();
   const items = [
-    ['/search', 'Search Location', 'Find rooms, offices, elevators and washrooms', 'search'],
     ['/help/new', 'Request Help', 'Ask an authorized helper to guide you', 'person'],
     ['/barrier/new', 'Report Barrier', 'Broken elevator? Blocked ramp? Tell us', 'alert'],
     ['/plan', 'Plan Arrival', 'Know when to leave for class', 'calendar'],
@@ -49,7 +36,6 @@ export function Home() {
   return (
     <Screen title="Welcome" sub="Home" home>
       <p className="muted lead">Hi {name?.split(' ')[0] || 'there'}. Find your way around campus.</p>
-      <ActiveRequestBanner />
       <div className="stack">
         {items.map(([to, t, d, i]) => (
           <Link key={to} to={to} className="action-row">
@@ -64,59 +50,6 @@ export function Home() {
   );
 }
 
-/* ------------------------- Search + filters (Figures 10–11) ------------------------- */
-const FILTERS = [['elevator', 'Elevators', 'elevator'], ['washroom', 'Accessible washrooms', 'washroom'], ['ramp', 'Ramps', 'ramp'], ['autoDoor', 'Auto doors', 'door']];
-const FEATURE_NAMES = { elevator: 'Elevator nearby', stepFree: 'Step-free access', washroom: 'Accessible washroom nearby', ramp: 'Ramp', autoDoor: 'Automatic door' };
-
-export function Search() {
-  const [params, setParams] = useSearchParams();
-  const [q, setQ] = useState(params.get('q') ?? '');
-  const [filters, setFilters] = useState([]);
-  const query = q.trim().toLowerCase();
-  const results = useMemo(() => places
-    .filter((p) => (!query || p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query)))
-    .filter((p) => filters.every((f) => p.acc[f]))
-    .sort((a, b) => (b.name.toLowerCase().startsWith(query) - a.name.toLowerCase().startsWith(query)) || a.name.localeCompare(b.name)), [query, filters]);
-  const toggle = (f) => setFilters((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]));
-
-  return (
-    <Screen title="Find a Campus Location" sub="Search Location">
-      <form role="search" onSubmit={(e) => e.preventDefault()}>
-        <div className="searchbox">
-          <Icon name="search" size={18} />
-          <input type="search" value={q} aria-label="Search campus locations" placeholder="Search campus location…" autoFocus
-            onChange={(e) => { setQ(e.target.value); setParams(e.target.value ? { q: e.target.value } : {}, { replace: true }); }} />
-        </div>
-      </form>
-      <fieldset className="filters">
-        <legend>Accessible facilities</legend>
-        <div className="row gap wrap">
-          {FILTERS.map(([f, label, icon]) => (
-            <button key={f} type="button" className={`chip toggle ${filters.includes(f) ? 'on' : ''}`} aria-pressed={filters.includes(f)} onClick={() => toggle(f)}>
-              <Icon name={icon} size={16} />{label}
-            </button>
-          ))}
-          {filters.length > 0 && <button type="button" className="link" onClick={() => setFilters([])}>Clear filters</button>}
-        </div>
-      </fieldset>
-      <p className="muted small" aria-live="polite">{results.length} result{results.length === 1 ? '' : 's'}</p>
-      <div className="stack">
-        {results.map((p) => (
-          <Link key={p.id} to={`/place/${p.id}`} className="result">
-            <strong>{p.name}</strong>
-            <small>Block {p.block}, Floor {p.floor}</small>
-            <span className="row gap wrap">
-              {['elevator', 'washroom', 'ramp', 'autoDoor'].filter((f) => p.acc[f]).map((f) => <Badge key={f}>{FEATURE_NAMES[f]}</Badge>)}
-            </span>
-            <span className="view">View Details <Icon name="arrow" size={14} /></span>
-          </Link>
-        ))}
-        {!results.length && <Empty>No results found{query ? ` for “${q}”` : ''}. Try another name or clear the filters.</Empty>}
-      </div>
-    </Screen>
-  );
-}
-
 /* ------------------------- Destination details (Figure 12) ------------------------- */
 export function Place() {
   const { id } = useParams();
@@ -125,7 +58,7 @@ export function Place() {
   const s = useSession();
   const p = getNode(id);
   const blocked = blockedFeatures(data);
-  if (!p || p.kind === 'hub') return <Screen title="Not found"><Empty>That place does not exist.</Empty><LinkButton to="/search">Back to search</LinkButton></Screen>;
+  if (!p || p.kind === 'hub') return <Screen title="Not found"><Empty>That place does not exist.</Empty><LinkButton to="/home">Back to home</LinkButton></Screen>;
   const blockedHere = blocked.includes(getEntranceFeature(p.id));
   const go = () => (s.start ? nav(`/navigate?from=${s.start}&to=${p.id}`) : nav(`/start?to=${p.id}`));
   const rows = [['elevator', 'Elevator Access'], ['stepFree', 'Step-Free Entrance'], ['washroom', 'Accessible Washroom Nearby'], ['ramp', 'Ramp'], ['autoDoor', 'Automatic Door']];
@@ -167,7 +100,7 @@ export function StartLocation() {
   const [start, setStart] = useState(s.start ?? null);
   const [just, setJust] = useState(false);
   const dest = getNode(to);
-  const proceed = () => { setSession({ start }); nav(to ? `/navigate?from=${start}&to=${to}` : `/search`); };
+  const proceed = () => { setSession({ start }); nav(to ? `/navigate?from=${start}&to=${to}` : '/home'); };
 
   return (
     <Screen title="Set Start Location" sub="Destination Details">

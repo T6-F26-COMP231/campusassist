@@ -34,8 +34,8 @@ function AccessRefused() {
 }
 
 const TABS = {
-  user: [['/home', 'Home', 'home'], ['/search', 'Search', 'search'], ['/help/new', 'Help', 'person'], ['/directory', 'Directory', 'book']],
-  visitor: [['/visitor', 'Home', 'home'], ['/search', 'Search', 'search'], ['/help/new', 'Help', 'person']],
+  user: [['/home', 'Home', 'home'], ['/help/new', 'Help', 'person'], ['/directory', 'Directory', 'book']],
+  visitor: [['/visitor', 'Home', 'home'], ['/help/new', 'Help', 'person']],
 };
 
 export function Screen({ title, sub, children, home = false, tabs = true }) {

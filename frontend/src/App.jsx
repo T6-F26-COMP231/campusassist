@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Guard } from './components/Screen.jsx';
 import { Landing, SignIn } from './pages/auth.jsx';
-import { Home, Search, Place, StartLocation, Navigate as NavigatePage, ReportBarrier, PlanArrival, Directory } from './pages/user.jsx';
-import { RequestHelp, HelpStatus, Chat } from './pages/help.jsx';
-import { OpenRequests, RequestDetails, ActiveRequest, DirectionsToUser } from './pages/helper.jsx';
+import { Home, Place, StartLocation, Navigate as NavigatePage, ReportBarrier, PlanArrival, Directory } from './pages/user.jsx';
+import { RequestHelp, Chat } from './pages/help.jsx';
+import { OpenRequests, ActiveRequest } from './pages/helper.jsx';
 import { AdminHome, BarrierReports, ReportDetails, HelperAccounts, DirectoryEntries, EditEntry } from './pages/admin.jsx';
 import { VisitorHome, EventSearch, Entrances, StaffHome } from './pages/visitor.jsx';
 
@@ -31,7 +31,6 @@ export default function App() {
         <Route path="/plan" element={G(['user', 'visitor'], <PlanArrival />)} />
 
         {/* Shared by everyone who is not an administrator */}
-        <Route path="/search" element={G(ANY, <Search />)} />
         <Route path="/place/:id" element={G(ANY, <Place />)} />
         <Route path="/start" element={G(ANY, <StartLocation />)} />
         <Route path="/navigate" element={G(ANY, <NavigatePage />)} />
@@ -40,7 +39,6 @@ export default function App() {
 
         {/* Help requests */}
         <Route path="/help/new" element={G(PUBLIC.filter((r) => r !== 'staff'), <RequestHelp />)} />
-        <Route path="/help/:id" element={G(ANY, <HelpStatus />)} />
         <Route path="/help/:id/chat" element={G(['user', 'helper', 'visitor'], <Chat />)} />
 
         {/* Visitor and Staff */}
@@ -51,9 +49,7 @@ export default function App() {
 
         {/* Authorized Helper */}
         <Route path="/helper" element={G(['helper'], <OpenRequests />)} />
-        <Route path="/helper/request/:id" element={G(['helper'], <RequestDetails />)} />
         <Route path="/helper/active/:id" element={G(['helper'], <ActiveRequest />)} />
-        <Route path="/helper/active/:id/directions" element={G(['helper'], <DirectionsToUser />)} />
 
         {/* Administrator */}
         <Route path="/admin" element={G(['admin'], <AdminHome />)} />

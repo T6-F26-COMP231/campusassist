@@ -6,21 +6,15 @@ import { useData, useSession, setSession, blockedFeatures } from '../lib/store.j
 import { Screen } from '../components/Screen.jsx';
 import LocationPicker from '../components/LocationPicker.jsx';
 import MapPreview from '../components/MapPreview.jsx';
-import { ActiveRequestBanner, BarrierList } from './user.jsx';
+import { BarrierList } from './user.jsx';
 import { Badge, Button, Card, Empty, Icon, LinkButton, Notice } from '../components/ui.jsx';
 
 /* ------------------- Visitor home (Figure 39) ------------------- */
 export function VisitorHome() {
-  const nav = useNavigate();
-  const [q, setQ] = useState('');
   const rows = [['/visitor/events', 'Find an event', 'calendar'], ['/visitor/entrances', 'Find an accessible entrance', 'door'], ['/help/new', 'Request in-person help', 'person']];
   return (
     <Screen title="Welcome, Visitor" sub="Home" home>
-      <form onSubmit={(e) => { e.preventDefault(); nav(`/search?q=${encodeURIComponent(q)}`); }} role="search">
-        <div className="searchbox"><Icon name="search" size={18} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Where to?" aria-label="Search or get directions" /></div>
-      </form>
-      <p className="muted small">No account needed to search or get directions.</p>
-      <ActiveRequestBanner />
+      <p className="muted small">No account needed to get directions.</p>
       <div className="stack">
         {rows.map(([to, t, i]) => (
           <Link key={to} to={to} className="action-row"><span className="role-ico"><Icon name={i} size={22} /></span><span className="grow"><strong>{t}</strong></span><Icon name="arrow" size={18} /></Link>
@@ -110,7 +104,6 @@ export function StaffHome() {
           <Link key={to} to={to} className="action-row"><span className="role-ico"><Icon name={i} size={22} /></span><span className="grow"><strong>{t}</strong><small>{d}</small></span><Icon name="arrow" size={18} /></Link>
         ))}
       </div>
-      <Link to="/search" className="link">Search campus locations</Link>
     </Screen>
   );
 }
