@@ -4,6 +4,8 @@ import { findRoute, getNode } from '../lib/graph.js';
 import { useData, useSession, setSession, acceptRequest, setRequestStatus, completeRequest, ackCancelled, blockedFeatures, ACTIVE, STATUS_LABEL } from '../lib/store.js';
 import { Screen, useAuth } from '../components/Screen.jsx';
 import LocationPicker from '../components/LocationPicker.jsx';
+import RoutePanel from '../components/RoutePanel.jsx';
+import MapPreview from '../components/MapPreview.jsx';
 import { Badge, Button, Card, Dialog, Empty, Field, Icon, LinkButton, Notice, fmtDateTime } from '../components/ui.jsx';
 
 const HELPER_DEFAULT_LOC = 'b-concourse';
@@ -59,6 +61,7 @@ export function OpenRequests() {
               </dl>
               {msg[r.id] && <Notice kind="error">{msg[r.id]}</Notice>}
               <div className="row gap">
+                <LinkButton variant="secondary" to={`/helper/request/${r.id}`}>Details</LinkButton>
                 <Button onClick={() => accept(r.id)} disabled={!!active} title={active ? 'Finish your active request first' : undefined}>Accept Request</Button>
               </div>
             </Card>
@@ -66,6 +69,33 @@ export function OpenRequests() {
         })}
         {!open.length && <Empty>No open requests right now. New ones appear here instantly.</Empty>}
       </div>
+    </Screen>
+  );
+}
+
+/* ------------------- Request details + accept (Figure 26) ------------------- */
+export function RequestDetails() {
+  const { id } = useParams();
+  const { data, email, active } = useHelper();
+  const nav = useNavigate();
+  const [err, setErr] = useState('');
+  const r = data.requests.find((x) => x.id === id);
+  if (!r) return <Screen title="Request not found"><Empty>That request no longer exists.</Empty></Screen>;
+  const p = getNode(r.locationId);
+  const taken = r.status !== 'pending';
+  return (
+    <Screen title="Request Details" sub={r.id}>
+      <MapPreview pins={[r.locationId]} blocked={blockedFeatures(data)} />
+      <Card>
+        <strong>{r.ownerName}</strong>
+        <p>{r.destination || r.type}</p>
+        <p className="muted">{p.name}, Block {p.block}, Floor {p.floor}</p>
+        {r.scheduledFor && <p><Icon name="calendar" size={14} /> Scheduled for {fmtDateTime(r.scheduledFor)}</p>}
+      </Card>
+      {taken && <Notice kind="warn">This request is {STATUS_LABEL[r.status].toLowerCase()}{r.helperEmail && r.helperEmail !== email ? ' by another helper' : ''}, so it can’t be accepted.</Notice>}
+      {err && <Notice kind="error">{err}</Notice>}
+      <Button disabled={taken || !!active} onClick={() => { const res = acceptRequest(r.id, email); res.ok ? nav(`/helper/active/${r.id}`) : setErr(res.error); }}>Accept Request</Button>
+      {active && !taken && <p className="muted small">Finish your active request ({active.id}) before accepting another.</p>}
     </Screen>
   );
 }
@@ -108,6 +138,7 @@ export function ActiveRequest() {
         </dl>
       </Card>
       <div className="row gap wrap">
+        <LinkButton variant="secondary" icon="arrow" to={`/helper/active/${r.id}/directions`}>Directions to user</LinkButton>
         <LinkButton variant="secondary" icon="send" to={`/help/${r.id}/chat`}>Message user</LinkButton>
       </div>
       <Card>
@@ -130,6 +161,22 @@ export function ActiveRequest() {
           </div>
         </Dialog>
       )}
+    </Screen>
+  );
+}
+
+/* ------------------- Directions to the user (Figure 27) ------------------- */
+export function DirectionsToUser() {
+  const { id } = useParams();
+  const { data, email, loc } = useHelper();
+  const [sf, setSf] = useState(false);
+  const r = data.requests.find((x) => x.id === id && x.helperEmail === email);
+  if (!r) return <Screen title="Not available"><Notice kind="error">You are not assigned to this request.</Notice></Screen>;
+  return (
+    <Screen title="Directions to User" sub="Active Navigation">
+      <LocationPicker label="Your location" value={loc} onChange={(v) => setSession({ helperLoc: v ?? HELPER_DEFAULT_LOC })} allowQr={false} />
+      <Card><span className="muted small">Destination (user’s location)</span><strong>{getNode(r.locationId).name}</strong></Card>
+      <RoutePanel from={loc} to={r.locationId} stepFree={sf} onStepFree={setSf} />
     </Screen>
   );
 }
