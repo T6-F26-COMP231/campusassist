@@ -25,8 +25,8 @@ COMP231 Software Development Project · Team 6 · Fall 2026
 |---|---|
 | Robert Tan Jr. | Scrum Master and Agile Customer |
 | Abdullah Zafar | Developer (UI/UX) |
-| Czareena Canda | Developer (back end and data) |
-| Favour Oropo | Developer (back end and database) |
+| Czareena Canda | Developer (back end and data), PR Lead |
+| Favour Oropo | Developer (back end and database), Backup PR Reviewer |
 | Troy Simpson | Developer (back end and testing) |
 | Gabriella Agyarko | Developer (testing and documentation) |
 
@@ -42,9 +42,14 @@ COMP231 Software Development Project · Team 6 · Fall 2026
 1. We finish **one story at a time** in priority order: 8, 17, 18, 10, 19, 3, 4, 2, 7, 6, 12, 38, 24, 25, 27, 26, 11, 1
 2. Each task has its own issue on the [project board](../../projects)
 3. Work on a branch named after your task, e.g. `story-8-help-form`
-4. Open a pull request with `Closes #NUMBER`, and one teammate approves it
+4. Open a pull request into `main` with `Closes #NUMBER`. **Czareena (PR Lead)** reviews and approves it. **Favour** reviews Czareena's own pull requests.
 5. After each story, we deploy to the test site and run its acceptance tests
 6. Close your issue with your actual hours, e.g. `Actual: 1.0 h`
+
+## 🔒 Branch rules
+- `main` is protected: no direct pushes
+- Every change needs a pull request with 1 approval from a code owner (Czareena or Favour)
+- Approvals reset if new commits are pushed to the pull request
 
 <!-- GIF here -->
 
