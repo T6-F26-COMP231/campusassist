@@ -148,6 +148,20 @@ input[aria-invalid='true'] { border-color: #c0392b; }
   background: var(--lime); color: var(--charcoal);
 }
 
+/* Directions to the user */
+.directions-note { margin: 0; line-height: 1.5; color: var(--charcoal-soft); }
+.directions-steps {
+  margin: 0;
+  padding: 16px 16px 16px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+}
+.directions-steps li { padding-left: 4px; }
+
 /* Accept request */
 .request-details {
   margin: 0;
