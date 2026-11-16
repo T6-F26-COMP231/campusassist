@@ -1,3 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+:root {
+  --charcoal: #323a42;
+  --charcoal-soft: #4a535c;
+  --lime: #c5d200;
+  --lime-dark: #a9b500;
+  --lime-tint: #f4f7cc;
+  --bg: #f7f8f3;
+  --surface: #ffffff;
+  --border: #d9dcd2;
+  --warn-bg: #fdf3d6;
+  --warn-text: #6b5200;
+  font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--charcoal);
+}
 
 * {
   box-sizing: border-box;
@@ -6,8 +22,11 @@
 body {
   margin: 0;
   min-width: 320px;
+  background: var(--bg);
 }
 
-button {
+button,
+input,
+textarea {
   font-family: inherit;
 }

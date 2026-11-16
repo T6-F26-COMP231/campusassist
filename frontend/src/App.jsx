@@ -1,40 +1,26 @@
+import { useState } from 'react';
+import AppHeader from './components/AppHeader';
+import RequestHelp from './pages/RequestHelp';
+import './pages/RequestHelp.css';
 
-import './App.css';
-
-function App() {
+function Home({ onRequestHelp }) {
   return (
-    <div className="app">
-      <header className="header">
-        <h1>CampusAssist</h1>
-        <p>Centennial College - Progress Campus</p>
-      </header>
-
-      <main className="main">
-        <h2>Welcome to CampusAssist</h2>
-
-        <p>
-          Find your way around campus and request
-          in-person assistance when needed.
-        </p>
-
-        <div className="features">
-          <button disabled>Search Location</button>
-          <button disabled>Request In-Person Assistance</button>
-          <button disabled>Report Barrier</button>
-          <button disabled>Plan Arrival</button>
-          <button disabled>Campus Directory</button>
-        </div>
-
-        <p className="notice">
-          Features coming soon.
-        </p>
+    <div className="screen">
+      <AppHeader subtitle="Centennial College Navigation & Support" />
+      <main className="content home">
+        <h2 className="page-title">Welcome</h2>
+        <p>Find your way around campus and request in-person assistance when needed.</p>
+        <button className="btn btn--primary" onClick={onRequestHelp}>Request In-Person Help</button>
+        <button className="btn btn--secondary" disabled>Search Location (coming soon)</button>
+        <button className="btn btn--secondary" disabled>Report Barrier (coming soon)</button>
       </main>
-
-      <footer className="footer">
-        <p>CampusAssist | Team 6</p>
-      </footer>
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  const [page, setPage] = useState('home');
+  return page === 'help'
+    ? <RequestHelp onBack={() => setPage('home')} />
+    : <Home onRequestHelp={() => setPage('help')} />;
+}
