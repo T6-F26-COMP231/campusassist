@@ -44,6 +44,7 @@ export function Home() {
     ['/help/new', 'Request Help', 'Ask an authorized helper to guide you', 'person'],
     ['/barrier/new', 'Report Barrier', 'Broken elevator? Blocked ramp? Tell us', 'alert'],
     ['/plan', 'Plan Arrival', 'Know when to leave for class', 'calendar'],
+    ['/navigate', 'Get Directions', 'Step-by-step route from where you are', 'arrow'],
     ['/directory', 'Campus Directory', 'Faculty offices and campus services', 'book'],
   ];
   return (
