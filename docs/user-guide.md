@@ -34,3 +34,21 @@ A signed-in Campus User can limit the place list to facilities they can use, suc
 6. Choose **Clear filters** to show every place again.
 
 Choosing **Elevators** leaves only places with an elevator. If a search and the filters match nothing, the list says no results were found and tells you to try another name or clear the filters.
+
+## Report a barrier
+
+A signed-in Campus User can report a broken elevator, a blocked entrance, or another obstacle. An administrator reviews the report before any routes change.
+
+1. Open CampusAssist and choose **Campus User**.
+2. Sign in. The demo account is `student@campus.test` / `student123`.
+3. On **Home**, choose **Report Barrier**.
+4. Choose a **Barrier type**: **Broken Elevator**, **Blocked Entrance**, **Construction Closure**, **Broken Door**, **Blocked Ramp**, or **Other**.
+5. Enter **Location (required)**. You can type a place, such as `Near room B230, Block B`.
+6. Optionally describe what is blocked, and optionally add a photo.
+7. Choose **Submit for review**.
+
+The app opens **Report sent** and shows: "Report R-003 was saved. An administrator reviews it before any routes change." The number goes up for each new report. Routes stay the same until an administrator approves the report.
+
+### If you leave the location empty
+
+The report is not accepted. The form stays open and shows: "A report without a location is not accepted. Tell us where the barrier is." Enter a location, then submit again.

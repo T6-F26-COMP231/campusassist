@@ -39,7 +39,7 @@ COMP231 Software Development Project · Team 6 · Fall 2026
 🔗 *Link coming soon*
 
 ## 📖 User guide
-How a Campus User requests in-person help and filters accessible places: [docs/user-guide.md](docs/user-guide.md)
+How a Campus User requests help, filters accessible places, and reports a barrier: [docs/user-guide.md](docs/user-guide.md)
 
 ## 📋 How we work
 1. We finish **one story at a time** in priority order: 8, 17, 18, 10, 19, 3, 4, 2, 7, 6, 12, 38, 24, 25, 27, 26, 11, 1
