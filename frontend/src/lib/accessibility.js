@@ -28,12 +28,41 @@ export function listAccessibilityFeatures() {
   return FEATURES.map((feature) => feature.label);
 }
 
+const DETAIL = {
+  elevator: ['Elevator', 'No elevator'],
+  washroom: ['Accessible washroom', 'No accessible washroom'],
+  ramp: ['Ramp', 'No ramp'],
+  autoDoor: ['Auto door', 'No auto door'],
+};
+
+function findPlace(placeId) {
+  return PLACES.find((entry) => entry.id === placeId);
+}
+
 export function getAccessibilityFeatures(placeId) {
-  const place = PLACES.find((entry) => entry.id === placeId);
+  const place = findPlace(placeId);
   if (!place) {
     return { ok: false, error: 'That place is not in the campus records.' };
   }
 
   const features = FEATURES.filter((feature) => place[feature.id]).map((feature) => feature.label);
   return { ok: true, id: place.id, name: place.name, features };
+}
+
+export function getLocationAccessibility(placeId) {
+  const place = findPlace(placeId);
+  if (!place) {
+    return { ok: false, error: 'That place is not in the campus records.' };
+  }
+
+  const details = FEATURES.map((feature) => {
+    const available = place[feature.id];
+    return {
+      feature: feature.label,
+      available,
+      text: available ? DETAIL[feature.id][0] : DETAIL[feature.id][1],
+    };
+  });
+
+  return { ok: true, id: place.id, name: place.name, details };
 }
