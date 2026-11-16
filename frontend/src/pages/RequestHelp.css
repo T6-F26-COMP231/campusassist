@@ -148,6 +148,21 @@ input[aria-invalid='true'] { border-color: #c0392b; }
   background: var(--lime); color: var(--charcoal);
 }
 
+/* Accept request */
+.request-details {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+}
+.request-details div { display: grid; grid-template-columns: 6.5rem 1fr; gap: 8px; }
+.request-details dt { margin: 0; color: var(--charcoal-soft); font-weight: 600; }
+.request-details dd { margin: 0; }
+
 /* Home */
 .home p { margin: 0; line-height: 1.5; color: var(--charcoal-soft); }
 .home .btn--secondary {
