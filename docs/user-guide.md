@@ -52,3 +52,14 @@ The app opens **Report sent** and shows: "Report R-003 was saved. An administrat
 ### If you leave the location empty
 
 The report is not accepted. The form stays open and shows: "A report without a location is not accepted. Tell us where the barrier is." Enter a location, then submit again.
+
+## See pending barrier reports
+
+An administrator uses this list so a barrier report is not missed. Only reports that are still waiting for review appear on the Pending tab.
+
+1. Open CampusAssist and choose **Administrator**.
+2. Sign in. The demo account is `admin@campus.test` / `admin123`.
+3. On **Admin Home**, choose **Review Barrier Reports**. The row shows how many reports are pending, and a badge shows that count when it is above zero.
+4. The **Pending** tab is selected. It lists each waiting report with its number, type, location, and description.
+
+The demo data starts with **Report 001 · Broken Elevator** at Block A, Elevator 2 near Cafeteria, and **Report 002 · Blocked Entrance** at Block A Main Entrance. A Campus User report, such as R-003, appears in this same list. **View Details** opens that one report. Approved reports are on the **Approved** tab, and rejected or resolved reports are on the **Closed** tab, so they are not in Pending.
