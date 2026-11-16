@@ -21,3 +21,16 @@ The app opens **My Help Request**. The status is **Pending**, your location is s
 ### If you do not choose a location
 
 The request is not sent. The form stays open and shows: "The request was not sent: choose your current location first." Choose a location, then send again.
+
+## Filter accessible facilities
+
+A signed-in Campus User can limit the place list to facilities they can use, such as elevators and accessible washrooms.
+
+1. Open CampusAssist and choose **Campus User**.
+2. Sign in. The demo account is `student@campus.test` / `student123`.
+3. On **Home**, choose **Search Location**.
+4. Under **Accessible facilities**, choose one or more of **Elevators**, **Accessible washrooms**, **Ramps**, and **Auto doors**.
+5. The list shows only places that have every facility you chose. Each result names the place, its block and floor, and the facilities it has.
+6. Choose **Clear filters** to show every place again.
+
+Choosing **Elevators** leaves only places with an elevator. If a search and the filters match nothing, the list says no results were found and tells you to try another name or clear the filters.
