@@ -38,6 +38,9 @@ COMP231 Software Development Project · Team 6 · Fall 2026
 ## 🚀 Test site
 🔗 *Link coming soon*
 
+## 📖 User guide
+How a Campus User requests in-person help: [docs/user-guide.md](docs/user-guide.md)
+
 ## 📋 How we work
 1. We finish **one story at a time** in priority order: 8, 17, 18, 10, 19, 3, 4, 2, 7, 6, 12, 38, 24, 25, 27, 26, 11, 1
 2. Each task has its own issue on the [project board](../../projects)
