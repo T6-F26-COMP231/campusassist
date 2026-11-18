@@ -1,4 +1,4 @@
-
+import helpRequestRoutes from "./routes/helpRequestRoutes.js";
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 5000;
 
 // Parse JSON requests
 app.use(express.json());
+// Story 17: Help request routes
+app.use("/api/help-requests", helpRequestRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
