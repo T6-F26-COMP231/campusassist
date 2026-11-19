@@ -4,9 +4,10 @@ import AppHeader from './components/AppHeader';
 import RequestHelp from './pages/RequestHelp';
 import AcceptRequest from './pages/AcceptRequest';
 import OpenRequests from './pages/OpenRequests';
+import AccessibleFacilities from './pages/AccessibleFacilities';
 import './pages/RequestHelp.css';
 
-function Home({ onRequestHelp, onOpenRequests }) {
+function Home({ onRequestHelp, onOpenRequests, onFacilities }) {
   return (
     <div className="screen">
       <AppHeader subtitle="Centennial College Navigation & Support" />
@@ -31,6 +32,13 @@ function Home({ onRequestHelp, onOpenRequests }) {
           onClick={onOpenRequests}
         >
           View Open Requests (Volunteer)
+        </button>
+
+        <button
+          className="btn btn--secondary"
+          onClick={onFacilities}
+        >
+          Find Accessible Facilities
         </button>
 
         <button className="btn btn--secondary" disabled>
@@ -67,6 +75,10 @@ export default function App() {
     );
   }
 
+  if (page === 'facilities') {
+    return <AccessibleFacilities onBack={goHome} />;
+  }
+
   if (page === 'open') {
     return (
       <OpenRequests
@@ -83,6 +95,7 @@ export default function App() {
     <Home
       onRequestHelp={() => setPage('help')}
       onOpenRequests={() => setPage('open')}
+      onFacilities={() => setPage('facilities')}
     />
   );
 }

@@ -1,13 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { FLOOR_PLAN_TITLES, NOT_ON_PLAN_MESSAGE, locateRoom } from '../lib/floorPlan';
-import floor1 from '../assets/floorplans/floor-1.png';
-import floor2 from '../assets/floorplans/floor-2.png';
-import floor3 from '../assets/floorplans/floor-3.png';
-import floor4 from '../assets/floorplans/floor-4.png';
-import floor5 from '../assets/floorplans/floor-5.png';
+import { PLAN_IMAGES } from '../assets/floorplans';
 import './FloorPlan.css';
-
-const PLAN_IMAGES = { 1: floor1, 2: floor2, 3: floor3, 4: floor4, 5: floor5 };
 
 // Shows the Progress Campus floor plan for the floor in `location`, with a marker on
 // the room. The marker follows `location`; nothing is pinned to a fixed room.
