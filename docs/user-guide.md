@@ -63,3 +63,20 @@ An administrator uses this list so a barrier report is not missed. Only reports 
 4. The **Pending** tab is selected. It lists each waiting report with its number, type, location, and description.
 
 The demo data starts with **Report 001 · Broken Elevator** at Block A, Elevator 2 near Cafeteria, and **Report 002 · Blocked Entrance** at Block A Main Entrance. A Campus User report, such as R-003, appears in this same list. **View Details** opens that one report. Approved reports are on the **Approved** tab, and rejected or resolved reports are on the **Closed** tab, so they are not in Pending.
+
+
+## See open help requests
+
+An Authorized Helper can see the open help requests for a campus block and choose one to take. Only requests that are still waiting for a helper appear in the list.
+
+1. On  **Home** , choose  **View Open Requests (Volunteer)** .
+2. Under  **Select Campus Block** , choose  **A Block** ,  **B Block** , or  **C Block** . The page opens on A Block, and the list changes to show that block's requests.
+3. The page title is  **Open Requests Nearby** . Each card shows the request number,  **Location** ,  **Problem** , and  **Assistance Type** . **Problem** appears when the person described what they need.
+4. Choose **Accept Request** on a card to open that request.
+5. Choose **Message User** to contact the person. For now, the app shows: "Messaging is coming soon."
+
+### If a block has no open requests
+
+The page shows "No open requests in Block A right now."  Choose another block to look for requests there.
+
+Accepted or cancelled requests do not appear in the list.
