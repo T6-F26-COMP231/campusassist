@@ -7,13 +7,15 @@ import DirectionsToUser from './pages/DirectionsToUser';
 import OpenRequests from './pages/OpenRequests';
 import AccessibleFacilities from './pages/AccessibleFacilities';
 import RequestStatus from './pages/RequestStatus';
+import AccessibilityFeatures from './pages/AccessibilityFeatures';
 import './pages/RequestHelp.css';
 
 function Home({
   onRequestHelp,
   onOpenRequests,
   onRequestStatus,
-  onFacilities
+  onFacilities,
+  onFeatures
 }) {
   return (
     <div className="screen">
@@ -53,6 +55,13 @@ function Home({
           onClick={onFacilities}
         >
           Find Accessible Facilities
+        </button>
+
+        <button
+          className="btn btn--secondary"
+          onClick={onFeatures}
+        >
+          Check Destination Accessibility
         </button>
 
         <button className="btn btn--secondary" disabled>
@@ -121,6 +130,11 @@ export default function App() {
     return <AccessibleFacilities onBack={goHome} />;
   }
 
+  // Story 4: See the accessibility features of a destination.
+  if (page === 'features') {
+    return <AccessibilityFeatures onBack={goHome} />;
+  }
+
   // Story 17: View pending help requests.
   if (page === 'open') {
     return (
@@ -150,6 +164,7 @@ export default function App() {
       onOpenRequests={() => setPage('open')}
       onRequestStatus={() => setPage('status')}
       onFacilities={() => setPage('facilities')}
+      onFeatures={() => setPage('features')}
     />
   );
 }

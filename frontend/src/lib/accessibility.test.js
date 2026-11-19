@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getAccessibilityFeatures, listAccessibilityFeatures } from './accessibility.js';
+import { getAccessibilityFeatures, getAccessibilityReport, listAccessibilityFeatures, listPlaces } from './accessibility.js';
 
 test('the accessible facilities are elevators, washrooms, ramps, and auto doors', () => {
   assert.deepEqual(listAccessibilityFeatures(), [
@@ -31,4 +31,26 @@ test('an unknown place is not found', () => {
 
   assert.equal(result.ok, false);
   assert.equal(result.error, 'That place is not in the campus records.');
+});
+
+test('the report lists every feature, with a yes or no for each', () => {
+  const report = getAccessibilityReport('b-b210');
+  assert.equal(report.ok, true);
+  assert.equal(report.items.length, 4);
+  assert.equal(report.items.find((i) => i.id === 'elevator').available, true);
+  assert.equal(report.items.find((i) => i.id === 'washroom').available, false);
+  assert.equal(report.availableCount, 1);
+  assert.equal(report.total, 4);
+});
+
+test('notes appear only for features the place has', () => {
+  assert.ok(getAccessibilityReport('a-library').items.every((i) => i.available && i.note));
+  assert.equal(getAccessibilityReport('b-b210').items.find((i) => i.id === 'ramp').note, '');
+});
+
+test('every listed place has a report', () => {
+  for (const place of listPlaces()) {
+    assert.equal(getAccessibilityReport(place.id).ok, true, place.id);
+  }
+  assert.equal(getAccessibilityReport('missing').ok, false);
 });
