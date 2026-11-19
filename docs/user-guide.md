@@ -77,6 +77,6 @@ An Authorized Helper can see the open help requests for a campus block and choos
 
 ### If a block has no open requests
 
-The page shows: "No open requests in Block {block} right now." For example, if B Block has none, it says "No open requests in Block B right now." Choose another block to look for requests there.
+The page shows; For Example: "No open requests in Block A right now."  Choose another block to look for requests there.
 
 Accepted or cancelled requests do not appear in the list.
