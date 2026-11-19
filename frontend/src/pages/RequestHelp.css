@@ -163,6 +163,27 @@ input[aria-invalid='true'] { border-color: #c0392b; }
 .request-details dt { margin: 0; color: var(--charcoal-soft); font-weight: 600; }
 .request-details dd { margin: 0; }
 
+/* Directions to the user */
+.directions-note { margin: 0; line-height: 1.5; color: var(--charcoal-soft); }
+.directions-steps {
+  margin: 0;
+  padding: 16px 16px 16px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+}
+.directions-steps li { padding-left: 4px; }
+.btn--secondary {
+  background: var(--surface);
+  color: var(--charcoal);
+  border: 2px solid var(--border);
+}
+.btn--secondary:hover { background: var(--lime-tint); }
+.btn--secondary:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+
 /* Home */
 .home p { margin: 0; line-height: 1.5; color: var(--charcoal-soft); }
 .home .btn--secondary {

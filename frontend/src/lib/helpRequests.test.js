@@ -61,3 +61,32 @@ test('accept sends the id it is given and the helper id', async () => {
   assert.match(call.url, /\/api\/help-requests\/abc123\/accept$/);
   assert.deepEqual(call.body, { helperId: 'helper1' });
 });
+
+test('accept success returns the server message as a sentence', async () => {
+  globalThis.fetch = async () => ({
+    ok: true,
+    json: async () => ({ message: 'Help request accepted successfully', request: {} }),
+  });
+  const result = await acceptHelpRequest('abc123', 'helper1');
+  assert.equal(result.ok, true);
+  assert.equal(result.message, 'Help request accepted successfully.');
+});
+
+test('a second accept shows the server conflict message', async () => {
+  globalThis.fetch = async () => ({
+    ok: false,
+    json: async () => ({ message: 'Request is unavailable or already accepted' }),
+  });
+  const result = await acceptHelpRequest('abc123', 'helper1');
+  assert.equal(result.ok, false);
+  assert.equal(result.error, 'Request is unavailable or already accepted.');
+});
+
+test('accept reports an unreachable server', async () => {
+  globalThis.fetch = async () => {
+    throw new Error('network down');
+  };
+  const result = await acceptHelpRequest('abc123', 'helper1');
+  assert.equal(result.ok, false);
+  assert.equal(result.error, 'Could not reach the server. Please try again.');
+});

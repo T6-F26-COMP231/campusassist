@@ -30,6 +30,9 @@ export function openHelpRequests(store) {
 
 const API_BASE = import.meta.env?.VITE_API_URL ?? '';
 
+// The server sends its messages without a final period; show them as sentences.
+const asSentence = (text) => (/[.!?]$/.test(text) ? text : `${text}.`);
+
 // Story 18: ask the backend to accept a pending help request.
 export async function acceptHelpRequest(requestId, helperId) {
   try {
@@ -40,9 +43,16 @@ export async function acceptHelpRequest(requestId, helperId) {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      return { ok: false, error: data.message || 'Unable to accept this request.' };
+      return {
+        ok: false,
+        error: asSentence(data.message || 'Unable to accept this request.'),
+      };
     }
-    return { ok: true, request: data.request };
+    return {
+      ok: true,
+      message: asSentence(data.message || 'Help request accepted successfully'),
+      request: data.request,
+    };
   } catch {
     return { ok: false, error: 'Could not reach the server. Please try again.' };
   }
