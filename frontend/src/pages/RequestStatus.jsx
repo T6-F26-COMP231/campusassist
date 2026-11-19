@@ -124,7 +124,11 @@ export default function RequestStatus({ onBack, requestId }) {
               <p>
                 <strong>Assigned Helper:</strong>{' '}
                 {request.helperId
-                  ? 'Assigned'
+                  ? typeof request.helperId === 'object'
+                    ? request.helperId.name ||
+                      request.helperId._id ||
+                      'Helper information unavailable'
+                    : request.helperId
                   : 'Not assigned yet'}
               </p>
             </section>

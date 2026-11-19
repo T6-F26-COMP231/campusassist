@@ -39,8 +39,6 @@ function Home({
           My Help Request Status
         </button>
 
-        
-
         <button
           className="btn btn--secondary"
           onClick={onOpenRequests}
@@ -61,21 +59,34 @@ function Home({
 }
 
 export default function App() {
-
   const [page, setPage] = useState('home');
   const [selected, setSelected] = useState(null);
+
+  // Story 10: Remember the request submitted by the campus user.
+  const [submittedRequestId, setSubmittedRequestId] = useState(null);
 
   const goHome = () => {
     setSelected(null);
     setPage('home');
   };
 
+  // Story 8: Submit a help request.
   if (page === 'help') {
-    return <RequestHelp onBack={goHome} />;
+    return (
+      <RequestHelp
+        onBack={goHome}
+        onRequestCreated={(requestId) => {
+          setSubmittedRequestId(requestId);
+        }}
+        onSubmitted={(requestId) => {
+          setSubmittedRequestId(requestId);
+          setPage('status');
+        }}
+      />
+    );
   }
 
-
-  // Story 19: Show directions to the selected user
+  // Story 19: Show directions to the selected user.
   if (page === 'directions' && selected) {
     return (
       <DirectionsToUser
@@ -85,8 +96,7 @@ export default function App() {
     );
   }
 
-  // Story 18: Accept the selected help request
-
+  // Story 18: Accept the selected help request.
   if (page === 'accept' && selected) {
     return (
       <AcceptRequest
@@ -97,7 +107,7 @@ export default function App() {
     );
   }
 
-  // Story 17: View pending help requests
+  // Story 17: View pending help requests.
   if (page === 'open') {
     return (
       <OpenRequests
@@ -110,16 +120,15 @@ export default function App() {
     );
   }
 
-  // Story 10: View help request status
+  // Story 10: View the actual submitted request.
   if (page === 'status') {
     return (
       <RequestStatus
         onBack={goHome}
-        requestId={import.meta.env.VITE_TEST_REQUEST_ID}
+        requestId={submittedRequestId}
       />
     );
   }
-
 
   return (
     <Home
