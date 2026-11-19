@@ -1,0 +1,45 @@
+.facmap { display: flex; flex-direction: column; gap: 10px; }
+.facmap__title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+.facmap__empty { margin: 0; color: var(--charcoal-soft); }
+
+.facmap__tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.facmap__tab {
+  min-width: 56px; min-height: 44px;
+  padding: 8px 12px;
+  font-size: 0.95rem; font-weight: 600;
+  color: var(--charcoal);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.facmap__tab span { font-weight: 500; color: var(--charcoal-soft); }
+.facmap__tab:hover:not(:disabled) { background: var(--lime-tint); }
+.facmap__tab--on { background: var(--lime-tint); border-color: var(--lime-dark); }
+.facmap__tab:disabled { opacity: 0.45; cursor: not-allowed; }
+.facmap__tab:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+
+.facmap__summary { margin: 0; font-size: 0.9rem; color: var(--charcoal-soft); }
+
+.facmap__legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.9rem; }
+.facmap__legend li { display: flex; align-items: center; gap: 8px; }
+
+/* Elevators are squares, washrooms are circles, each with a letter: the two kinds
+   differ by shape and letter, not only by colour. */
+.facmap__key, .facmap__marker {
+  display: grid; place-items: center;
+  font-weight: 700; line-height: 1;
+  border: 3px solid var(--charcoal);
+}
+.facmap__key { width: 24px; height: 24px; font-size: 0.8rem; }
+.facmap__marker {
+  position: absolute;
+  width: 26px; height: 26px;
+  transform: translate(-50%, -50%);
+  font-size: 0.85rem;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85);
+}
+.facmap__key--elevator, .facmap__marker--elevator { background: var(--lime); color: var(--charcoal); border-radius: 6px; }
+.facmap__key--washroom, .facmap__marker--washroom { background: var(--charcoal); color: #fff; border-color: #fff; border-radius: 50%; outline: 3px solid var(--charcoal); }
+
+.facmap__hint { margin: 0; font-size: 0.85rem; color: var(--charcoal-soft); }

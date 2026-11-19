@@ -5,13 +5,15 @@ import RequestHelp from './pages/RequestHelp';
 import AcceptRequest from './pages/AcceptRequest';
 import DirectionsToUser from './pages/DirectionsToUser';
 import OpenRequests from './pages/OpenRequests';
+import AccessibleFacilities from './pages/AccessibleFacilities';
 import RequestStatus from './pages/RequestStatus';
 import './pages/RequestHelp.css';
 
 function Home({
   onRequestHelp,
   onOpenRequests,
-  onRequestStatus
+  onRequestStatus,
+  onFacilities
 }) {
   return (
     <div className="screen">
@@ -44,6 +46,13 @@ function Home({
           onClick={onOpenRequests}
         >
           View Open Requests (Volunteer)
+        </button>
+
+        <button
+          className="btn btn--secondary"
+          onClick={onFacilities}
+        >
+          Find Accessible Facilities
         </button>
 
         <button className="btn btn--secondary" disabled>
@@ -107,6 +116,11 @@ export default function App() {
     );
   }
 
+  // Story 3: Filter and map accessible facilities.
+  if (page === 'facilities') {
+    return <AccessibleFacilities onBack={goHome} />;
+  }
+
   // Story 17: View pending help requests.
   if (page === 'open') {
     return (
@@ -135,6 +149,7 @@ export default function App() {
       onRequestHelp={() => setPage('help')}
       onOpenRequests={() => setPage('open')}
       onRequestStatus={() => setPage('status')}
+      onFacilities={() => setPage('facilities')}
     />
   );
 }
