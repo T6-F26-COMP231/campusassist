@@ -112,3 +112,46 @@ export async function acceptHelpRequest(req, res) {
     });
   }
 }
+
+// Story 8: Submit an in-person help request
+export async function createHelpRequest(req, res) {
+  try {
+    const { currentLocation, description, assistanceType } = req.body || {};
+
+    // Validate required fields
+    if (
+      typeof currentLocation !== "string" ||
+      !currentLocation.trim() ||
+      !["Standard Guiding", "Mobility Assistance", "Other"].includes(assistanceType)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a location and a valid assistance type"
+      });
+    }
+
+    // Create a new pending request
+    const request = await HelpRequest.create({
+      currentLocation: currentLocation.trim(),
+      description:
+        typeof description === "string" ? description.trim() : "",
+      assistanceType,
+      status: "Pending",
+      helperId: null
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Help request submitted successfully",
+      request
+    });
+
+  } catch (error) {
+    console.error("Error creating help request:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to submit help request"
+    });
+  }
+}

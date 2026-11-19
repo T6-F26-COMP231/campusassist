@@ -8,21 +8,70 @@ const ASSISTANCE_TYPES = [
   { value: 'other', label: 'Other', hint: 'Describe what you need above' },
 ];
 
-export default function RequestHelp({ onBack }) {
+export default function RequestHelp({
+  onBack,
+  onSubmitted,
+  onRequestCreated
+}) {
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('standard');
   const [touched, setTouched] = useState(false);
   const [sent, setSent] = useState(false);
+  const [savedRequestId, setSavedRequestId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const missingLocation = location.trim() === '';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setTouched(true);
-    if (missingLocation) return;
-    // TODO: send to backend when the API is available
-    setSent(true);
+
+    if (missingLocation || submitting) return;
+
+    setSubmitting(true);
+    setError('');
+
+    const assistanceType =
+      ASSISTANCE_TYPES.find((opt) => opt.value === type)?.label;
+
+    try {
+      const response = await fetch('/api/help-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          currentLocation: location.trim(),
+          description: description.trim(),
+          assistanceType
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message || 'Unable to send help request.'
+        );
+      }
+
+      const requestId = data.request?._id;
+
+      if (!requestId) {
+        throw new Error('Request saved, but no request ID was returned.');
+      }
+
+      setSavedRequestId(requestId);
+      setSent(true);
+      onRequestCreated?.(requestId);
+
+    } catch (err) {
+      setError(err.message || 'Unable to send help request.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (sent) {
@@ -33,12 +82,24 @@ export default function RequestHelp({ onBack }) {
           <div className="success__check" aria-hidden="true">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
           </div>
-          <h2>Help is on the way</h2>
+          <h2>Help Request Submitted Successfully</h2>
           <p>
-            Your request from <strong>{location}</strong> has been sent. Stay where you
-            are and a campus volunteer will find you shortly.
+            Your request from <strong>{location}</strong> has been
+            submitted successfully. A campus volunteer can now
+            review your request.
           </p>
-          <button className="btn btn--primary" onClick={onBack}>Back to home</button>
+          <button
+            className="btn btn--primary"
+            onClick={() => onSubmitted?.(savedRequestId)}
+          >
+            View Request Status
+          </button>
+          <button
+            className="btn btn--secondary"
+            onClick={onBack}
+          >
+            Back to home
+          </button>
         </main>
       </div>
     );
@@ -106,8 +167,18 @@ export default function RequestHelp({ onBack }) {
           A request without a location cannot be sent.
         </div>
 
-        <button type="submit" className="btn btn--primary" disabled={missingLocation}>
-          Send Help Request
+        {error && (
+          <div className="notice notice--error" role="alert">
+            {error}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className="btn btn--primary"
+          disabled={missingLocation || submitting}
+        >
+          {submitting ? 'Sending...' : 'Send Help Request'}
         </button>
       </form>
     </div>
