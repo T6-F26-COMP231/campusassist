@@ -1,0 +1,55 @@
+.facmap { display: flex; flex-direction: column; gap: 10px; }
+.facmap__title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+.facmap__empty { margin: 0; color: var(--charcoal-soft); }
+
+.facmap__tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.facmap__tab {
+  min-width: 56px; min-height: 44px;
+  padding: 8px 12px;
+  font-size: 0.95rem; font-weight: 600;
+  color: var(--charcoal);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.facmap__tab span { font-weight: 500; color: var(--charcoal-soft); }
+.facmap__tab:hover:not(:disabled) { background: var(--lime-tint); }
+.facmap__tab--on { background: var(--lime-tint); border-color: var(--lime-dark); }
+.facmap__tab:disabled { opacity: 0.45; cursor: not-allowed; }
+.facmap__tab:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+
+.facmap__summary { margin: 0; font-size: 0.9rem; color: var(--charcoal-soft); }
+
+.facmap__legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.9rem; }
+.facmap__legend li { display: flex; align-items: center; gap: 8px; }
+
+/* Each kind of facility has its own colour, shape and letters, so the markers never
+   rely on colour alone. */
+.facmap__key, .facmap__marker {
+  display: grid; place-items: center;
+  font-weight: 700; line-height: 1;
+  border: 3px solid var(--charcoal);
+  color: #fff;
+}
+.facmap__key { width: 28px; height: 28px; flex-shrink: 0; font-size: 0.7rem; }
+.facmap__marker {
+  position: absolute;
+  width: 28px; height: 28px;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85);
+}
+.facmap__key--water-station, .facmap__marker--water-station,
+.facmap__key--aed, .facmap__marker--aed { font-size: 0.55rem; }
+
+.facmap__key--elevator, .facmap__marker--elevator { background: var(--lime); color: var(--charcoal); border-radius: 6px; }
+.facmap__key--accessible-washroom, .facmap__marker--accessible-washroom { background: var(--charcoal); border-color: #fff; border-radius: 50%; outline: 3px solid var(--charcoal); }
+.facmap__key--food-and-drink, .facmap__marker--food-and-drink { background: #e8912d; color: var(--charcoal); border-radius: 12px 12px 12px 3px; }
+.facmap__key--water-station, .facmap__marker--water-station { background: #1f6fbf; border-radius: 50%; }
+.facmap__key--aed, .facmap__marker--aed { background: #c0392b; border-radius: 6px; }
+.facmap__key--information, .facmap__marker--information { background: #4a5a68; border-radius: 50%; }
+.facmap__key--multi-faith-room, .facmap__marker--multi-faith-room { background: #6b3fa0; border-radius: 6px; }
+.facmap__key--parenting-room, .facmap__marker--parenting-room { background: #167a62; border-radius: 50%; }
+
+.facmap__hint { margin: 0; font-size: 0.85rem; color: var(--charcoal-soft); }
