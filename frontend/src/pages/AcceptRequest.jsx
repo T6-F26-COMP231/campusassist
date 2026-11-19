@@ -11,15 +11,21 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
   const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleAccept = async () => {
     if (!request.id) return;
     setBusy(true);
     setError('');
+    setMessage('');
     const result = await acceptHelpRequest(request.id, HELPER_ID);
     setBusy(false);
-    if (result.ok) setAccepted(true);
-    else setError(result.error);
+    if (result.ok) {
+      setAccepted(true);
+      setMessage(result.message);
+    } else {
+      setError(result.error);
+    }
   };
 
   return (
@@ -56,6 +62,11 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
         >
           {accepted ? 'Accepted' : busy ? 'Accepting…' : 'Accept Request'}
         </button>
+        {message && (
+          <div className="notice notice--success" role="status">
+            {message}
+          </div>
+        )}
         <button
           type="button"
           className="btn btn--secondary"
@@ -63,8 +74,16 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
         >
           Directions to this user
         </button>
-        {!request.id && <p role="alert">No request selected.</p>}
-        {error && <p role="alert">{error}</p>}
+        {!request.id && (
+          <div className="notice notice--error" role="alert">
+            No request selected.
+          </div>
+        )}
+        {error && (
+          <div className="notice notice--error" role="alert">
+            {error}
+          </div>
+        )}
       </main>
     </div>
   );
