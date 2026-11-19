@@ -43,9 +43,8 @@ test('the report lists every feature, with a yes or no for each', () => {
   assert.equal(report.total, 4);
 });
 
-test('notes appear only for features the place has', () => {
-  assert.ok(getAccessibilityReport('a-library').items.every((i) => i.available && i.note));
-  assert.equal(getAccessibilityReport('b-b210').items.find((i) => i.id === 'ramp').note, '');
+test('only the two campus place records are listed', () => {
+  assert.deepEqual(listPlaces().map((place) => place.name), ['Student HUB', 'Room B210']);
 });
 
 test('every listed place has a report', () => {

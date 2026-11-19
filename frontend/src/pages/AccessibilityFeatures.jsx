@@ -38,7 +38,6 @@ export default function AccessibilityFeatures({ onBack }) {
           {report && (
             <section className="a11y__report" aria-labelledby="a11y-name">
               <h3 id="a11y-name">{report.name}</h3>
-              <p className="a11y__where">{report.where}</p>
               <p className="a11y__summary">
                 {report.availableCount} of {report.total} accessibility features available
               </p>
@@ -53,7 +52,6 @@ export default function AccessibilityFeatures({ onBack }) {
                     <div>
                       <strong>{item.label}</strong>
                       <span className="a11y__state">{item.available ? 'Available' : 'Not available'}</span>
-                      {item.note && <p>{item.note}</p>}
                     </div>
                   </li>
                 ))}
