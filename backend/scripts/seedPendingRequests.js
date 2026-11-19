@@ -23,8 +23,7 @@ async function main() {
   }
   await mongoose.connect(MONGODB_URI, { dbName: MONGODB_DB_NAME, serverSelectionTimeoutMS: 10000 });
   console.log(`Connected to database "${MONGODB_DB_NAME}"`);
-
-  const tagged = { description: { $regex: `^\${SEED_TAG}` } };
+const tagged = { description: { $regex: /^\[seed\]/ } };
 
   if (process.argv.includes("--clear")) {
     const { deletedCount } = await HelpRequest.deleteMany(tagged);
