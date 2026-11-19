@@ -9,7 +9,6 @@ import './pages/RequestHelp.css';
 
 function Home({
   onRequestHelp,
-  onAcceptRequest,
   onOpenRequests,
   onRequestStatus
 }) {
@@ -39,12 +38,7 @@ function Home({
           My Help Request Status
         </button>
 
-        <button
-          className="btn btn--secondary"
-          onClick={onAcceptRequest}
-        >
-          Accept a request
-        </button>
+        
 
         <button
           className="btn btn--secondary"
@@ -66,28 +60,56 @@ function Home({
 }
 
 export default function App() {
+
   const [page, setPage] = useState('home');
+  const [selected, setSelected] = useState(null);
 
-  const goHome = () => setPage('home');
+  const goHome = () => {
+    setSelected(null);
+    setPage('home');
+  };
 
-  if (page === 'help')
+  if (page === 'help') {
     return <RequestHelp onBack={goHome} />;
+  }
 
-  if (page === 'accept')
-    return <AcceptRequest onBack={goHome} />;
+  // Story 18: Accept the selected help request
+  if (page === 'accept' && selected) {
+    return (
+      <AcceptRequest
+        request={selected}
+        onBack={() => setPage('open')}
+      />
+    );
+  }
 
-  if (page === 'open')
-    return <OpenRequests onBack={goHome} />;
+  // Story 17: View pending help requests
+  if (page === 'open') {
+    return (
+      <OpenRequests
+        onBack={goHome}
+        onAccept={(request) => {
+          setSelected(request);
+          setPage('accept');
+        }}
+      />
+    );
+  }
 
-  if (page === 'status')
-    return <RequestStatus
-  onBack={goHome}
-  requestId={import.meta.env.VITE_TEST_REQUEST_ID}/>;
+  // Story 10: View help request status
+  if (page === 'status') {
+    return (
+      <RequestStatus
+        onBack={goHome}
+        requestId={import.meta.env.VITE_TEST_REQUEST_ID}
+      />
+    );
+  }
+
 
   return (
     <Home
       onRequestHelp={() => setPage('help')}
-      onAcceptRequest={() => setPage('accept')}
       onOpenRequests={() => setPage('open')}
       onRequestStatus={() => setPage('status')}
     />

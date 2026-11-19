@@ -1,65 +1,43 @@
 
 import { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
+import { fetchPendingRequests } from '../lib/helpRequests';
 import './OpenRequests.css';
 
-export default function OpenRequests({ onBack }) {
+const BLOCKS = ['A', 'B', 'C'];
+
+export default function OpenRequests({ onBack, onAccept }) {
+  const [block, setBlock] = useState('A');
   const [requests, setRequests] = useState([]);
-  const [block, setBlock] = useState('B');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [messaged, setMessaged] = useState(null);
-  const [notice, setNotice] = useState('');
 
-  // Story 17 - Retrieve pending requests from MongoDB
+  // Story 17: Retrieve pending requests from MongoDB
   useEffect(() => {
-    let active = true;
+    let cancelled = false;
 
-    async function loadRequests() {
-      setLoading(true);
-      setError('');
-      setNotice('');
+    setLoading(true);
+    setError('');
+    setRequests([]);
 
-      try {
-        const response = await fetch(
-          `/api/help-requests/pending?block=${block}`
-        );
+    fetchPendingRequests(block).then((result) => {
+      if (cancelled) return;
 
-        if (!response.ok) {
-          throw new Error('Unable to load help requests');
-        }
+      setLoading(false);
 
-        const data = await response.json();
-
-        if (active) {
-          setRequests(data.requests || []);
-        }
-      } catch (err) {
-        if (active) {
-          setRequests([]);
-          setError(err.message);
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
+      if (result.ok) {
+        setRequests(result.requests);
+      } else {
+        setRequests([]);
+        setError(result.error);
       }
-    }
-
-    loadRequests();
+    });
 
     return () => {
-      active = false;
+      cancelled = true;
     };
   }, [block]);
-
-  // Story 18 UI integration will be handled separately.
-  // Do not remove a request until MongoDB confirms acceptance.
-  const handleAccept = () => {
-    setNotice(
-      'Request acceptance is not connected on this screen yet.'
-    );
-  };
 
   return (
     <div className="screen">
@@ -77,62 +55,46 @@ export default function OpenRequests({ onBack }) {
           value={block}
           onChange={(e) => setBlock(e.target.value)}
         >
-          <option value="A">A Block</option>
-          <option value="B">B Block</option>
-          <option value="C">C Block</option>
+          {BLOCKS.map((b) => (
+            <option key={b} value={b}>
+              {b} Block
+            </option>
+          ))}
         </select>
-
-        {notice && (
-          <div className="notice" role="status">
-            {notice}
-          </div>
-        )}
 
         {loading && (
           <p role="status">Loading help requests...</p>
         )}
 
         {error && (
-          <div className="notice" role="alert">
-            {error}
-          </div>
+          <p role="alert">{error}</p>
         )}
 
         {!loading && !error && requests.length === 0 && (
           <div className="empty">
-            <p>No open requests nearby right now.</p>
+            <p>No open requests in Block {block} right now.</p>
           </div>
         )}
 
         {!loading && !error && requests.length > 0 && (
           <ul className="request-list">
             {requests.map((req) => (
-              <li key={req._id} className="request">
+              <li key={req.id} className="request">
                 <article className="request__card">
-                  <h3>
-                    Request #{req._id.slice(-6)}
-                  </h3>
+                  <h3>Request #{String(req.id).slice(-6)}</h3>
 
                   <p>
-                    <span>Location:</span>{' '}
-                    {req.currentLocation}
+                    <span>Location:</span> {req.location}
                   </p>
 
                   {req.description && (
                     <p>
-                      <span>Problem:</span>{' '}
-                      {req.description}
+                      <span>Problem:</span> {req.description}
                     </p>
                   )}
 
                   <p>
-                    <span>Assistance Type:</span>{' '}
-                    {req.assistanceType}
-                  </p>
-
-                  <p>
-                    <span>Status:</span>{' '}
-                    {req.status}
+                    <span>Assistance Type:</span> {req.need}
                   </p>
                 </article>
 
@@ -140,7 +102,7 @@ export default function OpenRequests({ onBack }) {
                   <button
                     type="button"
                     className="btn btn--outline"
-                    onClick={() => setMessaged(req._id)}
+                    onClick={() => setMessaged(req.id)}
                   >
                     Message User
                   </button>
@@ -148,13 +110,14 @@ export default function OpenRequests({ onBack }) {
                   <button
                     type="button"
                     className="btn btn--primary"
-                    onClick={handleAccept}
+                    onClick={() => onAccept(req)}
+                    disabled={!req.id || !onAccept}
                   >
                     Accept Request
                   </button>
                 </div>
 
-                {messaged === req._id && (
+                {messaged === req.id && (
                   <p className="request__hint" role="status">
                     Messaging is coming soon.
                   </p>
