@@ -164,6 +164,14 @@ input[aria-invalid='true'] { border-color: #c0392b; }
 .request-details dd { margin: 0; }
 
 /* Directions to the user */
+.directions-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 600;
+}
+.directions-option input { width: 20px; height: 20px; }
 .directions-note { margin: 0; line-height: 1.5; color: var(--charcoal-soft); }
 .directions-steps {
   margin: 0;

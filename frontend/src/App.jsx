@@ -147,8 +147,6 @@ export default function App() {
     return <AccessibilityFeatures onBack={goHome} />;
   }
 
-  }
-
   // Story 17: View pending help requests.
   if (page === 'open') {
     return (

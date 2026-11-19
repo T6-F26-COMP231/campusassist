@@ -1,15 +1,26 @@
+import { useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import { directionSteps } from '../lib/directions.js';
 import './RequestHelp.css';
 
 export default function DirectionsToUser({ request, onBack }) {
-  const result = directionSteps(request?.location);
+  const [stepFree, setStepFree] = useState(false);
+  const result = directionSteps(request?.location, { stepFree });
 
   return (
     <div className="screen">
       <AppHeader subtitle="Directions to user" onBack={onBack} />
       <main className="content">
         <h2 className="page-title">Directions to the user</h2>
+
+        <label className="directions-option">
+          <input
+            type="checkbox"
+            checked={stepFree}
+            onChange={(event) => setStepFree(event.target.checked)}
+          />
+          Avoid stairs
+        </label>
 
         {result.ok ? (
           <>
