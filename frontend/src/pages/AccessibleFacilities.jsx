@@ -1,27 +1,27 @@
 import { useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import FacilityMap from '../components/FacilityMap';
-import { FACILITIES, FACILITY_TYPES, facilityBlocks, filterFacilities } from '../lib/facilities';
+import { FACILITIES, FACILITY_TYPES, facilityBuildings, filterFacilities } from '../lib/facilities';
 import './RequestHelp.css';
 import './AccessibleFacilities.css';
 
 const TYPE_LABELS = Object.fromEntries(FACILITY_TYPES.map((t) => [t.id, t.label]));
-const BLOCKS = facilityBlocks();
+const BUILDINGS = facilityBuildings();
 
 export default function AccessibleFacilities({ onBack }) {
   const [selected, setSelected] = useState([]);
-  const [block, setBlock] = useState('');
+  const [building, setBuilding] = useState('');
 
   const toggle = (id) =>
     setSelected((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]));
   const clear = () => {
     setSelected([]);
-    setBlock('');
+    setBuilding('');
   };
 
-  const results = filterFacilities(FACILITIES, selected, block);
+  const results = filterFacilities(FACILITIES, selected, building);
   const total = FACILITIES.length;
-  const filtering = selected.length > 0 || block !== '';
+  const filtering = selected.length > 0 || building !== '';
 
   return (
     <div className="screen">
@@ -55,9 +55,9 @@ export default function AccessibleFacilities({ onBack }) {
 
           <label className="filters__block">
             <span>Where</span>
-            <select value={block} onChange={(e) => setBlock(e.target.value)}>
+            <select value={building} onChange={(e) => setBuilding(e.target.value)}>
               <option value="">All of campus</option>
-              {BLOCKS.map(({ id, label }) => (
+              {BUILDINGS.map(({ id, label }) => (
                 <option key={id} value={id}>{label}</option>
               ))}
             </select>
@@ -89,8 +89,9 @@ export default function AccessibleFacilities({ onBack }) {
               <li key={facility.id}>
                 <article className="facility">
                   <span className="facility__badge">{TYPE_LABELS[facility.type]}</span>
-                  <h3>{facility.location}</h3>
-                  <p>{facility.details}</p>
+                  <h3>{facility.name}</h3>
+                  <p>{facility.location}</p>
+                  {facility.details && <p>{facility.details}</p>}
                 </article>
               </li>
             ))}
@@ -100,7 +101,7 @@ export default function AccessibleFacilities({ onBack }) {
         <FacilityMap facilities={results} />
 
         <p className="facilities__footnote">
-          Locations come from the Progress Campus floor plan.
+          Locations come from the Progress Campus map and floor plan.
         </p>
       </main>
     </div>
