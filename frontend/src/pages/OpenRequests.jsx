@@ -1,58 +1,74 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
+import { fetchPendingRequests } from '../lib/helpRequests';
 import './OpenRequests.css';
 
-// Placeholder data until the backend API is available
-const INITIAL_REQUESTS = [
-  { id: 18, user: 'User_03', location: 'Block B, Floor 1', problem: 'Needs help with classroom door', distance: '250 m' },
-  { id: 19, user: 'User_07', location: 'Block A, Floor 2', distance: '400 m' },
-];
+const BLOCKS = ['A', 'B', 'C'];
 
-export default function OpenRequests({ onBack }) {
-  const [requests, setRequests] = useState(INITIAL_REQUESTS);
-  const [accepted, setAccepted] = useState(null);
+export default function OpenRequests({ onBack, onAccept }) {
+  const [block, setBlock] = useState('A');
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [messaged, setMessaged] = useState(null);
 
-  const handleAccept = (req) => {
-    // TODO: send to backend when the API is available
-    setRequests((list) => list.filter((r) => r.id !== req.id));
-    setAccepted(req);
-    setMessaged(null);
-  };
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError('');
+    fetchPendingRequests(block).then((result) => {
+      if (cancelled) return;
+      setLoading(false);
+      if (result.ok) setRequests(result.requests);
+      else {
+        setRequests([]);
+        setError(result.error);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [block]);
 
   return (
     <div className="screen">
       <AppHeader subtitle="Help Requests" onBack={onBack} />
 
       <main className="content">
-        <h2 className="page-title">Open Requests Nearby</h2>
+        <h2 className="page-title">Open Requests</h2>
 
-        {accepted && (
-          <div className="notice notice--success" role="status">
-            <span className="notice__icon" aria-hidden="true">✓</span>
-            You accepted Request #{accepted.id}. Head to {accepted.location}.
+        <label>
+          Campus block{' '}
+          <select value={block} onChange={(e) => setBlock(e.target.value)}>
+            {BLOCKS.map((b) => (
+              <option key={b} value={b}>Block {b}</option>
+            ))}
+          </select>
+        </label>
+
+        {loading && <p role="status">Loading requests…</p>}
+        {error && <p role="alert">{error}</p>}
+
+        {!loading && !error && requests.length === 0 && (
+          <div className="empty">
+            <p>No open requests in Block {block} right now.</p>
           </div>
         )}
 
-        {requests.length === 0 ? (
-          <div className="empty">
-            <p>No open requests nearby right now.</p>
-          </div>
-        ) : (
+        {!loading && requests.length > 0 && (
           <ul className="request-list">
             {requests.map((req) => (
               <li key={req.id} className="request">
                 <article className="request__card">
-                  <h3>Request #{req.id} (from {req.user})</h3>
+                  <h3>{req.need}</h3>
                   <p><span>Location:</span> {req.location}</p>
-                  {req.problem && <p><span>Problem:</span> {req.problem}</p>}
-                  <p><span>Distance:</span> {req.distance} away</p>
+                  {req.description && <p><span>Problem:</span> {req.description}</p>}
                 </article>
                 <div className="request__actions">
                   <button type="button" className="btn btn--outline" onClick={() => setMessaged(req.id)}>
                     Message User
                   </button>
-                  <button type="button" className="btn btn--primary" onClick={() => handleAccept(req)}>
+                  <button type="button" className="btn btn--primary" onClick={() => onAccept(req)}>
                     Accept Request
                   </button>
                 </div>

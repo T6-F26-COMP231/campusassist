@@ -28,7 +28,7 @@ export function openHelpRequests(store) {
   return store.requests.filter((request) => request.status === 'pending');
 }
 
-const API_BASE = import.meta.env.VITE_API_URL ?? '';
+const API_BASE = import.meta.env?.VITE_API_URL ?? '';
 
 // Story 18: ask the backend to accept a pending help request.
 export async function acceptHelpRequest(requestId, helperId) {
@@ -43,6 +43,27 @@ export async function acceptHelpRequest(requestId, helperId) {
       return { ok: false, error: data.message || 'Unable to accept this request.' };
     }
     return { ok: true, request: data.request };
+  } catch {
+    return { ok: false, error: 'Could not reach the server. Please try again.' };
+  }
+}
+
+// Story 17: load pending requests for one campus block (A, B or C).
+// Maps backend fields to what the screens use; `id` is the database _id.
+export async function fetchPendingRequests(block) {
+  try {
+    const res = await fetch(`${API_BASE}/api/help-requests/pending?block=${encodeURIComponent(block)}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      return { ok: false, error: data.message || 'Unable to load open requests.' };
+    }
+    const requests = (data.requests ?? []).map((r) => ({
+      id: r._id,
+      location: r.currentLocation,
+      need: r.assistanceType,
+      description: r.description,
+    }));
+    return { ok: true, requests };
   } catch {
     return { ok: false, error: 'Could not reach the server. Please try again.' };
   }

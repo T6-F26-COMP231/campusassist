@@ -6,23 +6,16 @@ import './RequestHelp.css';
 // No login yet: the helper's user id comes from config until auth exists.
 const HELPER_ID = import.meta.env.VITE_HELPER_ID;
 
-const SAMPLE_REQUEST = {
-  id: 'REQ-001',
-  _id: import.meta.env.VITE_SAMPLE_REQUEST_ID,
-  name: 'Sam Student',
-  location: 'Room B101',
-  need: 'Standard Guiding',
-};
-
-export default function AcceptRequest({ request = SAMPLE_REQUEST, onBack }) {
+export default function AcceptRequest({ request, onBack }) {
   const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
   const handleAccept = async () => {
+    if (!request.id) return;
     setBusy(true);
     setError('');
-    const result = await acceptHelpRequest(request._id ?? request.id, HELPER_ID);
+    const result = await acceptHelpRequest(request.id, HELPER_ID);
     setBusy(false);
     if (result.ok) setAccepted(true);
     else setError(result.error);
@@ -32,12 +25,8 @@ export default function AcceptRequest({ request = SAMPLE_REQUEST, onBack }) {
     <div className="screen">
       <AppHeader subtitle="Accept a request" onBack={onBack} />
       <main className="content">
-        <h2 className="page-title">Request {request.id}</h2>
+        <h2 className="page-title">Accept this request</h2>
         <dl className="request-details">
-          <div>
-            <dt>From</dt>
-            <dd>{request.name}</dd>
-          </div>
           <div>
             <dt>Location</dt>
             <dd>{request.location}</dd>
@@ -46,6 +35,12 @@ export default function AcceptRequest({ request = SAMPLE_REQUEST, onBack }) {
             <dt>Needs</dt>
             <dd>{request.need}</dd>
           </div>
+          {request.description && (
+            <div>
+              <dt>Details</dt>
+              <dd>{request.description}</dd>
+            </div>
+          )}
           <div>
             <dt>Status</dt>
             <dd>{accepted ? 'Accepted' : 'Pending'}</dd>
@@ -55,10 +50,11 @@ export default function AcceptRequest({ request = SAMPLE_REQUEST, onBack }) {
           type="button"
           className="btn btn--primary"
           onClick={handleAccept}
-          disabled={accepted || busy}
+          disabled={accepted || busy || !request.id}
         >
-          {accepted ? 'Accepted' : busy ? 'Accepting…' : 'Accept Request'}
+          {accepted ? 'Accepted' : busy ? 'Acceptingâ€¦' : 'Accept Request'}
         </button>
+        {!request.id && <p role="alert">No request selected.</p>}
         {error && <p role="alert">{error}</p>}
       </main>
     </div>
