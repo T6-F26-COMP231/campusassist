@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PLAN_IMAGES } from '../assets/floorplans';
+import { FACILITY_TYPES } from '../lib/facilities';
 import { FLOOR_PLAN_TITLES } from '../lib/floorPlan';
 import './FloorPlan.css';
 import './FacilityMap.css';
 
 const PAGES = [1, 2, 3, 4, 5];
 const TAB_LABELS = { 1: '1', 2: '2', 3: '3', 4: '4', 5: '5+' };
-const MARKER_LETTER = { elevator: 'E', 'accessible-washroom': 'W' };
+const MARKS = Object.fromEntries(FACILITY_TYPES.map((t) => [t.id, t.mark]));
 
 // Floor plan with a marker for every facility in `facilities` (the filtered list).
 // The plan is one floor at a time, so floor tabs show how many facilities each has.
@@ -44,6 +45,7 @@ export default function FacilityMap({ facilities }) {
   }
 
   const title = FLOOR_PLAN_TITLES[page];
+  const shownTypes = FACILITY_TYPES.filter((t) => onPage.some((f) => f.type === t.id));
   return (
     <section className="facmap" aria-labelledby="facmap-title">
       <h3 id="facmap-title" className="facmap__title">Map</h3>
@@ -69,8 +71,12 @@ export default function FacilityMap({ facilities }) {
       </p>
 
       <ul className="facmap__legend" aria-label="Map key">
-        <li><span className="facmap__key facmap__key--elevator" aria-hidden="true">E</span> Elevator</li>
-        <li><span className="facmap__key facmap__key--washroom" aria-hidden="true">W</span> Accessible washroom</li>
+        {shownTypes.map((t) => (
+          <li key={t.id}>
+            <span className={`facmap__key facmap__key--${t.id}`} aria-hidden="true">{t.mark}</span>
+            {t.label}
+          </li>
+        ))}
       </ul>
 
       <div className="floorplan__scroller" ref={scroller} tabIndex={0}>
@@ -83,13 +89,13 @@ export default function FacilityMap({ facilities }) {
           {onPage.map((f) => (
             <span
               key={f.id}
-              className={`facmap__marker facmap__marker--${f.type === 'elevator' ? 'elevator' : 'washroom'}`}
+              className={`facmap__marker facmap__marker--${f.type}`}
               style={{ left: `${f.plan.x}%`, top: `${f.plan.y}%` }}
               role="img"
               aria-label={`${f.name}, ${f.location}`}
               title={`${f.name}, ${f.location}`}
             >
-              {MARKER_LETTER[f.type]}
+              {MARKS[f.type]}
             </span>
           ))}
         </div>
