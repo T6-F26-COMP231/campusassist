@@ -24,6 +24,17 @@ const PLACES = [
   },
 ];
 
+const DETAIL = {
+  elevator: ['Elevator', 'No elevator'],
+  washroom: ['Accessible washroom', 'No accessible washroom'],
+  ramp: ['Ramp', 'No ramp'],
+  autoDoor: ['Auto door', 'No auto door'],
+};
+
+function findPlace(placeId) {
+  return PLACES.find((entry) => entry.id === placeId);
+}
+
 export function listAccessibilityFeatures() {
   return FEATURES.map((feature) => feature.label);
 }
@@ -33,7 +44,7 @@ export function listPlaces() {
 }
 
 export function getAccessibilityFeatures(placeId) {
-  const place = PLACES.find((entry) => entry.id === placeId);
+  const place = findPlace(placeId);
 
   if (!place) {
     return { ok: false, error: 'That place is not in the campus records.' };
@@ -43,25 +54,62 @@ export function getAccessibilityFeatures(placeId) {
   return { ok: true, id: place.id, name: place.name, features };
 }
 
-// Every feature with a yes or no, so the screen can show what is missing too.
+
+export function getLocationAccessibility(placeId) {
+  const place = findPlace(placeId);
+
+  if (!place) {
+    return {
+      ok: false,
+      error: 'That place is not in the campus records.'
+    };
+  }
+
+  const details = FEATURES.map((feature) => {
+    const available = place[feature.id];
+
+    return {
+      feature: feature.label,
+      available,
+      text: available
+        ? DETAIL[feature.id][0]
+        : DETAIL[feature.id][1]
+    };
+  });
+
+  return {
+    ok: true,
+    id: place.id,
+    name: place.name,
+    details
+  };
+}
+
+// Existing main functionality: availability summary.
 export function getAccessibilityReport(placeId) {
   const place = PLACES.find((entry) => entry.id === placeId);
 
   if (!place) {
-    return { ok: false, error: 'That place is not in the campus records.' };
+    return {
+      ok: false,
+      error: 'That place is not in the campus records.'
+    };
   }
 
   const items = FEATURES.map((feature) => ({
     id: feature.id,
     label: feature.label,
-    available: Boolean(place[feature.id]),
+    available: Boolean(place[feature.id])
   }));
+
   return {
     ok: true,
     id: place.id,
     name: place.name,
     items,
     availableCount: items.filter((item) => item.available).length,
-    total: items.length,
+    total: items.length
   };
+}
+
 }
