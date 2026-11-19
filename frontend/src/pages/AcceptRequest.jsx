@@ -6,7 +6,7 @@ import './RequestHelp.css';
 // No login yet: the helper's user id comes from config until auth exists.
 const HELPER_ID = import.meta.env.VITE_HELPER_ID;
 
-export default function AcceptRequest({ request, onBack }) {
+export default function AcceptRequest({ request, onBack, onDirections }) {
   const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -53,6 +53,13 @@ export default function AcceptRequest({ request, onBack }) {
           disabled={accepted || busy || !request.id}
         >
           {accepted ? 'Accepted' : busy ? 'Accepting…' : 'Accept Request'}
+        </button>
+        <button
+          type="button"
+          className="btn btn--secondary"
+          onClick={onDirections}
+        >
+          Directions to this user
         </button>
         {!request.id && <p role="alert">No request selected.</p>}
         {error && <p role="alert">{error}</p>}

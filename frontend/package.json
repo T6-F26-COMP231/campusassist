@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "test": "node --test src/lib/helpRequests.test.js",
+    "test": "node --test src/lib/helpRequests.test.js src/lib/directions.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import AppHeader from './components/AppHeader';
 import RequestHelp from './pages/RequestHelp';
 import AcceptRequest from './pages/AcceptRequest';
+import DirectionsToUser from './pages/DirectionsToUser';
 import OpenRequests from './pages/OpenRequests';
 import './pages/RequestHelp.css';
 
@@ -58,11 +59,21 @@ export default function App() {
     return <RequestHelp onBack={goHome} />;
   }
 
+  if (page === 'directions' && selected) {
+    return (
+      <DirectionsToUser
+        request={selected}
+        onBack={() => setPage('accept')}
+      />
+    );
+  }
+
   if (page === 'accept' && selected) {
     return (
       <AcceptRequest
         request={selected}
         onBack={() => setPage('open')}
+        onDirections={() => setPage('directions')}
       />
     );
   }
