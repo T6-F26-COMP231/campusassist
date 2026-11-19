@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AppHeader from '../components/AppHeader';
+import FloorPlan from '../components/FloorPlan';
 import { acceptHelpRequest } from '../lib/helpRequests';
 import './RequestHelp.css';
 
@@ -46,6 +47,7 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
             <dd>{accepted ? 'Accepted' : 'Pending'}</dd>
           </div>
         </dl>
+        <FloorPlan location={request.location} />
         <button
           type="button"
           className="btn btn--primary"
