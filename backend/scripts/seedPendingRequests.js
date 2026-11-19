@@ -10,10 +10,10 @@ import HelpRequest from "../models/HelpRequest.js";
 const SEED_TAG = "[seed]";
 
 const SAMPLES = [
-  { currentLocation: "A Block, Floor 1", description: "Needs help finding room A112", assistanceType: "Standard Guiding" },
+  { currentLocation: "A3-74", description: "Needs help finding room A3-74", assistanceType: "Standard Guiding" },
   { currentLocation: "B Block, Floor 1", description: "Needs help with classroom door", assistanceType: "Mobility Assistance" },
-  { currentLocation: "b3-74", description: "Lost, trying to reach the library", assistanceType: "Standard Guiding" },
-  { currentLocation: "C Block, Floor 2", description: "Elevator is out of service", assistanceType: "Other" },
+  { currentLocation: "B2-04", description: "Lost, trying to reach the library", assistanceType: "Standard Guiding" },
+  { currentLocation: "C3-14", description: "Elevator is out of service", assistanceType: "Other" },
 ];
 
 async function main() {
