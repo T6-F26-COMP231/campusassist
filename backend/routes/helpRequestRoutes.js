@@ -1,5 +1,8 @@
 
 import { Router } from "express";
+import {
+  getHelpRequestStatus
+} from "../controllers/helpRequestStatusController.js";
 
 import {
   getPendingRequests,
@@ -14,4 +17,6 @@ router.get("/pending", getPendingRequests);
 // Story 18: Accept a pending help request
 router.patch("/:id/accept", acceptHelpRequest);
 
+// Story 10: Retrieve a specific help request's status
+router.get("/:id/status", getHelpRequestStatus);
 export default router;
