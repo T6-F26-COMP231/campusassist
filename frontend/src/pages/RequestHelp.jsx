@@ -14,15 +14,51 @@ export default function RequestHelp({ onBack }) {
   const [type, setType] = useState('standard');
   const [touched, setTouched] = useState(false);
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const missingLocation = location.trim() === '';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setTouched(true);
-    if (missingLocation) return;
-    // TODO: send to backend when the API is available
-    setSent(true);
+
+    if (missingLocation || submitting) return;
+
+    setSubmitting(true);
+    setError('');
+
+    const assistanceType =
+      ASSISTANCE_TYPES.find((opt) => opt.value === type)?.label;
+
+    try {
+      const response = await fetch('/api/help-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          currentLocation: location.trim(),
+          description: description.trim(),
+          assistanceType
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message || 'Unable to send help request.'
+        );
+      }
+
+      setSent(true);
+
+    } catch (err) {
+      setError(err.message || 'Unable to send help request.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (sent) {
@@ -106,8 +142,18 @@ export default function RequestHelp({ onBack }) {
           A request without a location cannot be sent.
         </div>
 
-        <button type="submit" className="btn btn--primary" disabled={missingLocation}>
-          Send Help Request
+        {error && (
+          <div className="notice notice--error" role="alert">
+            {error}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className="btn btn--primary"
+          disabled={missingLocation || submitting}
+        >
+          {submitting ? 'Sending...' : 'Send Help Request'}
         </button>
       </form>
     </div>

@@ -3,7 +3,7 @@ import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
 import { connectDB } from "./config/db.js";
-import helpRequestRoutes from "./routes/helpRequestRoutes.js";
+
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.get("/api/health", (req, res) => {
 });
 
 // Help request routes (stories 17 and 18)
-app.use("/api/help-requests", helpRequestRoutes);
+//app.use("/api/help-requests", helpRequestRoutes);
 
 // Start the backend server
 async function startServer() {

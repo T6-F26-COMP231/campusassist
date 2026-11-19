@@ -1,7 +1,10 @@
 
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getPendingRequests } from "../controllers/helpRequestController.js";
+import {
+  createHelpRequest,
+  getPendingRequests
+} from "../controllers/helpRequestController.js";
 import HelpRequest from "../models/HelpRequest.js";
 
 function mockResponse() {
@@ -18,6 +21,48 @@ function mockResponse() {
     }
   };
 }
+
+test("Story 8 creates a pending help request", async () => {
+  const originalCreate = HelpRequest.create;
+
+  try {
+    HelpRequest.create = async (input) => ({
+      _id: "request-id",
+      ...input,
+      status: "Pending"
+    });
+
+    const res = mockResponse();
+    await createHelpRequest(
+      {
+        body: {
+          currentLocation: "  B Block, Floor 1  ",
+          description: "  Need help reaching B101  ",
+          assistanceType: "Standard Guiding"
+        }
+      },
+      res
+    );
+
+    assert.equal(res.statusCode, 201);
+    assert.equal(res.body.success, true);
+    assert.equal(res.body.request.status, "Pending");
+  } finally {
+    HelpRequest.create = originalCreate;
+  }
+});
+
+test("Story 8 rejects a missing location", async () => {
+  const res = mockResponse();
+
+  await createHelpRequest(
+    { body: { currentLocation: "   " } },
+    res
+  );
+
+  assert.equal(res.statusCode, 400);
+  assert.equal(res.body.success, false);
+});
 
 test("Story 17 retrieves pending requests in B Block", async () => {
   const originalFind = HelpRequest.find;
