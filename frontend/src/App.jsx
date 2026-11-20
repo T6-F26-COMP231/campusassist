@@ -7,6 +7,7 @@ import DirectionsToUser from './pages/DirectionsToUser';
 import OpenRequests from './pages/OpenRequests';
 import AccessibleFacilities from './pages/AccessibleFacilities';
 import SearchLocation from './pages/SearchLocation';
+import StepByStepDirections from './pages/StepByStepDirections';
 import RequestStatus from './pages/RequestStatus';
 import AccessibilityFeatures from './pages/AccessibilityFeatures';
 import './pages/RequestHelp.css';
@@ -17,6 +18,7 @@ function Home({
   onRequestStatus,
   onFacilities,
   onSearch,
+  onGetDirections,
   onFeatures
 }) {
   return (
@@ -72,6 +74,13 @@ onClick={onSearch}
 >
   Check Destination Accessibility
 
+        </button>
+
+        <button
+          className="btn btn--secondary"
+          onClick={onGetDirections}
+        >
+          Get Step-by-Step Directions
         </button>
 
         <button className="btn btn--secondary" disabled>
@@ -137,6 +146,11 @@ export default function App() {
   }
 
 
+  // Story 6: Step-by-step directions to a destination.
+  if (page === 'route') {
+    return <StepByStepDirections onBack={goHome} />;
+  }
+
   // Story 2: Search for a location by name.
   if (page === 'search') {
     return <SearchLocation onBack={goHome} />;
@@ -178,6 +192,7 @@ export default function App() {
       onFacilities={() => setPage('facilities')}
 
 onSearch={() => setPage('search')}
+      onGetDirections={() => setPage('route')}
 onFeatures={() => setPage('features')}
 
     />
