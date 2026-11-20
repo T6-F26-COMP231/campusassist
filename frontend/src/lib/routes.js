@@ -7,6 +7,7 @@ import { WALK_FLOORS } from './walkMap.js';
 // map both come from the same path.
 
 export const NO_PATH_MESSAGE = 'The map shows no walkable route between these two places.';
+export const NO_STEP_FREE_MESSAGE = 'No step-free route is available between these two places.';
 export const NOT_ON_MAP_MESSAGE = 'One of these places is not connected to the walkable map.';
 
 const BUILDINGS = [
@@ -104,17 +105,23 @@ const cellPoint = (cx, cy) => {
 };
 
 const rasters = new Map();
+
+// A step-free search leaves the stairs out of the walkable ground, so no path can cross them.
+let stepFreeMode = false;
+const rasterKey = (floor) => (stepFreeMode ? `${floor}!` : floor);
 const owners = new Map(); // floor -> building index + 1 for every walkable cell
 const BUILDING_INDEX = Object.fromEntries(BUILDINGS.map((b, i) => [b.id, i + 1]));
 
 // 1 where a person can walk on this floor. Shapes are filled with the even-odd rule, so holes
 // stay empty; the result is widened by one cell so doorways and narrow joins stay connected.
 function raster(floor) {
-  if (rasters.has(floor)) return rasters.get(floor);
+  const key = rasterKey(floor);
+  if (rasters.has(key)) return rasters.get(key);
   const { width, height, size } = gridBounds();
   const filled = new Uint8Array(size);
   const owner = new Uint8Array(size);
-  for (const [building, rings] of WALK_FLOORS[floor] ?? []) {
+  for (const [building, rings, kind] of WALK_FLOORS[floor] ?? []) {
+    if (stepFreeMode && kind === 's') continue;
     const edges = [];
     let top = Infinity, bottom = -Infinity;
     for (const ring of rings) {
@@ -151,8 +158,8 @@ function raster(floor) {
       if (walk[i] && !owner[i]) owner[i] = owner[i - 1] || owner[i + 1] || owner[i - width] || owner[i + width];
     }
   }
-  rasters.set(floor, walk);
-  owners.set(floor, owner);
+  rasters.set(key, walk);
+  owners.set(key, owner);
   return walk;
 }
 
@@ -348,7 +355,7 @@ const BRIDGE_ENDS = {
 function bridgeCrossings(leg) {
   if (leg.floor !== BRIDGE_FLOOR) return [];
   const { width } = gridBounds();
-  const owner = owners.get(leg.floor);
+  const owner = owners.get(rasterKey(leg.floor));
   const found = [];
   let before = 0;
   leg.cells.forEach((cell, index) => {
@@ -394,10 +401,9 @@ function simplifyPoints(points) {
   return out;
 }
 
-export function routeDirections(fromId, toId, options = {}) {
+function computeRoute(fromId, toId, avoidStairs) {
   const from = BY_ID.get(String(fromId));
   const to = BY_ID.get(String(toId));
-  const avoidStairs = Boolean(options.avoidStairs);
 
   if (!from || !to) {
     return { ok: false, error: 'Choose where you are and where you are going.' };
@@ -510,4 +516,35 @@ export function routeDirections(fromId, toId, options = {}) {
     totalMetres: Math.round(total),
     minutes: Math.max(1, Math.round(total / 72)),
   };
+}
+
+// Runs `work` with the stairs either left in or out of the walkable ground.
+function withStairs(avoidStairs, work) {
+  stepFreeMode = avoidStairs;
+  try {
+    return work();
+  } finally {
+    stepFreeMode = false;
+  }
+}
+
+// Directions from one place to another. With `avoidStairs` the route is step-free: it never
+// uses stairs, only corridors and elevators. The result says how much longer a step-free route
+// is, and when none exists it says whether a route with stairs does.
+export function routeDirections(fromId, toId, options = {}) {
+  const avoidStairs = Boolean(options.avoidStairs);
+  const result = withStairs(avoidStairs, () => computeRoute(fromId, toId, avoidStairs));
+
+  if (!avoidStairs) {
+    return result.ok ? { ...result, stepFree: false, usesStairs: result.steps.some((step) => /stairs/i.test(step)) } : result;
+  }
+
+  const usual = withStairs(false, () => computeRoute(fromId, toId, false));
+  if (!result.ok) {
+    return result.error === NO_PATH_MESSAGE && usual.ok
+      ? { ok: false, error: NO_STEP_FREE_MESSAGE, stairsRouteExists: true }
+      : result;
+  }
+  const extra = usual.ok ? result.totalMetres - usual.totalMetres : 0;
+  return { ...result, stepFree: true, usesStairs: false, extraMetres: extra >= 5 ? extra : 0 };
 }
