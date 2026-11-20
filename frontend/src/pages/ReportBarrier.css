@@ -1,0 +1,35 @@
+.barrier__intro { margin: 0; line-height: 1.4; color: var(--charcoal-soft); }
+.barrier__required { font-weight: 500; color: var(--charcoal-soft); }
+.barrier__help { color: var(--charcoal-soft); font-size: 0.85rem; }
+.barrier__help--over { color: #c0392b; font-weight: 700; }
+.barrier__error { margin: 0; color: var(--warn-text); font-size: 0.9rem; font-weight: 600; }
+.barrier__error::before { content: '\26A0\00a0'; }
+
+.barrier__problems { align-items: flex-start; }
+.barrier__problems:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+.barrier__problems ul { margin: 4px 0 0; padding-left: 18px; }
+
+.barrier__file {
+  width: 100%; min-height: 44px; padding: 10px;
+  font-size: 0.95rem; color: var(--charcoal);
+  background: var(--surface); border: 2px dashed var(--border); border-radius: 12px;
+}
+.barrier__file:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 2px; }
+
+.barrier__photo {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  padding: 10px; font-size: 0.9rem;
+  background: var(--surface); border: 2px solid var(--border); border-radius: 12px;
+}
+.barrier__photo img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; }
+.barrier__photo span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.barrier__remove {
+  min-height: 44px; padding: 0 4px;
+  font-size: 0.95rem; font-weight: 700; color: var(--charcoal);
+  text-decoration: underline; background: none; border: 0; cursor: pointer;
+}
+.barrier__remove:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+
+.barrier__summary { align-self: stretch; text-align: left; }
+
+input[type='text'][aria-invalid='true'], textarea[aria-invalid='true'] { border-color: #c0392b; }

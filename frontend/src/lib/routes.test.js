@@ -35,8 +35,8 @@ test('a walk on one floor starts at the start place and ends at the destination'
 
   assert.equal(result.ok, true);
   assert.match(result.steps[0], /^Start at Bookstore/);
-  assert.match(result.steps[1], /^Walk about \d+ m [a-z-]+/);
-  assert.equal(result.steps.at(-1), 'Arrive at Student Hub.');
+  assert.match(result.steps[1], /^Walk \d+ m [a-z-]+/);
+  assert.equal(result.steps.at(-1), 'Arrive at Student Hub');
   assert.equal(result.legs.length, 1);
 });
 
@@ -45,8 +45,8 @@ test('a walk between floors rides the elevator once, in order', () => {
 
   assert.equal(result.ok, true);
   const text = result.steps.join('|');
-  assert.ok(result.steps.includes('Take the elevator from Floor 1 to Floor 3.'));
-  assert.ok(text.indexOf('Start at A1-51') < text.indexOf('Take the elevator') && text.indexOf('Take the elevator') < text.indexOf('Arrive at A3-74'));
+  assert.ok(result.steps.includes('Elevator: Floor 1 → Floor 3'));
+  assert.ok(text.indexOf('Start at A1-51') < text.indexOf('Elevator: Floor') && text.indexOf('Elevator: Floor') < text.indexOf('Arrive at A3-74'));
   assert.deepEqual(result.legs.map((leg) => leg.floor), ['1', '3']);
 });
 
@@ -68,21 +68,21 @@ test('a route between two blocks crosses the bridge, in walking order', () => {
   const result = routeDirections(find('A2-65A'), find('Bookstore'));
 
   assert.equal(result.ok, true);
-  const bridge = result.steps.findIndex((step) => /^Cross the bridge from Block A to the B, C, D & E Blocks\.$/.test(step));
+  const bridge = result.steps.findIndex((step) => /^Cross the bridge from Block A to the B, C, D & E Blocks$/.test(step));
   assert.ok(bridge > 0, 'the bridge step is listed');
   assert.match(result.steps[0], /^Start at A2-65A/);
   assert.ok(bridge < result.steps.length - 1);
-  assert.match(result.steps[bridge - 1], /to the bridge\.$/);
-  assert.match(result.steps[bridge + 1], /^Leave the bridge and walk/);
-  assert.equal(result.steps.at(-1), 'Arrive at Bookstore (B2-02).');
-  assert.equal(result.steps.filter((step) => /bridge\.$|^Cross the bridge/.test(step)).length, 2);
+  assert.match(result.steps[bridge - 1], /to the bridge$/);
+  assert.match(result.steps[bridge + 1], /^Walk \d+ m/);
+  assert.equal(result.steps.at(-1), 'Arrive at Bookstore (B2-02)');
+  assert.equal(result.steps.filter((step) => /bridge$|^Cross the bridge/.test(step)).length, 2);
 });
 
 test('the bridge is crossed in the other direction too', () => {
   const result = routeDirections(find('Bookstore'), find('A2-65A'));
 
   assert.equal(result.ok, true);
-  assert.ok(result.steps.includes('Cross the bridge from the B, C, D & E Blocks to Block A.'));
+  assert.ok(result.steps.includes('Cross the bridge from the B, C, D & E Blocks to Block A'));
 });
 
 test('a route inside one block has no bridge step', () => {
@@ -101,7 +101,7 @@ test('the route on the map is the same path as the steps', () => {
   const end = MAP_PLACES.find((place) => place[1] === 'A3-74');
   assert.deepEqual([first.lon, first.lat], [start[4], start[5]]);
   assert.deepEqual([lastLeg.at(-1).lon, lastLeg.at(-1).lat], [end[4], end[5]]);
-  const walks = result.steps.filter((step) => /walk about/i.test(step)).length;
+  const walks = result.steps.filter((step) => /\d+ m( |$)/.test(step)).length;
   const segments = result.legs.reduce((sum, leg) => sum + leg.points.length - 1, 0);
   assert.equal(walks, segments);
 });
@@ -135,7 +135,7 @@ test('every route either has directions or says why not', () => {
       assert.ok(result.ok || result.error, `${a[1]} to ${b[1]}`);
       if (result.ok) {
         assert.match(result.steps[0], /^Start at /);
-        assert.equal(result.steps.at(-1), `Arrive at ${b[1]}.`);
+        assert.equal(result.steps.at(-1), `Arrive at ${b[1]}`);
       } else {
         assert.ok(result.error.length > 0 && NO_PATH_MESSAGE.length > 0);
       }
@@ -150,8 +150,8 @@ test('a step-free route never uses stairs and says it is step-free', () => {
   assert.equal(result.stepFree, true);
   assert.equal(result.usesStairs, false);
   assert.equal(result.steps.some((step) => /stairs/i.test(step)), false);
-  assert.ok(result.steps.some((step) => /^Take the elevator from Floor 1 to Floor 5\.$/.test(step)));
-  assert.equal(result.steps.at(-1), 'Arrive at A5-02.');
+  assert.ok(result.steps.some((step) => /^Elevator: Floor 1 → Floor 5$/.test(step)));
+  assert.equal(result.steps.at(-1), 'Arrive at A5-02');
 });
 
 test('a step-free route says how much longer it is than the route with stairs', () => {

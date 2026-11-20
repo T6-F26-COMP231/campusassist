@@ -80,11 +80,39 @@ An Authorized Helper can see the open help requests for a campus block and choos
 The page shows "No open requests in Block A right now."  Choose another block to look for requests there.
 
 Accepted or cancelled requests do not appear in the list.
+
+## Check destination accessibility
+
+A Campus User can check a destination's accessibility features before going there.
+
+1. On **Home**, choose **Check Destination Accessibility**.
+2. On **Check a Destination**, open the **Destination** dropdown.
+3. Choose your destination.
+4. Review the destination name and the number of accessibility features available.
+5. Read the feature list. Each feature shows **Available** with a check mark or **Not available** with a cross.
+6. Choose another destination from the dropdown to check a different place.
+
+### Missing accessibility features
+
+The page lists missing features under **Missing at this destination**. If an accessible washroom is unavailable, it also says: "This destination has no accessible washroom."
+
+If every feature is available, the page says: "Nothing is missing. This destination has every accessibility feature."
+
+### Before choosing a destination
+
+The page shows: "Pick a destination to see what it offers." Choose a destination to display its accessibility information.
+
+### Destination examples
+
+- Choose **Student HUB** from the **Destination** dropdown. Its feature list shows **Elevators** as **Available**.
+- Choose **Room B210** from the **Destination** dropdown. Its accessible washroom shows **Not available**, and the page says: "This destination has no accessible washroom."
+
 ## Find a step-free route
 
 A Campus User can use CampusAssist to find walking directions that avoid stairs. When step-free routing is selected, the app uses recorded walkable corridors and elevators instead of stairs.
 
 ### Get step-free directions
+
 1. Open CampusAssist.
 2. On **Home**, choose **Get Step-by-Step Directions**.
 3. On the **Get Directions** page, select your current location under **I am at**.

@@ -10,6 +10,7 @@ import SearchLocation from './pages/SearchLocation';
 import StepByStepDirections from './pages/StepByStepDirections';
 import RequestStatus from './pages/RequestStatus';
 import AccessibilityFeatures from './pages/AccessibilityFeatures';
+import ReportBarrier from './pages/ReportBarrier';
 import './pages/RequestHelp.css';
 
 function Home({
@@ -19,7 +20,8 @@ function Home({
   onFacilities,
   onSearch,
   onGetDirections,
-  onFeatures
+  onFeatures,
+  onReportBarrier
 }) {
   return (
     <div className="screen">
@@ -83,8 +85,11 @@ onClick={onSearch}
           Get Step-by-Step Directions
         </button>
 
-        <button className="btn btn--secondary" disabled>
-          Report Barrier (coming soon)
+        <button
+          className="btn btn--secondary"
+          onClick={onReportBarrier}
+        >
+          Report Barrier
         </button>
       </main>
     </div>
@@ -94,6 +99,9 @@ onClick={onSearch}
 export default function App() {
   const [page, setPage] = useState('home');
   const [selected, setSelected] = useState(null);
+
+  // Story 12: Barrier reports sent during this visit. They set the next report number.
+  const [barrierReports, setBarrierReports] = useState([]);
 
   // Story 10: Remember the request submitted by the campus user.
   const [submittedRequestId, setSubmittedRequestId] = useState(null);
@@ -146,6 +154,17 @@ export default function App() {
   }
 
 
+  // Story 12: Report a barrier with its location.
+  if (page === 'barrier') {
+    return (
+      <ReportBarrier
+        onBack={goHome}
+        reportCount={barrierReports.length}
+        onReported={(report) => setBarrierReports((list) => [...list, report])}
+      />
+    );
+  }
+
   // Story 6: Step-by-step directions to a destination.
   if (page === 'route') {
     return <StepByStepDirections onBack={goHome} />;
@@ -193,6 +212,7 @@ export default function App() {
 
 onSearch={() => setPage('search')}
       onGetDirections={() => setPage('route')}
+      onReportBarrier={() => setPage('barrier')}
 onFeatures={() => setPage('features')}
 
     />
