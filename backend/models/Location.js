@@ -18,6 +18,24 @@ const locationSchema = new mongoose.Schema(
       trim: true
     },
 
+    // Story 2 - Issue #52: Campus location details
+    block: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      enum: ["A", "B", "C", "D", "E", "L", "P", "R", "G"]
+    },
+
+    floor: {
+      type: Number,
+      min: 0
+    },
+
+    roomNumber: {
+      type: String,
+      trim: true
+    },
+
     accessibility: {
       elevator: {
         type: Boolean,
