@@ -106,3 +106,46 @@ The page shows: "Pick a destination to see what it offers." Choose a destination
 
 - Choose **Student HUB** from the **Destination** dropdown. Its feature list shows **Elevators** as **Available**.
 - Choose **Room B210** from the **Destination** dropdown. Its accessible washroom shows **Not available**, and the page says: "This destination has no accessible washroom."
+
+## Find a step-free route
+
+A Campus User can use CampusAssist to find walking directions that avoid stairs. When step-free routing is selected, the app uses recorded walkable corridors and elevators instead of stairs.
+
+### Get step-free directions
+
+1. Open CampusAssist.
+2. On **Home**, choose **Get Step-by-Step Directions**.
+3. On the **Get Directions** page, select your current location under **I am at**.
+4. Under **I am going to**, select your destination.
+5. Turn **Step-free route** to **On**.
+6. Choose **Show step-free route**.
+
+If a step-free route is available, CampusAssist displays walking instructions that avoid recorded stairs. The route may use elevators to travel between floors.
+
+The page also displays the route on the campus map, the approximate walking distance, and the estimated walking time. If the step-free route is longer than the usual route, the additional distance is displayed.
+
+### If no step-free route is available
+
+When the selected locations cannot be connected without stairs, the app displays:
+
+"No step-free route is available between these two places."
+
+If a route using stairs exists, the page also displays:
+
+"A route with stairs does exist."
+
+Choose **Show route with stairs** to view that alternative. Only choose this option if using stairs is suitable for your needs.
+
+### If no walking route is available
+
+If the campus map contains no connected walking route between the selected places, the app displays:
+
+"The map shows no walkable route between these two places."
+
+Choose different locations or seek assistance.
+
+### Remembering your preference
+
+CampusAssist remembers your Step-free route setting on your device when browser storage is available. You can turn the option on or off at any time.
+
+**Note:** Step-free routing avoids stairs recorded in the campus routing data. It does not guarantee that every corridor, elevator, doorway, or other part of the route is currently accessible. Actual conditions may change because of maintenance, construction, or temporary barriers.
