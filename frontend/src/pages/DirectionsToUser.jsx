@@ -23,9 +23,8 @@ export default function DirectionsToUser({ request, onBack }) {
   };
 
   // Story 19 - Task #34: Retrieve the user's saved location
-  const userLocation = String(
-    request?.currentLocation ?? request?.location ?? ''
-  ).trim();
+  const userLocation =
+    request?.currentLocation || request?.location || '';
 
   const locationRoom = locateRoom(userLocation);
   const locationPlace = findRecordedPlace(userLocation);
@@ -40,23 +39,17 @@ export default function DirectionsToUser({ request, onBack }) {
   const destinationRoom = locateRoom(requestedDestination);
   const destinationPlace = findRecordedPlace(requestedDestination);
 
-  const destinationValid = Boolean(
-    room || locationPlace
-  );
-
   // Task #35: Use the active request's current location.
   const handleFindDirections = () => {
-    if (!destinationValid && !/^Room\s+[A-Za-z]\d+/i.test(userLocation)) {
+    if (!userLocation) {
       setCampusRoute({
         ok: false,
-        error: 'Please provide a recognized current location.'
+        error: 'This request has no location to walk to.'
       });
       return;
     }
 
-    const result = directionSteps(userLocation, {
-      stepFree
-    });
+    const result = directionSteps(userLocation);
 
     setCampusRoute(result);
   };
@@ -78,8 +71,7 @@ export default function DirectionsToUser({ request, onBack }) {
 
         <div className="field">
           <p className="directions-note">
-            User's Current Location: {room?.code || locationPlace?.name ||
-              'Location not recognized'}
+            User's Current Location: {userLocation.trim() || 'Location not provided'}
           </p>
 
           {requestedDestination && (
@@ -93,8 +85,7 @@ export default function DirectionsToUser({ request, onBack }) {
             type="button"
             className="btn btn--primary"
             onClick={handleFindDirections}
-            disabled={!destinationValid &&
-              !/^Room\s+[A-Za-z]\d+/i.test(userLocation)}
+            disabled={!userLocation}
           >
             Find Walking Directions
           </button>
@@ -141,8 +132,7 @@ export default function DirectionsToUser({ request, onBack }) {
 
           {!campusRoute ? (
             <p className="directions-note">
-              Enter your current location and select
-              Find Walking Directions.
+              Select Find Walking Directions.
             </p>
           ) : campusRoute.ok ? (
             <>
