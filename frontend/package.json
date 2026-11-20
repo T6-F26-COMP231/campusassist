@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "test": "node --test src/lib/helpRequests.test.js src/lib/directions.test.js src/lib/floorPlan.test.js src/lib/accessibility.test.js src/lib/facilities.test.js src/lib/locations.test.js",
+    "test": "node --test src/lib/helpRequests.test.js src/lib/directions.test.js src/lib/floorPlan.test.js src/lib/accessibility.test.js src/lib/facilities.test.js src/lib/locations.test.js src/lib/routeData.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
