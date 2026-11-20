@@ -111,5 +111,3 @@ export function getAccessibilityReport(placeId) {
     total: items.length
   };
 }
-
-}
