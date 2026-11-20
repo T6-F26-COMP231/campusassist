@@ -2,7 +2,13 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { MAP_PLACES } from './mapPlaces.js';
 import { planLeg, planPageForRouteFloor } from './routeMap.js';
-import { NO_PATH_MESSAGE, routeDirections, routeGroups, routePlaceCount } from './routes.js';
+import {
+  NO_PATH_MESSAGE,
+  NO_STEP_FREE_MESSAGE,
+  routeDirections,
+  routeGroups,
+  routePlaceCount,
+} from './routes.js';
 
 const find = (text) => String(MAP_PLACES.find((place) => place[1].includes(text))[0]);
 
@@ -135,4 +141,56 @@ test('every route either has directions or says why not', () => {
       }
     }
   }
+});
+
+test('a step-free route never uses stairs and says it is step-free', () => {
+  const result = routeDirections(find('A1-51'), find('A5-02'), { avoidStairs: true });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.stepFree, true);
+  assert.equal(result.usesStairs, false);
+  assert.equal(result.steps.some((step) => /stairs/i.test(step)), false);
+  assert.ok(result.steps.some((step) => /^Take the elevator from Floor 1 to Floor 5\.$/.test(step)));
+  assert.equal(result.steps.at(-1), 'Arrive at A5-02.');
+});
+
+test('a step-free route says how much longer it is than the route with stairs', () => {
+  const usual = routeDirections(find('A1-51'), find('A5-02'));
+  const stepFree = routeDirections(find('A1-51'), find('A5-02'), { avoidStairs: true });
+
+  assert.equal(usual.stepFree, false);
+  assert.equal(usual.usesStairs, true);
+  assert.ok(stepFree.extraMetres > 0);
+  assert.equal(stepFree.extraMetres, stepFree.totalMetres - usual.totalMetres);
+});
+
+test('a step-free route as short as the usual one has no extra distance', () => {
+  const result = routeDirections(find('Bookstore'), find('Student Hub'), { avoidStairs: true });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.extraMetres, 0);
+});
+
+test('when only a route with stairs exists, the message says so', () => {
+  const result = routeDirections(find('A1-51'), find('P1-07'), { avoidStairs: true });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error, NO_STEP_FREE_MESSAGE);
+  assert.equal(result.stairsRouteExists, true);
+  assert.equal(routeDirections(find('A1-51'), find('P1-07')).ok, true);
+});
+
+test('with no walkable route at all the step-free message is not used', () => {
+  const result = routeDirections(find('A1-51'), find('R0-05'), { avoidStairs: true });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error, NO_PATH_MESSAGE);
+});
+
+test('choosing step-free does not change later routes that allow stairs', () => {
+  const before = routeDirections(find('A1-51'), find('A5-02'));
+  routeDirections(find('A1-51'), find('A5-02'), { avoidStairs: true });
+  const after = routeDirections(find('A1-51'), find('A5-02'));
+
+  assert.deepEqual(after.steps, before.steps);
 });

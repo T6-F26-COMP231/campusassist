@@ -32,5 +32,50 @@
   border: 2px dashed var(--border); border-radius: 12px;
 }
 .route__note { margin: 0 0 10px; font-size: 0.9rem; color: var(--charcoal-soft); }
-.route__check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 0.95rem; font-weight: 600; }
-.route__check input { width: 22px; height: 22px; accent-color: var(--lime-dark); }
+
+/* Step-free route switch */
+.stepfree {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+}
+.stepfree--on { background: var(--lime-tint); border-color: var(--lime-dark); }
+.stepfree strong { font-size: 1rem; }
+.stepfree__state { margin-left: 8px; font-size: 0.85rem; font-weight: 700; color: var(--charcoal-soft); }
+.stepfree p { margin: 4px 0 0; font-size: 0.9rem; line-height: 1.4; color: var(--charcoal-soft); }
+.stepfree__switch {
+  flex-shrink: 0; position: relative;
+  width: 56px; height: 44px; padding: 0;
+  background: var(--charcoal-soft); border: 2px solid var(--charcoal); border-radius: 999px;
+  cursor: pointer; transition: background 0.15s;
+}
+.stepfree__switch[aria-checked="true"] { background: var(--lime); }
+.stepfree__knob {
+  position: absolute; top: 50%; left: 4px; width: 30px; height: 30px;
+  background: #fff; border: 2px solid var(--charcoal); border-radius: 50%;
+  transform: translateY(-50%); transition: left 0.15s;
+}
+.stepfree__switch[aria-checked="true"] .stepfree__knob { left: 20px; }
+.stepfree__switch:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+
+.route__badge {
+  display: inline-block; margin: 0 0 8px; padding: 6px 12px;
+  font-size: 0.9rem; font-weight: 700;
+  background: var(--lime); border: 2px solid var(--charcoal); border-radius: 999px;
+}
+.route__notice {
+  margin: 0 0 12px; padding: 12px 16px;
+  background: var(--surface); border: 2px solid var(--border); border-left: 6px solid var(--charcoal);
+  border-radius: 12px;
+}
+.route__notice p, .route__error p { margin: 0; }
+.route__error p + p { margin-top: 6px; }
+.route__link {
+  min-height: 44px; margin-top: 4px; padding: 0;
+  font-size: 0.95rem; font-weight: 700; color: var(--charcoal);
+  text-decoration: underline; background: none; border: 0; cursor: pointer;
+}
+.route__link:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+.route__step--stairs { border-left-color: var(--charcoal); }
