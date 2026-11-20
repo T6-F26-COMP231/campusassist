@@ -79,3 +79,19 @@ test('every listed place has a report', () => {
   }
   assert.equal(getAccessibilityReport('missing').ok, false);
 });
+
+test('the report names the features a destination is missing', () => {
+  assert.deepEqual(getAccessibilityReport('b-b210').missing, [
+    'Accessible washrooms',
+    'Ramps',
+    'Auto doors'
+  ]);
+  assert.deepEqual(getAccessibilityReport('b-hub').missing, ['Auto doors']);
+});
+
+test('missing and available features together cover every feature', () => {
+  for (const place of listPlaces()) {
+    const report = getAccessibilityReport(place.id);
+    assert.equal(report.missing.length + report.availableCount, report.total, place.id);
+  }
+});

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { directionSteps, stepFreeRoute } from './directions.js';
+import { directionSteps } from './directions.js';
 
 test('directions end at the location in the request', () => {
   const result = directionSteps('  Room B210  ');
@@ -73,15 +73,15 @@ test('whitespace is trimmed before directions are generated', () => {
 });
 
 test('a step-free route contains no stairs', () => {
-  const result = stepFreeRoute('Bookstore');
+  const result = directionSteps('Bookstore', { stepFree: true });
 
   assert.equal(result.ok, true);
   assert.equal(result.steps.at(-1), 'Arrive at the Bookstore.');
   assert.equal(result.steps.some((step) => /stair/i.test(step)), false);
 });
 
-test('step-free requests remain handled by the separate exported helper', () => {
-  const result = stepFreeRoute('Room B210');
+test('a step-free route that does not exist says so', () => {
+  const result = directionSteps('Room B210', { stepFree: true });
 
   assert.equal(result.ok, false);
   assert.equal(result.error, 'No step-free route is available.');

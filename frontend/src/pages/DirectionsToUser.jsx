@@ -49,7 +49,7 @@ export default function DirectionsToUser({ request, onBack }) {
       return;
     }
 
-    const result = directionSteps(userLocation);
+    const result = directionSteps(userLocation, { stepFree });
 
     setCampusRoute(result);
   };

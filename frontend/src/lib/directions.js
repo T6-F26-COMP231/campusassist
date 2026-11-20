@@ -48,7 +48,12 @@ export function stepFreeRoute(location) {
 }
 
 // Story 19: Return request-location directions.
-export function directionSteps(location) {
+// Avoid stairs uses the recorded step-free route.
+export function directionSteps(location, options = {}) {
+  if (options.stepFree) {
+    return stepFreeRoute(location);
+  }
+
   const place = placeName(location);
 
   if (!place) {
