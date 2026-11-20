@@ -12,7 +12,7 @@ export const FACILITY_TYPES = [
   { id: 'parenting-room', label: 'Parenting room', mark: 'P' },
 ];
 
-// Facilities from MazeMap and the Progress Campus floor plan (see facilitiesData.js).
+// Facilities from the Progress Campus floor plan (see facilitiesData.js).
 export { FACILITIES };
 
 // Buildings that have at least one facility, in campus order, with a label for the picker.
