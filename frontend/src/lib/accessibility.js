@@ -107,9 +107,8 @@ export function getAccessibilityReport(placeId) {
     id: place.id,
     name: place.name,
     items,
+    missing: items.filter((item) => !item.available).map((item) => item.label),
     availableCount: items.filter((item) => item.available).length,
     total: items.length
   };
-}
-
 }

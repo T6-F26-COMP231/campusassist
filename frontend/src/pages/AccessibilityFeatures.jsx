@@ -42,6 +42,15 @@ export default function AccessibilityFeatures({ onBack }) {
                 {report.availableCount} of {report.total} accessibility features available
               </p>
 
+              <p className="a11y__summary">
+                {report.availableCount} of {report.total} accessibility features available
+              </p>
+              <p className="a11y__summary">
+                {report.missing.length > 0
+                  ? `Missing at this destination: ${report.missing.join(', ')}`
+                  : 'Nothing is missing. This destination has every accessibility feature.'}
+              </p>
+
               <ul className="a11y__list">
                 {report.items.map((item) => (
                   <li
