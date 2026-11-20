@@ -5,6 +5,7 @@ import FloorPlan from '../components/FloorPlan';
 import { directionSteps } from '../lib/directions.js';
 import { locateRoom } from '../lib/floorPlan.js';
 import { getMazeMapDirections } from '../lib/mazeMap.js';
+import { findWalkingRoute } from '../lib/routeFinder.js';
 import './RequestHelp.css';
 
 export default function DirectionsToUser({ request, onBack }) {
@@ -72,6 +73,16 @@ export default function DirectionsToUser({ request, onBack }) {
       setFindingRoute(false);
     }
   };
+
+  // Task #35: Generate directions using the actual locations
+  const startLocation = helperRoom?.code || helperLocation.trim();
+  const destinationLocation = room?.code || userLocation.trim();
+
+  const campusRoute = findWalkingRoute(
+    startLocation,
+    destinationLocation,
+    { avoidStairs: stepFree }
+  );
 
   return (
     <div className="screen">
@@ -175,6 +186,28 @@ export default function DirectionsToUser({ request, onBack }) {
             </p>
 
             <FloorPlan location={result.location} />
+
+            <section className="field">
+              <h3>Campus Walking Directions</h3>
+
+              {campusRoute.ok ? (
+                <>
+                  <p className="directions-note">
+                    Route from {startLocation} to {destinationLocation}
+                  </p>
+
+                  <ol className="directions-steps">
+                    {campusRoute.steps.map((step, index) => (
+                      <li key={index}>{step}</li>
+                    ))}
+                  </ol>
+                </>
+              ) : (
+                <p role="status">
+                  {campusRoute.error}
+                </p>
+              )}
+            </section>
 
             <ol className="directions-steps">
               {result.steps.map((step, index) => (
