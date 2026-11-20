@@ -197,6 +197,7 @@ function shafts(building, kind) {
 // Metres of walking an elevator ride or a flight of stairs is worth.
 const RIDE_COST = { e: (floors) => 15 + 4 * floors, s: (floors) => 8 * floors };
 const RIDE_NAME = { e: 'elevator', s: 'stairs' };
+const RIDE_LABEL = { e: 'Elevator', s: 'Stairs' };
 
 const linkCache = new Map();
 function verticalLinks(avoidStairs) {
@@ -364,7 +365,7 @@ function bridgeCrossings(leg) {
     const a = BUILDINGS[before - 1]?.id;
     const b = BUILDINGS[now - 1].id;
     if (before && before !== now && BRIDGE_ENDS[a] && BRIDGE_ENDS[b]) {
-      found.push({ index, text: `Cross the bridge from ${BRIDGE_ENDS[a]} to ${BRIDGE_ENDS[b]}.` });
+      found.push({ index, text: `Cross the bridge from ${BRIDGE_ENDS[a]} to ${BRIDGE_ENDS[b]}` });
     }
     before = now;
   });
@@ -373,7 +374,7 @@ function bridgeCrossings(leg) {
 
 // ---- Directions --------------------------------------------------------------------------
 
-const metres = (m) => `about ${Math.max(5, Math.round(m / 5) * 5)} m`;
+const metres = (m) => `${Math.max(5, Math.round(m / 5) * 5)} m`;
 const floorName = (floor) => `Floor ${floor}`;
 const asMetres = (p) => ({ x: p.lon * M_PER_DEG_LON, y: p.lat * M_PER_DEG_LAT });
 const segmentLength = (a, b) => distanceMetres(a, b);
@@ -469,7 +470,7 @@ function computeRoute(fromId, toId, avoidStairs) {
     return { floor: leg.floor, points: points.length > 1 ? simplifyPoints(points) : points };
   });
 
-  const steps = [`Start at ${from.name} on ${floorName(from.floor)}.`];
+  const steps = [`Start at ${from.name} on ${floorName(from.floor)}`];
   let total = 0;
   let heading = null;
   mapLegs.forEach((leg, i) => {
@@ -487,11 +488,12 @@ function computeRoute(fromId, toId, avoidStairs) {
           ? ' to the bridge'
           : k + 2 === pts.length && i < rides.length ? ` to the ${RIDE_NAME[rides[i].kind]}` : '';
       const fresh = k === 0 || heading === null;
-      const opener = fresh
-        ? (i === 0 && k === 0 ? 'Walk' : `Leave the ${k === 0 ? RIDE_NAME[rides[i - 1].kind] : 'bridge'} and walk`)
-        : `${turnWords(heading, next)} and walk`;
-      const direction = fresh ? ` ${COMPASS[Math.round(next / 45) % 8]}` : '';
-      steps.push(`${opener} ${metres(length)}${direction}${target}.`);
+      if (fresh) {
+        steps.push(`Walk ${metres(length)} ${COMPASS[Math.round(next / 45) % 8]}${target}`);
+      } else {
+        const turn = turnWords(heading, next);
+        steps.push(target ? `${turn}, ${metres(length)}${target}` : `${turn}, walk ${metres(length)}`);
+      }
       heading = next;
       if (endsAtBridge) {
         steps.push(pts[k + 1].bridge);
@@ -500,11 +502,11 @@ function computeRoute(fromId, toId, avoidStairs) {
     }
     if (i < rides.length) {
       const ride = rides[i];
-      steps.push(`Take the ${RIDE_NAME[ride.kind]} from ${floorName(ride.from)} to ${floorName(ride.to)}.`);
+      steps.push(`${RIDE_LABEL[ride.kind]}: ${floorName(ride.from)} → ${floorName(ride.to)}`);
       heading = null;
     }
   });
-  steps.push(`Arrive at ${to.name}.`);
+  steps.push(`Arrive at ${to.name}`);
 
   return {
     ok: true,
