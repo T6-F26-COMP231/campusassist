@@ -71,7 +71,7 @@ function gridBounds() {
   if (bounds) return bounds;
   let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
   for (const shapes of Object.values(WALK_FLOORS)) {
-    for (const rings of shapes) {
+    for (const [, rings] of shapes) {
       for (const ring of rings) {
         for (let i = 0; i < ring.length; i += 2) {
           minLon = Math.min(minLon, ring[i]); maxLon = Math.max(maxLon, ring[i]);
@@ -104,6 +104,8 @@ const cellPoint = (cx, cy) => {
 };
 
 const rasters = new Map();
+const owners = new Map(); // floor -> building index + 1 for every walkable cell
+const BUILDING_INDEX = Object.fromEntries(BUILDINGS.map((b, i) => [b.id, i + 1]));
 
 // 1 where a person can walk on this floor. Shapes are filled with the even-odd rule, so holes
 // stay empty; the result is widened by one cell so doorways and narrow joins stay connected.
@@ -111,7 +113,8 @@ function raster(floor) {
   if (rasters.has(floor)) return rasters.get(floor);
   const { width, height, size } = gridBounds();
   const filled = new Uint8Array(size);
-  for (const rings of WALK_FLOORS[floor] ?? []) {
+  const owner = new Uint8Array(size);
+  for (const [building, rings] of WALK_FLOORS[floor] ?? []) {
     const edges = [];
     let top = Infinity, bottom = -Infinity;
     for (const ring of rings) {
@@ -135,6 +138,7 @@ function raster(floor) {
       for (let k = 0; k + 1 < xs.length; k += 2) {
         for (let cx = Math.max(0, Math.round(xs[k])); cx < Math.min(width, Math.round(xs[k + 1])); cx += 1) {
           filled[cy * width + cx] = 1;
+          owner[cy * width + cx] = BUILDING_INDEX[building];
         }
       }
     }
@@ -144,9 +148,11 @@ function raster(floor) {
     for (let cx = 1; cx < width - 1; cx += 1) {
       const i = cy * width + cx;
       walk[i] = filled[i] || filled[i - 1] || filled[i + 1] || filled[i - width] || filled[i + width] ? 1 : 0;
+      if (walk[i] && !owner[i]) owner[i] = owner[i - 1] || owner[i + 1] || owner[i - width] || owner[i + width];
     }
   }
   rasters.set(floor, walk);
+  owners.set(floor, owner);
   return walk;
 }
 
@@ -310,18 +316,52 @@ function clearLine(walk, width, a, b) {
 }
 
 // Cuts a cell-by-cell path down to the corners that matter.
-function straighten(floor, cells) {
+// The cells in `forced` are always kept as corners.
+function straighten(floor, cells, forced = []) {
   const { width } = gridBounds();
   const walk = raster(floor);
+  const stops = [...forced, cells.length - 1].sort((a, b) => a - b);
   const kept = [cells[0]];
   let i = 0;
-  while (i < cells.length - 1) {
-    let j = cells.length - 1;
-    while (j > i + 1 && !clearLine(walk, width, cells[i], cells[j])) j -= 1;
-    kept.push(cells[j]);
-    i = j;
+  for (const stop of stops) {
+    while (i < stop) {
+      let j = stop;
+      while (j > i + 1 && !clearLine(walk, width, cells[i], cells[j])) j -= 1;
+      kept.push(cells[j]);
+      i = j;
+    }
   }
   return kept;
+}
+
+// The campus bridge joins A Block and the B, C, D & E Blocks on the second floor. The map
+// does not draw it as its own shape, so it is where the walkable area passes from one of
+// those buildings to the other.
+const BRIDGE_FLOOR = '2';
+const BRIDGE_ENDS = {
+  A: 'Block A',
+  BCDE: 'the B, C, D & E Blocks',
+};
+
+// Where a leg of the path crosses the bridge: [{ index, text }], index being the first cell
+// on the far side.
+function bridgeCrossings(leg) {
+  if (leg.floor !== BRIDGE_FLOOR) return [];
+  const { width } = gridBounds();
+  const owner = owners.get(leg.floor);
+  const found = [];
+  let before = 0;
+  leg.cells.forEach((cell, index) => {
+    const now = owner[cell.y * width + cell.x];
+    if (!now) return;
+    const a = BUILDINGS[before - 1]?.id;
+    const b = BUILDINGS[now - 1].id;
+    if (before && before !== now && BRIDGE_ENDS[a] && BRIDGE_ENDS[b]) {
+      found.push({ index, text: `Cross the bridge from ${BRIDGE_ENDS[a]} to ${BRIDGE_ENDS[b]}.` });
+    }
+    before = now;
+  });
+  return found;
 }
 
 // ---- Directions --------------------------------------------------------------------------
@@ -348,7 +388,7 @@ function simplifyPoints(points) {
     const before = bearing(asMetres(out.at(-1)), asMetres(points[i]));
     const after = bearing(asMetres(points[i]), asMetres(points[i + 1]));
     const turn = Math.abs(((after - before + 540) % 360) - 180);
-    if (segmentLength(out.at(-1), points[i]) >= 3 && turn >= 25) out.push(points[i]);
+    if (points[i].bridge || (segmentLength(out.at(-1), points[i]) >= 3 && turn >= 25)) out.push(points[i]);
   }
   out.push(points.at(-1));
   return out;
@@ -409,7 +449,14 @@ export function routeDirections(fromId, toId, options = {}) {
   }
 
   const mapLegs = legs.map((leg, i) => {
-    const corners = straighten(leg.floor, leg.cells).map((cell) => cellPoint(cell.x, cell.y));
+    raster(leg.floor);
+    const crossings = bridgeCrossings(leg);
+    const bridgeAt = new Map(crossings.map((c) => [leg.cells[c.index], c.text]));
+    const corners = straighten(leg.floor, leg.cells, crossings.map((c) => c.index)).map((cell) => {
+      const point = cellPoint(cell.x, cell.y);
+      if (bridgeAt.has(cell)) point.bridge = bridgeAt.get(cell);
+      return point;
+    });
     const first = i === 0 ? { lon: from.lon, lat: from.lat } : corners[0];
     const last = i === legs.length - 1 ? { lon: to.lon, lat: to.lat } : corners.at(-1);
     const points = [first, ...corners.slice(1, -1), last];
@@ -427,14 +474,23 @@ export function routeDirections(fromId, toId, options = {}) {
       total += length;
       const next = bearing(asMetres(pts[k]), asMetres(pts[k + 1]));
       const lastStep = i === mapLegs.length - 1 && k + 2 === pts.length;
-      const target = lastStep ? ` to ${to.name}` : k + 2 === pts.length && i < rides.length ? ` to the ${RIDE_NAME[rides[i].kind]}` : '';
-      const firstOfLeg = k === 0;
-      const opener = firstOfLeg
-        ? (i === 0 ? 'Walk' : `Leave the ${RIDE_NAME[rides[i - 1].kind]} and walk`)
+      const endsAtBridge = Boolean(pts[k + 1].bridge);
+      const target = lastStep
+        ? ` to ${to.name}`
+        : endsAtBridge
+          ? ' to the bridge'
+          : k + 2 === pts.length && i < rides.length ? ` to the ${RIDE_NAME[rides[i].kind]}` : '';
+      const fresh = k === 0 || heading === null;
+      const opener = fresh
+        ? (i === 0 && k === 0 ? 'Walk' : `Leave the ${k === 0 ? RIDE_NAME[rides[i - 1].kind] : 'bridge'} and walk`)
         : `${turnWords(heading, next)} and walk`;
-      const direction = firstOfLeg ? ` ${COMPASS[Math.round(next / 45) % 8]}` : '';
+      const direction = fresh ? ` ${COMPASS[Math.round(next / 45) % 8]}` : '';
       steps.push(`${opener} ${metres(length)}${direction}${target}.`);
       heading = next;
+      if (endsAtBridge) {
+        steps.push(pts[k + 1].bridge);
+        heading = null;
+      }
     }
     if (i < rides.length) {
       const ride = rides[i];

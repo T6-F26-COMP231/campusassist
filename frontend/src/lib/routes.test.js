@@ -58,6 +58,34 @@ test('places in different buildings are joined by the corridors on the map', () 
   assert.ok(result.totalMetres > 20);
 });
 
+test('a route between two blocks crosses the bridge, in walking order', () => {
+  const result = routeDirections(find('A2-65A'), find('Bookstore'));
+
+  assert.equal(result.ok, true);
+  const bridge = result.steps.findIndex((step) => /^Cross the bridge from Block A to the B, C, D & E Blocks\.$/.test(step));
+  assert.ok(bridge > 0, 'the bridge step is listed');
+  assert.match(result.steps[0], /^Start at A2-65A/);
+  assert.ok(bridge < result.steps.length - 1);
+  assert.match(result.steps[bridge - 1], /to the bridge\.$/);
+  assert.match(result.steps[bridge + 1], /^Leave the bridge and walk/);
+  assert.equal(result.steps.at(-1), 'Arrive at Bookstore (B2-02).');
+  assert.equal(result.steps.filter((step) => /bridge\.$|^Cross the bridge/.test(step)).length, 2);
+});
+
+test('the bridge is crossed in the other direction too', () => {
+  const result = routeDirections(find('Bookstore'), find('A2-65A'));
+
+  assert.equal(result.ok, true);
+  assert.ok(result.steps.includes('Cross the bridge from the B, C, D & E Blocks to Block A.'));
+});
+
+test('a route inside one block has no bridge step', () => {
+  const result = routeDirections(find('Bookstore'), find('Student Hub'));
+
+  assert.equal(result.ok, true);
+  assert.equal(result.steps.some((step) => /bridge/i.test(step)), false);
+});
+
 test('the route on the map is the same path as the steps', () => {
   const result = routeDirections(find('A1-51'), find('A3-74'), { avoidStairs: true });
   const first = result.legs[0].points[0];
