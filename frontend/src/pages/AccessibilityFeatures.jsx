@@ -43,9 +43,6 @@ export default function AccessibilityFeatures({ onBack }) {
               </p>
 
               <p className="a11y__summary">
-                {report.availableCount} of {report.total} accessibility features available
-              </p>
-              <p className="a11y__summary">
                 {report.missing.length > 0
                   ? `Missing at this destination: ${report.missing.join(', ')}`
                   : 'Nothing is missing. This destination has every accessibility feature.'}
@@ -60,8 +57,11 @@ export default function AccessibilityFeatures({ onBack }) {
                     <span className="a11y__mark" aria-hidden="true">{item.available ? '✓' : '✕'}</span>
                     <div>
                       <strong>{item.label}</strong>
-                      <span className="a11y__state">{item.available ? 'Available' : 'Not available'}</span>
-                    </div>
+                       <span className="a11y__state">{item.available ? 'Available' : 'Not available'}</span>
+                       {item.id === 'washroom' && !item.available && (
+                      <p>This destination has no accessible washroom.</p>
+                       )}
+                   </div>
                   </li>
                 ))}
               </ul>
