@@ -15,6 +15,23 @@ test('directions end at the location in the request', () => {
   ]);
 });
 
+test('the requested destination does not replace the current location', () => {
+  const currentLocation = 'Room B210';
+  const requestedDestination = 'Student HUB';
+  const result = directionSteps(currentLocation);
+
+  assert.equal(result.location, 'Room B210');
+  assert.deepEqual(result.steps, [
+    'Start from your current position.',
+    'Walk toward Room B210.',
+    'Arrive at Room B210.',
+  ]);
+  assert.equal(
+    result.steps.some((step) => step.includes(requestedDestination)),
+    false
+  );
+});
+
 test('a request without a location has no directions', () => {
   const result = directionSteps('   ');
 

@@ -3,13 +3,11 @@ import { useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import FloorPlan from '../components/FloorPlan';
 import { locateRoom } from '../lib/floorPlan.js';
-import { findWalkingRoute } from '../lib/routeFinder.js';
+import { directionSteps } from '../lib/directions.js';
 import { PLACES } from '../lib/routeData.js';
 import './RequestHelp.css';
 
 export default function DirectionsToUser({ request, onBack }) {
-  // Story 19 - Task #35: Helper starting location
-  const [helperLocation, setHelperLocation] = useState('');
   const [stepFree, setStepFree] = useState(false);
   const [campusRoute, setCampusRoute] = useState(null);
 
@@ -24,13 +22,6 @@ export default function DirectionsToUser({ request, onBack }) {
     ) || null;
   };
 
-  // Validate the helper's location
-  const helperRoom = locateRoom(helperLocation);
-  const helperPlace = findRecordedPlace(helperLocation);
-
-  const helperLocationEntered = helperLocation.trim() !== '';
-  const helperLocationValid = Boolean(helperRoom || helperPlace);
-
   // Story 19 - Task #34: Retrieve the user's saved location
   const userLocation = String(
     request?.currentLocation ?? request?.location ?? ''
@@ -39,9 +30,8 @@ export default function DirectionsToUser({ request, onBack }) {
   const locationRoom = locateRoom(userLocation);
   const locationPlace = findRecordedPlace(userLocation);
 
-  // Story 19 - Task #34:
   // The helper must find the user's CURRENT location.
-  // The request description is not the user's location.
+  // The request description is only shown as the requested destination.
   const room = locationRoom;
 
   // Keep the requested destination separate from the user's current location.
@@ -50,32 +40,23 @@ export default function DirectionsToUser({ request, onBack }) {
   const destinationRoom = locateRoom(requestedDestination);
   const destinationPlace = findRecordedPlace(requestedDestination);
 
-  // Use recorded location names when available
-  const startLocation =
-    helperRoom?.code || helperPlace?.id || '';
-
-  const destinationLocation =
-    room?.code || locationPlace?.id || '';
-
   const destinationValid = Boolean(
     room || locationPlace
   );
 
-  // Task #35: Calculate walking directions inside CampusAssist
+  // Task #35: Use the active request's current location.
   const handleFindDirections = () => {
-    if (!helperLocationValid || !destinationValid) {
+    if (!destinationValid && !/^Room\s+[A-Za-z]\d+/i.test(userLocation)) {
       setCampusRoute({
         ok: false,
-        error: 'Please provide valid starting and destination locations.'
+        error: 'Please provide a recognized current location.'
       });
       return;
     }
 
-    const result = findWalkingRoute(
-      startLocation,
-      destinationLocation,
-      { avoidStairs: stepFree }
-    );
+    const result = directionSteps(userLocation, {
+      stepFree
+    });
 
     setCampusRoute(result);
   };
@@ -96,42 +77,6 @@ export default function DirectionsToUser({ request, onBack }) {
         </h2>
 
         <div className="field">
-          <label htmlFor="helperLocation">
-            Your Current Location (Helper)
-          </label>
-
-          <input
-            id="helperLocation"
-            type="text"
-            value={helperLocation}
-            placeholder="e.g. B1-04 or Bookstore"
-            onChange={(event) => {
-              setHelperLocation(event.target.value);
-              setCampusRoute(null);
-            }}
-          />
-
-          {helperLocationEntered && !helperLocationValid && (
-            <p
-              className="notice notice--error"
-              role="alert"
-            >
-              This location is not recognized in the campus data.
-            </p>
-          )}
-
-          {helperRoom && (
-            <p role="status">
-              Starting room confirmed: {helperRoom.code}
-            </p>
-          )}
-
-          {helperPlace && (
-            <p role="status">
-              Starting location: {helperPlace.name}
-            </p>
-          )}
-
           <p className="directions-note">
             User's Current Location: {room?.code || locationPlace?.name ||
               'Location not recognized'}
@@ -148,7 +93,8 @@ export default function DirectionsToUser({ request, onBack }) {
             type="button"
             className="btn btn--primary"
             onClick={handleFindDirections}
-            disabled={!helperLocationValid || !destinationValid}
+            disabled={!destinationValid &&
+              !/^Room\s+[A-Za-z]\d+/i.test(userLocation)}
           >
             Find Walking Directions
           </button>
@@ -201,9 +147,8 @@ export default function DirectionsToUser({ request, onBack }) {
           ) : campusRoute.ok ? (
             <>
               <p className="directions-note" role="status">
-                Recorded route from {helperRoom?.code ||
-                  helperPlace?.name} to {room?.code ||
-                  locationPlace?.name}
+                Directions to {room?.code || locationPlace?.name ||
+                  userLocation}
               </p>
 
               <ol className="directions-steps">
@@ -213,16 +158,13 @@ export default function DirectionsToUser({ request, onBack }) {
               </ol>
 
               <p className="directions-note">
-                Route based on recorded campus connections.
-                Physical access and current conditions
-                still require verification.
+                These are general directions based on the request.
+                A physical walking route has not been automatically verified.
               </p>
             </>
           ) : (
             <p className="directions-note" role="status">
-              {helperRoom && room
-                ? 'Both rooms are shown on the Progress Campus floor plan, but a verified walking route between them is not available yet.'
-                : campusRoute.error}
+              {campusRoute.error}
             </p>
           )}
         </section>

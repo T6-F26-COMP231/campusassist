@@ -4,6 +4,7 @@ import {
   FLOOR_PLAN_TITLES,
   NOT_ON_PLAN_MESSAGE
 } from './floorPlan.js';
+import { PLACES } from './routeData.js';
 
 function placeName(location) {
   return typeof location === 'string' ? location.trim() : '';
@@ -81,6 +82,24 @@ export function directionSteps(location, options = {}) {
           'Start from your current position.',
           `Walk toward ${place}.`,
           `Arrive at ${place}.`
+        ]
+      };
+    }
+
+    const recordedPlace = PLACES.find(
+      (entry) =>
+        entry.id.toLowerCase() === place.toLowerCase() ||
+        entry.name.toLowerCase() === place.toLowerCase()
+    );
+
+    if (recordedPlace) {
+      return {
+        ok: true,
+        location: recordedPlace.name,
+        steps: [
+          'Start from your current position.',
+          `Walk toward ${recordedPlace.name}.`,
+          `Arrive at ${recordedPlace.name}.`
         ]
       };
     }

@@ -8,8 +8,8 @@ test('Story 19 finds Bookstore to Student HUB route', () => {
   assert.equal(result.ok, true);
 
   assert.deepEqual(result.steps, [
-    'Leave the Bookstore and enter the Block B second-floor hallway.',
-    'Continue through the second-floor corridor toward the Student HUB.',
+    'Leave the Bookstore along the Block A hallway.',
+    'Cross the bridge from Block A to Block B.',
     'Arrive at the Student HUB.'
   ]);
 });
@@ -54,8 +54,8 @@ test('Story 19 accepts campus location names', () => {
   assert.equal(result.ok, true);
 
   assert.deepEqual(result.steps, [
-    'Leave the Bookstore and enter the Block B second-floor hallway.',
-    'Continue through the second-floor corridor toward the Student HUB.',
+    'Leave the Bookstore along the Block A hallway.',
+    'Cross the bridge from Block A to Block B.',
     'Arrive at the Student HUB.'
   ]);
 });

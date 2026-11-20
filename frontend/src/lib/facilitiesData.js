@@ -1,7 +1,7 @@
-// Facilities on the Progress Campus floor plan, from MazeMap (campus 2081): elevators, food and
-// drink, water stations, AEDs, information desks, multi-faith and parenting rooms. MazeMap has no
-// accessible-washroom tag, so those are the plan's washroom groups that have the Accessible symbol
-// beside them, named after the nearest MazeMap washroom. `plan` is the floor plan page and the
+// Facilities on the Progress Campus floor plan: elevators, food and drink, water stations,
+// AEDs, information desks, multi-faith and parenting rooms. Accessible-washroom entries use
+// washroom groups with the Accessible symbol on the plan, named after the nearest recorded
+// washroom. `plan` is the floor plan page and the
 // position in percent of the image ([x, y], top-left origin). Adjacent elevator cars are merged.
 export const FACILITIES = [
   { id: 1, type: 'elevator', name: 'Elevator', building: 'A', floor: 1, location: 'A Block, Floor 1', details: 'Near room A1-88', plan: { page: 1, x: 15.5, y: 54.6 } },

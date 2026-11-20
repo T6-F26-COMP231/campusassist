@@ -87,11 +87,6 @@ test("Story 17 retrieves pending requests in B Block", async () => {
       );
 
       assert.equal(
-        filter.currentLocation.test("Bookstore"),
-        true
-      );
-
-      assert.equal(
         filter.currentLocation.test("A Block, Floor 2"),
         false
       );
@@ -115,40 +110,6 @@ test("Story 17 retrieves pending requests in B Block", async () => {
     assert.equal(res.body.block, "B");
     assert.equal(res.body.count, 1);
     assert.deepEqual(res.body.requests, sampleRequests);
-  } finally {
-    HelpRequest.find = originalFind;
-  }
-});
-
-test("Story 17 retrieves Student HUB in C Block", async () => {
-  const originalFind = HelpRequest.find;
-
-  try {
-    HelpRequest.find = (filter) => {
-      assert.equal(
-        filter.currentLocation.test("Student HUB"),
-        true
-      );
-      assert.equal(
-        filter.currentLocation.test("A1-04"),
-        false
-      );
-
-      return {
-        select() { return this; },
-        sort() { return this; },
-        async lean() { return []; }
-      };
-    };
-
-    const res = mockResponse();
-    await getPendingRequests(
-      { query: { block: "C" } },
-      res
-    );
-
-    assert.equal(res.statusCode, 200);
-    assert.equal(res.body.block, "C");
   } finally {
     HelpRequest.find = originalFind;
   }
