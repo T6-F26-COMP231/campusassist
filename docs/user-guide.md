@@ -101,3 +101,8 @@ If every feature is available, the page says: "Nothing is missing. This destinat
 ### Before choosing a destination
 
 The page shows: "Pick a destination to see what it offers." Choose a destination to display its accessibility information.
+
+### Destination examples
+
+- Choose **Student HUB** from the **Destination** dropdown. Its feature list shows **Elevators** as **Available**.
+- Choose **Room B210** from the **Destination** dropdown. Its accessible washroom shows **Not available**, and the page says: "This destination has no accessible washroom."
