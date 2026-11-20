@@ -1,4 +1,5 @@
 import helpRequestRoutes from "./routes/helpRequestRoutes.js";
+import accessibilityRoutes from "./routes/accessibilityRoutes.js";
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
@@ -13,6 +14,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 // Story 17: Help request routes
 app.use("/api/help-requests", helpRequestRoutes);
+// Story 4 - Destination accessibility details
+app.use("/api/locations", accessibilityRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
