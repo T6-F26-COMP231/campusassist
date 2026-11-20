@@ -1,20 +1,42 @@
+
 import helpRequestRoutes from "./routes/helpRequestRoutes.js";
 import accessibilityRoutes from "./routes/accessibilityRoutes.js";
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import { connectDB } from "./config/db.js";
-
 
 const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+// Allow the local frontend and the deployed Netlify website.
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests without an Origin header
+    // (for example, health checks and backend tests).
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Origin not allowed by CORS"));
+  }
+}));
+
 // Parse JSON requests
 app.use(express.json());
+
 // Story 17: Help request routes
 app.use("/api/help-requests", helpRequestRoutes);
-// Story 4 - Destination accessibility details
+
+// Story 4: Destination accessibility details
 app.use("/api/locations", accessibilityRoutes);
 
 // Health check endpoint
@@ -25,9 +47,6 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Help request routes (stories 17 and 18)
-//app.use("/api/help-requests", helpRequestRoutes);
-
 // Start the backend server
 async function startServer() {
   try {
@@ -35,15 +54,15 @@ async function startServer() {
 
     const server = app.listen(
       PORT,
-      "127.0.0.1",
+      "0.0.0.0",
       () => {
         console.log(
-          `CampusAssist server running at http://localhost:${PORT}`
+          `CampusAssist backend running on port ${PORT}`
         );
       }
     );
 
-    // Close the database connection on shutdown
+    // Close database connection on shutdown
     async function shutdown() {
       server.close(async () => {
         await mongoose.disconnect();
