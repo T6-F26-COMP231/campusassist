@@ -17,8 +17,23 @@ export async function getPendingRequests(req, res) {
     }
 
     // Match locations such as "B Block, Floor 1" or "b3-74".
+    const namedLocations = {
+      A: [],
+      B: ["Bookstore"],
+      C: ["Student Hub"]
+    };
+
+    // Match room codes and block names.
+    const roomPattern =
+      `^\\s*(?:${block}\\s*Block\\b|Block\\s*${block}\\b|${block}\\s*[- ]?\\d)`;
+
+    // Match named campus locations for the selected block.
+    const namePattern = namedLocations[block]
+      .map((name) => `^\\s*${name}\\s*$`);
+
+    // Combine supported location formats.
     const locationPattern = new RegExp(
-      `^\\s*(?:${block}\\s*Block\\b|Block\\s*${block}\\b|${block}\\s*[- ]?\\d)`,
+      [roomPattern, ...namePattern].join("|"),
       "i"
     );
 

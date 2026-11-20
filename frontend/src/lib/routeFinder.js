@@ -1,8 +1,14 @@
-import { CONNECTIONS, PLACES, CORRIDORS } from './routeData.js';
+
+import {
+  CONNECTIONS,
+  PLACES,
+  CORRIDORS
+} from './routeData.js';
+
 import { verifiedCorridorForRoom } from './roomRoute.js';
 
 // Story 19 - Task #35
-// Find a walking route using the team's campus connections.
+// Find walking routes using recorded campus connections.
 
 const locations = [...PLACES, ...CORRIDORS];
 
@@ -13,7 +19,6 @@ function resolveLocation(value) {
 
   const search = value.trim().toLowerCase();
 
-  // First, check the team's recorded places and corridors.
   const match = locations.find(
     (location) =>
       location.id.toLowerCase() === search ||
@@ -24,72 +29,138 @@ function resolveLocation(value) {
     return match.id;
   }
 
-  // Only use a room's hallway when the connection is verified.
   return verifiedCorridorForRoom(value);
 }
 
-export function findWalkingRoute(startId, destinationId, options = {}) {
+// Instructions for travelling in the opposite direction.
+function reverseInstruction(connection) {
+  const from = locations.find(
+    (location) => location.id === connection.from
+  );
+
+  const to = locations.find(
+    (location) => location.id === connection.to
+  );
+
+  if (!from || !to) {
+    return null;
+  }
+
+  if (connection.kind === 'elevator') {
+    return `Take the ${to.block || from.block} elevator to Floor ${from.floor}.`;
+  }
+
+  if (connection.kind === 'stairs') {
+    return `Take the ${to.block || from.block} stairs to Floor ${from.floor}.`;
+  }
+
+  if (connection.id === 'leave-bookstore') {
+    return 'Follow the Block B second-floor hallway to the Bookstore.';
+  }
+
+  if (connection.id === 'enter-hub') {
+    return 'Leave the Student HUB and enter the Block C second-floor hallway.';
+  }
+
+  if (connection.id === 'hall-bc-2') {
+    return 'Follow the second-floor corridor from Block C toward Block B.';
+  }
+
+  if (connection.kind === 'bridge') {
+    return `Cross the bridge from Block ${to.block} to Block ${from.block}.`;
+  }
+
+  if (connection.kind === 'hallway') {
+    return `Follow the recorded hallway from ${to.name} toward ${from.name}.`;
+  }
+
+  return null;
+}
+
+export function findWalkingRoute(
+  startId,
+  destinationId,
+  options = {}
+) {
   const { avoidStairs = false } = options;
 
-  const resolvedStart = resolveLocation(startId);
-  const resolvedDestination = resolveLocation(destinationId);
+  const start = resolveLocation(startId);
+  const destination = resolveLocation(destinationId);
 
-  const startExists = Boolean(resolvedStart);
-  const destinationExists = Boolean(resolvedDestination);
-
-  startId = resolvedStart;
-  destinationId = resolvedDestination;
-
-  if (!startExists || !destinationExists) {
+  if (!start || !destination) {
     return {
       ok: false,
       error: 'One or both locations are not in the campus route data.'
     };
   }
 
-  if (startId === destinationId) {
+  if (start === destination) {
     return {
       ok: true,
       steps: ['You are already at your destination.']
     };
   }
 
-  // Use only recorded campus connections.
-  const connections = avoidStairs
-    ? CONNECTIONS.filter((connection) => connection.kind !== 'stairs')
-    : CONNECTIONS;
+  // Construct a graph from recorded campus connections.
+  const graph = new Map();
 
-  // Breadth-First Search (BFS)
+  for (const location of locations) {
+    graph.set(location.id, []);
+  }
+
+  for (const connection of CONNECTIONS) {
+    if (avoidStairs && connection.kind === 'stairs') {
+      continue;
+    }
+
+    if (
+      !graph.has(connection.from) ||
+      !graph.has(connection.to)
+    ) {
+      continue;
+    }
+
+    // Forward direction
+    graph.get(connection.from).push({
+      to: connection.to,
+      text: connection.text
+    });
+
+    // Reverse direction
+    const reverseText = reverseInstruction(connection);
+
+    if (reverseText) {
+      graph.get(connection.to).push({
+        to: connection.from,
+        text: reverseText
+      });
+    }
+  }
+
+  // Breadth-First Search
   const queue = [
-    { location: startId, steps: [] }
+    { location: start, steps: [] }
   ];
 
-  const visited = new Set([startId]);
+  const visited = new Set([start]);
 
   while (queue.length > 0) {
     const current = queue.shift();
 
-    if (current.location === destinationId) {
+    if (current.location === destination) {
       return {
         ok: true,
         steps: current.steps
       };
     }
 
-    const nextConnections = connections.filter(
-      (connection) => connection.from === current.location
-    );
-
-    for (const connection of nextConnections) {
-      if (!visited.has(connection.to)) {
-        visited.add(connection.to);
+    for (const next of graph.get(current.location) || []) {
+      if (!visited.has(next.to)) {
+        visited.add(next.to);
 
         queue.push({
-          location: connection.to,
-          steps: [
-            ...current.steps,
-            connection.text
-          ]
+          location: next.to,
+          steps: [...current.steps, next.text]
         });
       }
     }

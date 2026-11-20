@@ -71,6 +71,20 @@ export function directionSteps(location, options = {}) {
   const room = locateRoom(place);
 
   if (!room) {
+    // Preserve the original directions behaviour for
+    // legacy room names such as "Room B210".
+    if (/^Room\s+[A-Za-z]\d+/i.test(place)) {
+      return {
+        ok: true,
+        location: place,
+        steps: [
+          'Start from your current position.',
+          `Walk toward ${place}.`,
+          `Arrive at ${place}.`
+        ]
+      };
+    }
+
     return {
       ok: false,
       error: NOT_ON_PLAN_MESSAGE

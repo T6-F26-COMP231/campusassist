@@ -40,14 +40,14 @@ test('pending requests come from the backend and keep the database id', async ()
     return {
       ok: true,
       json: async () => ({
-        requests: [{ _id: 'abc123', currentLocation: 'B Block, Floor 1', assistanceType: 'Mobility Assistance', description: 'Door' }],
+        requests: [{ _id: 'abc123', currentLocation: 'B Block, Floor 1', assistanceType: 'Mobility Assistance', description: 'Student HUB' }],
       }),
     };
   };
   const result = await fetchPendingRequests('B');
   assert.match(calls[0], /\/api\/help-requests\/pending\?block=B$/);
   assert.deepEqual(result.requests, [
-    { id: 'abc123', location: 'B Block, Floor 1', need: 'Mobility Assistance', description: 'Door' },
+    { id: 'abc123', currentLocation: 'B Block, Floor 1', location: 'B Block, Floor 1', need: 'Mobility Assistance', description: 'Student HUB' },
   ]);
 });
 

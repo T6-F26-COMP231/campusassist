@@ -69,6 +69,7 @@ export async function fetchPendingRequests(block) {
     }
     const requests = (data.requests ?? []).map((r) => ({
       id: r._id,
+      currentLocation: r.currentLocation,
       location: r.currentLocation,
       need: r.assistanceType,
       description: r.description,
