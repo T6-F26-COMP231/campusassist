@@ -85,14 +85,12 @@ Accepted or cancelled requests do not appear in the list.
 A Campus User can use CampusAssist to find walking directions that avoid stairs. When step-free routing is selected, the app uses recorded walkable corridors and elevators instead of stairs.
 
 ### Get step-free directions
-
-1. Open CampusAssist and choose **Campus User**.
-2. Sign in using the demo account `student@campus.test` / `student123`.
-3. On **Home**, choose **Get Directions**.
-4. Under **I am at**, select your current location.
-5. Under **I am going to**, select your destination.
-6. Turn **Step-free route** to **On**.
-7. Choose **Show step-free route**.
+1. Open CampusAssist.
+2. On **Home**, choose **Get Step-by-Step Directions**.
+3. On the **Get Directions** page, select your current location under **I am at**.
+4. Under **I am going to**, select your destination.
+5. Turn **Step-free route** to **On**.
+6. Choose **Show step-free route**.
 
 If a step-free route is available, CampusAssist displays walking instructions that avoid recorded stairs. The route may use elevators to travel between floors.
 
