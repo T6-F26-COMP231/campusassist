@@ -1,0 +1,31 @@
+.routemap { display: flex; flex-direction: column; gap: 10px; }
+.routemap__title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+
+.routemap__tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.routemap__tab {
+  min-width: 56px; min-height: 44px; padding: 8px 14px;
+  font-size: 0.95rem; font-weight: 600; color: var(--charcoal);
+  background: var(--surface); border: 2px solid var(--border); border-radius: 999px; cursor: pointer;
+}
+.routemap__tab:hover { background: var(--lime-tint); }
+.routemap__tab--on { background: var(--lime-tint); border-color: var(--lime-dark); }
+.routemap__tab:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+
+.routemap__legend { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 0.9rem; }
+.routemap__swatch { width: 28px; height: 0; border-top: 6px solid #1f6fbf; border-radius: 3px; }
+.routemap__dot {
+  display: inline-grid; place-items: center; width: 24px; height: 24px;
+  font-size: 0.75rem; font-weight: 700; border-radius: 50%; border: 3px solid var(--charcoal);
+}
+.routemap__dot--from { background: var(--lime); color: var(--charcoal); }
+.routemap__dot--to { background: var(--charcoal); color: #fff; }
+
+.routemap__svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.routemap__halo { fill: none; stroke: #fff; stroke-width: 28; stroke-linecap: round; stroke-linejoin: round; }
+.routemap__line { fill: none; stroke: #1f6fbf; stroke-width: 16; stroke-linecap: round; stroke-linejoin: round; }
+.routemap__end { stroke: #323a42; stroke-width: 6; }
+.routemap__end--from { fill: #c5d200; }
+.routemap__end--to { fill: #323a42; }
+
+.routemap__hint { margin: 0; font-size: 0.85rem; color: var(--charcoal-soft); }
+.routemap__empty { margin: 0; padding: 16px; text-align: center; color: var(--charcoal-soft); background: var(--surface); border: 2px dashed var(--border); border-radius: 12px; }

@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import AppHeader from '../components/AppHeader';
-import { routeDirections, routePlaces } from '../lib/routes';
+import RouteMap from '../components/RouteMap';
+import { routeDirections, routeGroups } from '../lib/routes';
 import './RequestHelp.css';
 import './StepByStepDirections.css';
 
-const PLACES = routePlaces();
+const GROUPS = routeGroups();
 
 export default function StepByStepDirections({ onBack }) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [avoidStairs, setAvoidStairs] = useState(false);
   const [result, setResult] = useState(null);
 
   const submit = (event) => {
     event.preventDefault();
-    setResult(routeDirections(from, to));
+    setResult(routeDirections(from, to, { avoidStairs }));
   };
 
   const picker = (label, value, setValue) => (
@@ -27,8 +29,12 @@ export default function StepByStepDirections({ onBack }) {
         }}
       >
         <option value="">Choose a place</option>
-        {PLACES.map(({ id, name }) => (
-          <option key={id} value={id}>{name}</option>
+        {GROUPS.map((group) => (
+          <optgroup key={group.id} label={group.label}>
+            {group.places.map(({ id, name, floor }) => (
+              <option key={id} value={id}>{`${name} (Floor ${floor})`}</option>
+            ))}
+          </optgroup>
         ))}
       </select>
     </label>
@@ -45,6 +51,17 @@ export default function StepByStepDirections({ onBack }) {
         <form className="route__form" onSubmit={submit}>
           {picker('I am at', from, setFrom)}
           {picker('I am going to', to, setTo)}
+          <label className="route__check">
+            <input
+              type="checkbox"
+              checked={avoidStairs}
+              onChange={(event) => {
+                setAvoidStairs(event.target.checked);
+                setResult(null);
+              }}
+            />
+            Avoid stairs (use elevators)
+          </label>
           <button className="btn btn--primary" type="submit">Show directions</button>
         </form>
 
@@ -54,6 +71,10 @@ export default function StepByStepDirections({ onBack }) {
               <h3 id="route-title" className="route__title">
                 {result.from} to {result.to}
               </h3>
+              <p className="route__note">
+                About {result.totalMetres} m, about {result.minutes} {result.minutes === 1 ? 'minute' : 'minutes'} on
+                foot. This is the shortest route over the campus map.
+              </p>
               <ol className="route__steps">
                 {result.steps.map((step, index) => (
                   <li key={index}>{step}</li>
@@ -63,6 +84,16 @@ export default function StepByStepDirections({ onBack }) {
           )}
           {result && !result.ok && <p className="route__error">{result.error}</p>}
         </div>
+
+        {result?.ok && (
+          <RouteMap
+            key={`${from}-${to}-${avoidStairs}`}
+            legs={result.legs}
+            building={result.fromBuilding}
+            fromName={result.from}
+            toName={result.to}
+          />
+        )}
       </main>
     </div>
   );
