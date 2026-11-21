@@ -48,6 +48,15 @@ const barrierReportSchema = new mongoose.Schema(
   }
 );
 
+// Story 24: read Pending reports from this same collection.
+// Approved, rejected, and resolved reports are not included. Oldest report first.
+barrierReportSchema.statics.findPending = function () {
+  return this.find({ status: "Pending" })
+    .select("type location description photoName status createdAt")
+    .sort({ createdAt: 1 })
+    .lean();
+};
+
 const BarrierReport =
   mongoose.models.BarrierReport ||
   mongoose.model("BarrierReport", barrierReportSchema);
