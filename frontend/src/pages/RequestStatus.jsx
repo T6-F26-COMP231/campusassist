@@ -10,6 +10,7 @@ const steps = [
   'Request Submitted',
   'Accepted',
   'On the Way',
+  'Arrived',
   'Completed'
 ];
 
@@ -17,6 +18,7 @@ const statusMessages = {
   Pending: 'Your request has been received.',
   Accepted: 'A helper has accepted your request.',
   'On the Way': 'Your helper is on the way.',
+  Arrived: 'Your helper has arrived.',
   Completed: 'Your assistance has been completed.',
   Cancelled: 'Your request was cancelled.'
 };
@@ -80,7 +82,8 @@ export default function RequestStatus({ onBack, requestId }) {
     Pending: 0,
     Accepted: 1,
     'On the Way': 2,
-    Completed: 3
+    Arrived: 3,
+    Completed: 4
   }[currentStatus] ?? 0;
 
   return (
@@ -185,6 +188,10 @@ export default function RequestStatus({ onBack, requestId }) {
 
                       {step === 'On the Way' && (
                         <small>Your helper is coming</small>
+                      )}
+
+                      {step === 'Arrived' && (
+                        <small>Your helper has arrived</small>
                       )}
 
                       {step === 'Completed' && (
