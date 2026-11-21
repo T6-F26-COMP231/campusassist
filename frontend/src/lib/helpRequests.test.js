@@ -151,3 +151,25 @@ test('a request stops changing once it is completed or cancelled', () => {
     assert.equal(isFinalStatus(status), false);
   }
 });
+
+test('the user status check says the request was not found for a 404 or a bad id', async () => {
+  for (const status of [404, 400]) {
+    globalThis.fetch = async () => ({
+      ok: false,
+      status,
+      json: async () => ({ message: 'Help request not found' }),
+    });
+    const result = await fetchRequestStatus('abc123');
+    assert.equal(result.ok, false);
+    assert.equal(result.error, 'Request not found.');
+  }
+});
+
+test('the user status check keeps the general message for a server error', async () => {
+  globalThis.fetch = async () => ({
+    ok: false,
+    status: 500,
+    json: async () => ({ message: 'Unable to retrieve help request status' }),
+  });
+  assert.equal((await fetchRequestStatus('abc123')).error, 'Unable to load request status.');
+});

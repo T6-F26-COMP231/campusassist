@@ -98,6 +98,12 @@ export async function fetchRequestStatus(requestId) {
   try {
     const res = await fetch(`${API_BASE}/api/help-requests/${encodeURIComponent(requestId)}/status`);
     const data = await res.json().catch(() => ({}));
+
+    // The server answers 404 for an unknown request and 400 for a malformed id.
+    if (res.status === 404 || res.status === 400) {
+      return { ok: false, error: 'Request not found.' };
+    }
+    
     if (!res.ok || !data.request) {
       return { ok: false, error: 'Unable to load request status.' };
     }
