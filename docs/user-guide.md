@@ -1,111 +1,195 @@
 # CampusAssist user guide
 
-This guide is for someone using CampusAssist, not for setting up the project. Each story adds its own section.
+This guide explains how to use CampusAssist.
 
 ## Request in-person help
 
-A signed-in Campus User can ask an authorized helper to come to their current location and guide them. This is for non-emergency navigation help. In an emergency, contact campus security or call 911.
+A Campus User can request in-person navigation assistance. This is for non-emergency navigation help.
 
 ### Send a request
 
-1. Open CampusAssist and choose **Campus User**.
-2. Sign in. The demo account is `student@campus.test` / `student123`.
-3. On **Home**, choose **Request Help**.
-4. Under **Your location (required)**, choose where you are now from the map list, or use **Scan campus QR code**.
-5. Optionally describe where you are headed in **Destination / description**.
-6. Choose an assistance type: **Standard Guiding**, **Mobility Assistance**, or **Other**.
-7. Choose **Send Help Request**.
+1. On **Home**, choose **Request In-Person Help**.
+2. In **Your Location**, type your current location, such as `A Block, First Floor (A1)`.
+3. Optionally enter your destination or explain what you need in **Destination / Description**.
+4. Under **Select Assistance Type**, choose **Standard Guiding**, **Mobility Assistance**, or **Other**. **Standard Guiding** is selected initially.
+5. Choose **Send Help Request**. While saving, the button says **Sending...**.
 
-The app opens **My Help Request**. The status is **Pending**, your location is shown, and the timeline starts at **Request Submitted**. Helpers can then see the request in their open list.
+### After a successful submission
 
-### If you do not choose a location
+The page shows **Help Request Submitted Successfully** and confirms the location you entered:
 
-The request is not sent. The form stays open and shows: "The request was not sent: choose your current location first." Choose a location, then send again.
+"Your request from [your location] has been submitted successfully. A campus volunteer can now review your request."
+
+Choose **View Request Status** to check your saved request, or **Back to home** to return Home.
+
+### If the location is empty
+
+A location that is empty or contains only spaces is not accepted. **Send Help Request** is unavailable. The form displays:
+
+"A request without a location cannot be sent."
+
+Enter your current location to enable the button.
+
+### If submission fails
+
+The form displays an error message and keeps your entered information. Check the connection, correct any reported problem, and try again.
 
 ## Filter accessible facilities
 
-A signed-in Campus User can limit the place list to facilities they can use, such as elevators and accessible washrooms.
+A Campus User can find facilities and narrow the results by facility type and campus location.
 
-1. Open CampusAssist and choose **Campus User**.
-2. Sign in. The demo account is `student@campus.test` / `student123`.
-3. On **Home**, choose **Search Location**.
-4. Under **Accessible facilities**, choose one or more of **Elevators**, **Accessible washrooms**, **Ramps**, and **Auto doors**.
-5. The list shows only places that have every facility you chose. Each result names the place, its block and floor, and the facilities it has.
-6. Choose **Clear filters** to show every place again.
+1. On **Home**, choose **Find Accessible Facilities**.
+2. Under **Filter by facility**, select a facility type. You can select more than one to see facilities of the selected types.
+3. Under **Where**, choose a campus location, or leave **All of campus** selected.
+4. Review the matching facilities. Each result shows its type, name, location, and additional details when available.
+5. Review the map below the results.
+6. Select a chosen facility type again to remove that filter, or choose **Clear filters** to reset both the facility types and campus location.
 
-Choosing **Elevators** leaves only places with an elevator. If a search and the filters match nothing, the list says no results were found and tells you to try another name or clear the filters.
+The count shows **Showing all [total] facilities** when no filters are selected. When filtering, it shows **Showing [matches] of [total] facilities**.
+
+### If no facilities match
+
+The page shows:
+
+"No facilities match these filters. Try another facility type or campus location, or clear the filters."
+
+Change the selected facility types or **Where**, or choose **Clear filters** to show all facilities again.
+
+Locations come from the Progress Campus map and floor plan.
 
 ## Report a barrier
 
-A signed-in Campus User can report a broken elevator, a blocked entrance, or another obstacle. An administrator reviews the report before any routes change.
+A Campus User or Faculty Staff member can report a barrier. The confirmation explains that an administrator will review it before any routes change. Barrier reports do not currently change routes automatically.
 
-1. Open CampusAssist and choose **Campus User**.
-2. Sign in. The demo account is `student@campus.test` / `student123`.
-3. On **Home**, choose **Report Barrier**.
-4. Choose a **Barrier type**: **Broken Elevator**, **Blocked Entrance**, **Construction Closure**, **Broken Door**, **Blocked Ramp**, or **Other**.
-5. Enter **Location (required)**. You can type a place, such as `Near room B230, Block B`.
-6. Optionally describe what is blocked, and optionally add a photo.
-7. Choose **Submit for review**.
+1. On **Home**, choose **Report Barrier**.
+2. Under **Who is reporting?**, choose **Campus User** or **Faculty Staff**.
+3. Choose a **Barrier type (required)**: **Broken Elevator**, **Blocked Entrance**, **Construction Closure**, **Broken Door**, **Blocked Ramp**, or **Other**.
+4. Enter **Location (required)**. If you selected **Faculty Staff**, this field is called **Classroom (required)**.
+5. Optionally fill in **Describe what is blocked (optional)**.
+6. Optionally use **Add a photo (optional)**. Choose **Remove photo** to remove the selected photo.
+7. Choose **Submit for review**. While saving, the button says **Submitting...**.
 
-The app opens **Report sent** and shows: "Report R-003 was saved. An administrator reviews it before any routes change." The number goes up for each new report. Routes stay the same until an administrator approves the report.
+### Report a barrier near your classroom
 
-### If you leave the location empty
+1. On **Home**, choose **Report Barrier**.
+2. Under **Who is reporting?**, choose **Faculty Staff**.
+3. Choose the barrier type.
+4. In **Classroom (required)**, enter the classroom or nearby hallway, such as `The hallway outside B230`. You can also pick a suggestion as you type.
+5. Describe the obstruction, such as `Equipment is blocking the hallway outside B230`.
+6. Choose **Submit for review**.
 
-The report is not accepted. The form stays open and shows: "A report without a location is not accepted. Tell us where the barrier is." Enter a location, then submit again.
+### After a successful submission
+
+The page shows **Report sent** and:
+
+"Your barrier report was saved successfully and is Pending review. An administrator will review it before any routes change."
+
+The summary shows **Reported by**, **Type**, and **Classroom** for Faculty Staff, or **Location** for a Campus User. **Details** and **Photo** appear when supplied.
+
+Choose **Back to home** to return Home. Choose **Report another barrier** to open an empty form. Select **Faculty Staff** again when reporting another classroom barrier.
+
+The current photo feature previews the selected image and saves its filename with the report; it does not upload the image itself.
+
+### If required information is missing
+
+A classroom that is empty or contains only spaces is not accepted. For Faculty Staff, the form shows:
+
+"A report without a classroom is not accepted. Tell us which classroom the barrier is near."
+
+For a Campus User with no location, it shows:
+
+"A report without a location is not accepted. Tell us where the barrier is."
+
+If no barrier type is selected, it shows:
+
+"Choose a barrier type."
+
+Correct the listed problems and choose **Submit for review** again.
+
+### Field and photo limits
+
+- Location or classroom: up to 120 characters.
+- Description: up to 300 characters.
+- Optional photo: an image file no larger than 5 MB.
+
+### If submission fails
+
+The form displays an error instead of the **Report sent** confirmation. Your entered information remains on the form. Check the connection, correct any reported problem, and try again.
+
+### Faculty reporting examples
+
+- **A classroom barrier is submitted.** Choose **Faculty Staff**, select **Blocked Entrance**, enter `The hallway outside B230`, and describe the obstruction. After a successful submission, **Report sent** appears with **Pending review**, and the summary shows **Reported by: Faculty Staff** and the entered **Classroom**.
+- **The classroom is missing.** Choose **Faculty Staff** and a barrier type, leave **Classroom** empty or enter only spaces, and choose **Submit for review**. The form stays open and displays the missing-classroom message.
+- **The barrier type is missing.** Enter a classroom without selecting a barrier type and choose **Submit for review**. The form displays "Choose a barrier type."
 
 ## See pending barrier reports
 
-An administrator uses this list so a barrier report is not missed. Only reports that are still waiting for review appear on the **Pending** tab. Only reports sent from the app are listed. There are no sample reports.
+An administrator can view reports submitted during the current app visit. Only reports waiting for review appear on the **Pending** tab. There are no sample reports.
 
-1. Open CampusAssist. On **Home**, choose **Administrator**.
-2. **Admin Home** says "Check the reports that need your review." Choose **Review Barrier Reports**.
-3. When no report is waiting, the row says "No reports are waiting" and there is no badge. When reports are waiting, the row says "1 report is pending" or "2 reports are pending", and a badge shows that count.
-4. **Barrier Reports** opens with the **Pending** tab selected. The tabs show a count, such as **Pending (0)**, **Approved (0)**, and **Closed (0)**.
-5. When the **Pending** tab has no reports, it says "No reports are waiting."
-6. Choose **View Details** to open one report. It shows **Status**, **Type**, **Location**, and **Details**. **Details** says "No description" when the report has none. **Reported by** and **Photo** appear when the report has them. Choose **Back to reports** to return to the list.
+1. On **Home**, choose **Administrator**.
+2. Choose **Review Barrier Reports**.
+3. **Barrier Reports** opens with the **Pending** tab selected. The tabs show counts, such as **Pending (0)**, **Approved (0)**, and **Closed (0)**.
+4. When the **Pending** tab has no reports, it says "No reports are waiting."
+5. Choose **View Details** to open a report.
+6. Review **Status**, **Type**, **Location**, and **Details**. **Details** says "No description" when none was supplied. **Reported by** and **Photo** appear when available.
+7. Choose **Back to reports** to return to the list.
 
-A submitted report appears in **Pending** with **Status** **Pending**. The list shows its title, **Location**, and **Description**. One waiting report makes the tab say "1 report is waiting for review, oldest first". The oldest waiting report stays first.
+A pending report appears with its title, **Location**, and **Description**. The summary says "1 report is waiting for review, oldest first" or the corresponding number of reports. Reports remain in submission order.
 
-An approved report leaves **Pending** and appears on **Approved**. A rejected report leaves **Pending** and appears on **Closed**. Neither one is counted in the Pending badge. The screen says "Reports sent from the app appear here until the app is reloaded."
+Report titles use the saved report ID, for example **Report [report ID] · Broken Elevator**. Bracketed IDs in this guide are placeholders for the actual IDs displayed by the app.
+
+Reports with status **Approved** appear on **Approved**. Reports with status **Rejected** or **Resolved** appear on **Closed**.
+
+The current app has no action for approving or rejecting a report. These tabs group reports according to their existing status.
+
+The screen says:
+
+"Reports sent from the app appear here until the app is reloaded."
+
+Reloading clears the current administrator list. This does not mean the submitted reports were deleted from the database; the current list does not reload them from the server.
 
 ### Examples
 
-- **No reports sent yet.** Open **Review Barrier Reports**. The row says "No reports are waiting" with no badge. The **Pending** tab says "No reports are waiting." and shows **Pending (0)**.
-- **A Campus User sends a report.** On **Home**, choose **Report Barrier**, choose **Broken Elevator**, enter the location `Near room B230, Block B`, and choose **Submit for review**. The app shows **Report sent**: "Your barrier report was saved successfully and is Pending review. An administrator will review it before any routes change." Go to **Administrator**, then **Review Barrier Reports**. The row says "1 report is pending" with a badge of 1. The **Pending** tab says "1 report is waiting for review, oldest first" and lists **Report 001 · Broken Elevator**, Location: Near room B230, Block B. **View Details** shows **Status** **Pending**.
-- **Two reports wait.** After a second report is sent, the badge shows 2 and the Pending tab says "2 reports are waiting for review, oldest first". **Report 001** is listed first, then **Report 002**.
-- **An approved report leaves Pending.** It is no longer in the **Pending** list or the badge. It appears on **Approved**.
-- **A rejected report leaves Pending.** It is no longer in the **Pending** list or the badge. It appears on **Closed**.
-
+- **No reports sent during this visit.** Open **Review Barrier Reports**. The **Pending** tab says "No reports are waiting." and shows **Pending (0)**.
+- **A Campus User sends a report.** On **Home**, choose **Report Barrier**, select **Campus User**, choose **Broken Elevator**, enter `Near room B230, Block B`, and choose **Submit for review**. After the successful confirmation, return Home and choose **Administrator**, then **Review Barrier Reports**. The report appears on **Pending** with its saved ID and location. **View Details** shows **Status: Pending**.
+- **Two reports wait.** Starting with no reports during the current visit, submit two reports successfully. The Pending tab says "2 reports are waiting for review, oldest first". **Report [first report ID]** is listed before **Report [second report ID]**.
+- **An approved report.** A report with status **Approved** belongs on **Approved** and is not counted under **Pending**.
+- **A rejected report.** A report with status **Rejected** belongs on **Closed** and is not counted under **Pending**.
 
 ## Mark a barrier as resolved
 
-An administrator marks a barrier as resolved once it is cleared, so it no longer counts as an open barrier. Only a barrier that has been approved can be marked resolved.
+Only a report with status **Approved** can be marked resolved.
+
+The current app does not provide an approval action, so a newly submitted pending report cannot reach this step through the current interface. The following steps apply when an approved report is available in the list.
 
 1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
-2. Choose **View Details** on the report. Reports that are waiting for approval are on **Pending**, and approved reports are on **Approved**.
-3. On an approved report, choose **Mark as Resolved**. The screen asks: "Mark Report 001 · Broken Elevator as resolved?" It explains: "The barrier is cleared. It moves to Closed and no longer counts as an open barrier. You cannot undo this here."
-4. Choose **Yes, mark resolved**. To keep the report as it was, choose **Cancel**.
-5. The screen shows "Report 001 · Broken Elevator was marked resolved. It is now listed under Closed." The **Status** is **Resolved** and **Mark as Resolved** is gone. Choose **Back to reports**: the count on **Approved** goes down by one and the count on **Closed** goes up by one.
+2. Open **Approved** and choose **View Details** on the report.
+3. Choose **Mark as Resolved**.
+4. The screen asks "Mark Report [report ID] · Broken Elevator as resolved?" using the selected report's title.
+5. Read the explanation: "The barrier is cleared. It moves to Closed and no longer counts as an open barrier. You cannot undo this here."
+6. Choose **Yes, mark resolved**, or choose **Cancel** to leave the report unchanged.
+7. After success, the screen says "Report [report ID] · Broken Elevator was marked resolved. It is now listed under Closed." using the selected report's title.
+8. **Status** shows **Resolved**, and **Mark as Resolved** is gone. Choose **Back to reports** to view the updated counts.
 
-Approving a report is not in the app yet, so for now no report has the status Approved. When one does, it follows the steps above.
+Resolution currently changes the report in the current app visit. It is not saved back to the server.
 
 ### Examples
 
-- **An approved barrier is resolved.** Report 001 · Broken Elevator is on the **Approved** tab, so the tabs read **Pending (0)**, **Approved (1)** and **Closed (0)**. Choose **View Details**, **Mark as Resolved**, then **Yes, mark resolved**. The screen shows "Report 001 · Broken Elevator was marked resolved. It is now listed under Closed." The tabs now read **Pending (0)**, **Approved (0)** and **Closed (1)**, and Report 001 is on **Closed**.
-- **Cancel.** On the question "Mark Report 001 · Broken Elevator as resolved?", choose **Cancel**. The **Status** is still **Approved**, and **Mark as Resolved** is still there.
-- **A barrier that is not approved.** Open a report on the **Pending** tab with **View Details**. **Mark as Resolved** is not available, and the screen says "Only approved barriers can be marked resolved."
-- **A barrier that is already resolved.** A report on the **Closed** tab has no **Mark as Resolved** button, so it cannot be resolved twice.
+- **An approved barrier is resolved.** With one approved report and no other reports, the tabs read **Pending (0)**, **Approved (1)**, and **Closed (0)**. Resolve that report. The tabs become **Pending (0)**, **Approved (0)**, and **Closed (1)**.
+- **Cancel.** On the confirmation question, choose **Cancel**. **Status** remains **Approved**, and **Mark as Resolved** remains available.
+- **A pending barrier.** Open a pending report. **Mark as Resolved** is disabled, and the screen says "Only approved barriers can be marked resolved."
+- **An already resolved barrier.** A resolved report has no **Mark as Resolved** button, so it cannot be resolved twice.
+- **Resolution fails.** An error message appears instead of the success message. Review the message and return to the report list if necessary.
 
-Routes are not changed by resolving a barrier yet. The app does not block a route because of a barrier report.
-
+Routes are not changed by resolving a barrier. The app does not currently block a route because of a barrier report.
 
 ## See open help requests
 
 An Authorized Helper can see the open help requests for a campus block and choose one to take. Only requests that are still waiting for a helper appear in the list.
 
-1. On  **Home** , choose  **View Open Requests (Volunteer)** .
-2. Under  **Select Campus Block** , choose  **A Block** ,  **B Block** , or  **C Block** . The page opens on A Block, and the list changes to show that block's requests.
-3. The page title is  **Open Requests Nearby** . Each card shows the request number,  **Location** ,  **Problem** , and  **Assistance Type** . **Problem** appears when the person described what they need.
+1. On **Home**, choose **View Open Requests (Volunteer)**.
+2. Under **Select Campus Block**, choose **A Block**, **B Block**, or **C Block**. The page opens on A Block, and the list changes to show that block's requests.
+3. The page title is **Open Requests Nearby**. Each card shows the request number, **Location**, **Problem**, and **Assistance Type**. **Problem** appears when the person described what they need.
 4. Choose **Accept Request** on a card to open that request.
 5. Choose **Message User** to contact the person. For now, the app shows: "Messaging is coming soon."
 
@@ -134,7 +218,7 @@ If this device has no helper account set up, the page says "This device has no h
 
 ### If a block has no open requests
 
-The page shows "No open requests in Block A right now."  Choose another block to look for requests there.
+The page shows "No open requests in Block A right now." Choose another block to look for requests there.
 
 Accepted or cancelled requests do not appear in the list.
 
@@ -350,7 +434,7 @@ If you need a route that avoids stairs, turn **Step-free route** to **On**, then
 A Campus User can check the progress of a submitted help request to see when help is coming.
 
 1. Submit a request using **Request In-Person Help**.
-2. On **Home**, choose **My Help Request Status**.
+2. On **Home**, choose **My Help Request Status**, or choose **View Request Status** on the submission confirmation.
 3. Review your assistance type, current location, destination or description, and assigned helper.
 4. Read **Current Status** and the progress timeline.
 
@@ -376,6 +460,8 @@ Automatic checks stop when the request is completed or cancelled.
 If a background check fails, the page keeps showing the last known status. An unchanged status does not necessarily mean a new check succeeded; check the last checked time.
 
 ### If the status cannot be loaded
+
+If no request is selected, the page says "No request selected."
 
 If the request cannot be found, the page says "Request not found."
 
