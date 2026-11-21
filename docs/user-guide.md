@@ -81,6 +81,57 @@ The page shows "No open requests in Block A right now."  Choose another block to
 
 Accepted or cancelled requests do not appear in the list.
 
+## Get directions to the user
+
+An Authorized Helper can open walking directions to the location saved on a help request. The directions end at that location.
+
+1. On **Home**, choose **View Open Requests (Volunteer)**.
+2. Choose **Accept Request** on the request you are taking.
+3. On **Accept this request**, choose **Directions to this user**.
+4. The page title is **Directions to the user**. While the location is loading, the page says "Loading the user's location..."
+5. Read **User's Current Location**. If the person also named a place they want to reach, that place is shown as **Requested Destination**. The walk still goes to the current location.
+6. Choose **Find Walking Directions**.
+
+The directions are a numbered list:
+
+1. Start from your current position.
+2. Walk toward the user's current location.
+3. Arrive at that location.
+
+Before you choose the button, the page says "Select Find Walking Directions." After the steps, it says "These are general directions based on the request. A physical walking route has not been automatically verified."
+
+If the location is a room on the Progress Campus floor plan, the page also shows **Destination on Floor Plan** and that room code.
+
+### A request at Room B210
+
+When **User's Current Location** is **Room B210**, the steps are:
+
+1. Start from your current position.
+2. Walk toward Room B210.
+3. Arrive at Room B210.
+
+The last step is the location in the request. If **Requested Destination** is **Student HUB**, the steps still end at Room B210.
+
+### If the request has no location
+
+The page says "This request has no location to walk to." **Find Walking Directions** stays unavailable.
+
+### If the location cannot be loaded
+
+The page says "Unable to load the user's location." If no request was opened, it says "No request selected."
+
+### Avoid stairs
+
+Turn on **Avoid stairs**, then choose **Find Walking Directions**. The page says "Routes containing recorded stair connections will be excluded. Other accessibility conditions have not yet been verified."
+
+For **Bookstore**, the steps are:
+
+1. Start from your current position.
+2. Take the elevator to the second floor.
+3. Arrive at the Bookstore.
+
+Those steps do not mention stairs. For a location with no recorded step-free route, such as **Room B210**, the page says "No step-free route is available."
+
 ## Check destination accessibility
 
 A Campus User can check a destination's accessibility features before going there.
