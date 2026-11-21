@@ -19,6 +19,7 @@ import {
   resolveBarrierReport
 } from './lib/barrierReports';
 import { mergePendingReports } from './lib/pendingReports';
+import { approveBarrierReport, rejectBarrierReport } from './lib/reviewDecisions';
 import './pages/RequestHelp.css';
 
 function Home({
@@ -195,22 +196,26 @@ export default function App() {
         onBack={() => setPage('admin')}
         reports={barrierReports}
         onLoaded={addLoadedReports}
-        onApprove={(reportId) => {
+        onApprove={async (reportId) => {
           const result = approveReport(barrierReports, reportId);
+          if (!result.ok) return result;
 
-          if (result.ok) {
-            setBarrierReports(result.reports);
-          }
+          // Issue #82: change the list only after the backend has saved the approval.
+          const saved = await approveBarrierReport(reportId);
+          if (!saved.ok) return saved;
 
+          setBarrierReports((list) => approveReport(list, reportId).reports ?? list);
           return result;
         }}
-        onReject={(reportId) => {
+        onReject={async (reportId) => {
           const result = rejectReport(barrierReports, reportId);
+          if (!result.ok) return result;
 
-          if (result.ok) {
-            setBarrierReports(result.reports);
-          }
+          // Issue #82: change the list only after the backend has saved the rejection.
+          const saved = await rejectBarrierReport(reportId);
+          if (!saved.ok) return saved;
 
+          setBarrierReports((list) => rejectReport(list, reportId).reports ?? list);
           return result;
         }}
         onResolve={async (reportId) => {
@@ -222,9 +227,9 @@ export default function App() {
               list.map((report) =>
                 report.id === reportId
                   ? {
-                      ...report,
-                      status: result.report?.status || 'Resolved'
-                    }
+                    ...report,
+                    status: result.report?.status || 'Resolved'
+                  }
                   : report
               )
             );

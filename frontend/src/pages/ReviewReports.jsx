@@ -72,15 +72,17 @@ export default function ReviewReports({ onBack, reports, onLoaded, onApprove, on
     setOutcome(null);
   };
 
-  const approve = () => {
-    const result = onApprove?.(open.id);
+  const approve = async () => {
+    const id = open.id;
     setConfirming(null);
+    const result = await onApprove?.(id);
     setOutcome({ kind: 'approved', ...(result ?? { ok: false, error: 'This report could not be approved.' }) });
   };
 
-  const reject = () => {
-    const result = onReject?.(open.id);
+  const reject = async () => {
+    const id = open.id;
     setConfirming(null);
+    const result = await onReject?.(id);
     setOutcome({ kind: 'rejected', ...(result ?? { ok: false, error: 'This report could not be rejected.' }) });
   };
 
