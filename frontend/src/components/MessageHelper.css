@@ -1,0 +1,51 @@
+.msg {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+}
+.msg form { display: flex; flex-direction: column; gap: 12px; }
+.msg__title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+.msg__note {
+  margin: 0; padding: 10px 12px;
+  font-size: 0.95rem; line-height: 1.4;
+  background: #e9ebe4; border-radius: 12px;
+}
+.msg__empty { margin: 0; font-size: 0.95rem; color: var(--charcoal-soft); }
+
+.msg__thread {
+  list-style: none; margin: 0; padding: 0;
+  max-height: 240px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.msg__thread:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+.msg__bubble {
+  align-self: flex-end; max-width: 85%;
+  padding: 10px 12px;
+  background: var(--lime-tint);
+  border: 2px solid var(--lime-dark); border-radius: 12px 12px 4px 12px;
+}
+.msg__bubble p { margin: 0; line-height: 1.4; overflow-wrap: anywhere; }
+.msg__bubble small { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--charcoal-soft); }
+
+.msg textarea:disabled { background: #eceee7; color: #6b726b; cursor: not-allowed; }
+.msg__count { font-size: 0.85rem; color: var(--charcoal-soft); }
+.msg__count--over { color: #c0392b; font-weight: 700; }
+
+.msg__share {
+  align-self: flex-start;
+  min-height: 44px; padding: 0 16px;
+  font-size: 0.95rem; font-weight: 600; font-family: inherit; color: var(--charcoal);
+  background: var(--surface); border: 2px solid var(--border); border-radius: 999px; cursor: pointer;
+}
+.msg__share:hover:not(:disabled) { background: var(--lime-tint); }
+.msg__share:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+.msg__share:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.msg__error { margin: 0; color: var(--warn-text); font-size: 0.9rem; font-weight: 600; }
+.msg__error::before { content: '\26A0\00a0'; }
+.msg__status { margin: 0; min-height: 1.2em; font-size: 0.9rem; font-weight: 700; color: var(--charcoal); }
+.msg__status:not(:empty)::before { content: '\2713\00a0'; }
+.msg__hint { font-size: 0.85rem; color: var(--charcoal-soft); }
+.msg textarea[aria-invalid='true'] { border-color: #c0392b; }

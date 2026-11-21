@@ -518,6 +518,29 @@ Automatic checks stop when the request is completed or cancelled.
 
 If a background check fails, the page keeps showing the last known status. An unchanged status does not necessarily mean a new check succeeded; check the last checked time.
 
+### Message your helper
+
+Once a helper accepts your request, you can tell them exactly where you are. **Message your helper** is on **My Help Request Status**, below the status.
+
+1. On **Home**, choose **My Help Request Status**.
+2. In **Message your helper**, write your message in **Message to your helper**. It shows how many characters you have used, such as "0 of 300 characters".
+3. To send the location from your request, choose **Share my location**. It fills the message with "I am at" and the **Current Location** on your request, for example "I am at A3-74."
+4. Choose **Send message**. The screen shows "Message sent." and your message appears in the list with "You" and the time.
+
+Your messages stay in the list while you move around the app. The screen notes: "Messages are kept on this screen until the app is reloaded."
+
+### Examples
+
+- **Before a helper accepts.** The status is **Pending**. **Message your helper** says "You can message your helper once a helper accepts your request." The message box, **Share my location** and **Send message** are not available.
+- **After a helper accepts.** The status is **Accepted**. The list says "No messages yet. Tell your helper where you are." and the message box is available.
+- **Share your location.** Your request says **Current Location** A3-74. Choose **Share my location**, then **Send message**. The screen shows "Message sent." and the list shows "I am at A3-74."
+- **An empty message.** Choose **Send message** with nothing written. The screen says "Write a message before sending." and nothing is sent.
+- **A message that is too long.** More than 300 characters says "Keep the message to 300 characters or fewer." and nothing is sent.
+- **After the request is closed.** When the status is **Completed** or **Cancelled**, the screen says "This request is closed, so messages can no longer be sent." and you cannot send a message.
+
+Your helper does not receive these messages yet, and a helper's replies do not appear. Sending, storing and receiving messages are not in the app yet.
+
+
 ### If the status cannot be loaded
 
 If no request is selected, the page says "No request selected."
