@@ -236,3 +236,38 @@ To find a different route, change either location using the dropdown menus and s
 If you need a route that avoids stairs, turn **Step-free route** to **On**, then select **Show step-free route**. See the *Find a step-free route* section for more information.
 
 **Note:** CampusAssist calculates directions using its recorded campus walking data. Temporary barriers, construction, and maintenance may affect actual route accessibility.
+
+## Check your help request status
+
+A Campus User can check the progress of a submitted help request to see when help is coming.
+
+1. Submit a request using **Request In-Person Help**.
+2. On **Home**, choose **My Help Request Status**.
+3. Review your assistance type, current location, destination or description, and assigned helper.
+4. Read **Current Status** and the progress timeline.
+
+If no helper has been assigned, **Assigned Helper** shows **Not assigned yet**. If no destination or description was entered, it shows **Not specified**.
+
+### What each status means
+
+- **Pending**: Your request has been received.
+- **Accepted**: A helper has accepted your request.
+- **On the Way**: Your helper is on the way.
+- **Completed**: Your assistance has been completed.
+- **Cancelled**: Your request was cancelled.
+
+The timeline shows **Request Submitted**, **Accepted**, **On the Way**, and **Completed**. A cancelled request shows a cancellation message instead of the timeline.
+
+### Check for updates
+
+While the request is active, the page checks for updates automatically every 10 seconds. Choose **Check now** to check immediately. The last checked time shows when the most recent successful check occurred.
+
+Automatic checks stop when the request is completed or cancelled.
+
+If a background check fails, the page keeps showing the last known status. An unchanged status does not necessarily mean a new check succeeded; check the last checked time.
+
+### If the status cannot be loaded
+
+The page displays an error message if it cannot load the request status.
+
+Choose **Back to Dashboard** to return to Home.
