@@ -253,10 +253,11 @@ If no helper has been assigned, **Assigned Helper** shows **Not assigned yet**. 
 - **Pending**: Your request has been received.
 - **Accepted**: A helper has accepted your request.
 - **On the Way**: Your helper is on the way.
+- **Arrived**: Your helper has arrived.
 - **Completed**: Your assistance has been completed.
 - **Cancelled**: Your request was cancelled.
 
-The timeline shows **Request Submitted**, **Accepted**, **On the Way**, and **Completed**. A cancelled request shows a cancellation message instead of the timeline.
+The timeline shows **Request Submitted**, **Accepted**, **On the Way**, **Arrived**, and **Completed**. A cancelled request shows a cancellation message instead of the timeline.
 
 ### Check for updates
 
@@ -268,6 +269,8 @@ If a background check fails, the page keeps showing the last known status. An un
 
 ### If the status cannot be loaded
 
-The page displays an error message if it cannot load the request status.
+If the request cannot be found, the page says "Request not found."
+
+If the request has no status, the page says "Current Status: Unavailable" and "Status information unavailable. Please check again shortly."
 
 Choose **Back to Dashboard** to return to Home.
