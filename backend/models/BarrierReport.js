@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-// Story 12: A barrier report saved for an administrator to review.
+// Story 12 and Story 38 share this collection.
+// A faculty classroom is stored in location. There is no separate faculty collection.
 const barrierReportSchema = new mongoose.Schema(
   {
     type: {
@@ -42,6 +43,7 @@ const barrierReportSchema = new mongoose.Schema(
     }
   },
   {
+    collection: "barrierreports",
     timestamps: true
   }
 );
