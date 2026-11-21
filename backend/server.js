@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import locationRoutes from "./routes/locationRoutes.js";
+import routeRoutes from "./routes/routeRoutes.js";
 
 const app = express();
 
@@ -46,6 +47,9 @@ app.use("/api/locations", accessibilityRoutes);
 
 // Story 12: Submit a barrier report
 app.use("/api/barrier-reports", barrierReportRoutes);
+
+// Story 6: Calculate a route between two places
+app.use("/api/routes", routeRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
