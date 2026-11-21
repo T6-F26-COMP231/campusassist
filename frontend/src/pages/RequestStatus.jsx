@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import './RequestStatus.css';
 
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
 const steps = [
   'Request Submitted',
   'Accepted',
@@ -40,7 +42,7 @@ export default function RequestStatus({ onBack, requestId }) {
 
       try {
         const response = await fetch(
-          `/api/help-requests/${encodeURIComponent(requestId)}/status`
+          `${API_BASE}/api/help-requests/${encodeURIComponent(requestId)}/status`
         );
 
         if (!response.ok) {

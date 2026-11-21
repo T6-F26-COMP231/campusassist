@@ -6,6 +6,8 @@ import { directionSteps } from '../lib/directions.js';
 import { PLACES } from '../lib/routeData.js';
 import './RequestHelp.css';
 
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
 export default function DirectionsToUser({ request, onBack }) {
   const [stepFree, setStepFree] = useState(false);
   const [campusRoute, setCampusRoute] = useState(null);
@@ -33,7 +35,7 @@ export default function DirectionsToUser({ request, onBack }) {
 
       try {
         const response = await fetch(
-          `/api/help-requests/${encodeURIComponent(requestId)}/status`,
+          `${API_BASE}/api/help-requests/${encodeURIComponent(requestId)}/status`,
           { signal: controller.signal }
         );
 
