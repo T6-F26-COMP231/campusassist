@@ -6,6 +6,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
+import locationRoutes from "./routes/locationRoutes.js";
 
 const app = express();
 
@@ -35,6 +36,9 @@ app.use(express.json());
 
 // Story 17: Help request routes
 app.use("/api/help-requests", helpRequestRoutes);
+
+// Story 2: Location search by name
+app.use("/api/locations", locationRoutes);
 
 // Story 4: Destination accessibility details
 app.use("/api/locations", accessibilityRoutes);
