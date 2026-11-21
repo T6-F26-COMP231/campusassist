@@ -13,7 +13,11 @@ import AccessibilityFeatures from './pages/AccessibilityFeatures';
 import ReportBarrier from './pages/ReportBarrier';
 import AdminHome from './pages/AdminHome';
 import ReviewReports from './pages/ReviewReports';
-import { approveReport, rejectReport, resolveReport } from './lib/barrierReports';
+import {
+  approveReport,
+  rejectReport,
+  resolveBarrierReport
+} from './lib/barrierReports';
 import { mergePendingReports } from './lib/pendingReports';
 import './pages/RequestHelp.css';
 
@@ -80,7 +84,6 @@ function Home({
           onClick={onFeatures}
         >
           Check Destination Accessibility
-
         </button>
 
         <button
@@ -112,18 +115,19 @@ export default function App() {
   const [page, setPage] = useState('home');
   const [selected, setSelected] = useState(null);
 
-  // Story 12 and 24: Barrier reports sent during this visit. They start as Pending and set the
-  // next report number.
+  // Story 12 and 24: Store reports displayed during this visit.
   const [barrierReports, setBarrierReports] = useState([]);
 
-  // Story 24: add the pending reports loaded from the backend. A report already in the list keeps
-  // its own copy, so one approved or rejected here is not shown as pending again.
+  // Story 24: Merge pending reports retrieved from the backend.
   const addLoadedReports = useCallback(
-    (loaded) => setBarrierReports((list) => mergePendingReports(list, loaded)),
+    (loaded) =>
+      setBarrierReports((list) =>
+        mergePendingReports(list, loaded)
+      ),
     []
   );
 
-  // Story 10: Remember the request submitted by the campus user.
+  // Story 10: Remember the submitted help request.
   const [submittedRequestId, setSubmittedRequestId] = useState(null);
 
   const goHome = () => {
@@ -147,7 +151,7 @@ export default function App() {
     );
   }
 
-  // Story 19: Show directions to the selected user.
+  // Story 19: Directions to the selected user.
   if (page === 'directions' && selected) {
     return (
       <DirectionsToUser
@@ -157,7 +161,7 @@ export default function App() {
     );
   }
 
-  // Story 18: Accept the selected help request.
+  // Story 18: Accept a help request.
   if (page === 'accept' && selected) {
     return (
       <AcceptRequest
@@ -168,13 +172,12 @@ export default function App() {
     );
   }
 
-  // Story 3: Filter and map accessible facilities.
+  // Story 3: Accessible facilities.
   if (page === 'facilities') {
     return <AccessibleFacilities onBack={goHome} />;
   }
 
-
-  // Story 24: Administrator home and the list of barrier reports.
+  // Story 24: Administrator home.
   if (page === 'admin') {
     return (
       <AdminHome
@@ -185,6 +188,7 @@ export default function App() {
     );
   }
 
+  // Story 24, 25, 26 and 27: Review barrier reports.
   if (page === 'reports') {
     return (
       <ReviewReports
@@ -192,54 +196,75 @@ export default function App() {
         reports={barrierReports}
         onLoaded={addLoadedReports}
         onApprove={(reportId) => {
-          // Story 25: approve a pending barrier report.
           const result = approveReport(barrierReports, reportId);
-          if (result.ok) setBarrierReports(result.reports);
+
+          if (result.ok) {
+            setBarrierReports(result.reports);
+          }
+
           return result;
         }}
         onReject={(reportId) => {
-          // Story 26: reject a false barrier report.
           const result = rejectReport(barrierReports, reportId);
-          if (result.ok) setBarrierReports(result.reports);
+
+          if (result.ok) {
+            setBarrierReports(result.reports);
+          }
+
           return result;
         }}
-        onResolve={(reportId) => {
-          // Story 27: mark an approved barrier as resolved.
-          const result = resolveReport(barrierReports, reportId);
-          if (result.ok) setBarrierReports(result.reports);
+        onResolve={async (reportId) => {
+          // Story 27: Save resolution through the backend.
+          const result = await resolveBarrierReport(reportId);
+
+          if (result.ok) {
+            setBarrierReports((list) =>
+              list.map((report) =>
+                report.id === reportId
+                  ? {
+                      ...report,
+                      status: result.report?.status || 'Resolved'
+                    }
+                  : report
+              )
+            );
+          }
+
           return result;
         }}
       />
     );
   }
 
-  // Story 12: Report a barrier with its location.
+  // Story 12 and 38: Submit barrier reports.
   if (page === 'barrier') {
     return (
       <ReportBarrier
         onBack={goHome}
         reportCount={barrierReports.length}
-        onReported={(report) => setBarrierReports((list) => [...list, report])}
+        onReported={(report) =>
+          setBarrierReports((list) => [...list, report])
+        }
       />
     );
   }
 
-  // Story 6: Step-by-step directions to a destination.
+  // Story 6 and 7: Campus directions.
   if (page === 'route') {
     return <StepByStepDirections onBack={goHome} />;
   }
 
-  // Story 2: Search for a location by name.
+  // Story 2: Search for campus locations.
   if (page === 'search') {
     return <SearchLocation onBack={goHome} />;
   }
 
-  // Story 4: See the accessibility features of a destination.
+  // Story 4: Destination accessibility information.
   if (page === 'features') {
     return <AccessibilityFeatures onBack={goHome} />;
   }
 
-  // Story 17: View pending help requests.
+  // Story 17: Open help requests.
   if (page === 'open') {
     return (
       <OpenRequests
@@ -252,7 +277,7 @@ export default function App() {
     );
   }
 
-  // Story 10: View the actual submitted request.
+  // Story 10: Help request status.
   if (page === 'status') {
     return (
       <RequestStatus
@@ -268,13 +293,11 @@ export default function App() {
       onOpenRequests={() => setPage('open')}
       onRequestStatus={() => setPage('status')}
       onFacilities={() => setPage('facilities')}
-
       onSearch={() => setPage('search')}
       onGetDirections={() => setPage('route')}
       onReportBarrier={() => setPage('barrier')}
       onAdmin={() => setPage('admin')}
       onFeatures={() => setPage('features')}
-
     />
   );
 }

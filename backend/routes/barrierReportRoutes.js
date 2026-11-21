@@ -1,5 +1,10 @@
+
 import { Router } from "express";
-import { createBarrierReport, getApprovedBarrierReports } from "../controllers/barrierReportController.js";
+import {
+  createBarrierReport,
+  resolveBarrierReport,
+  getApprovedBarrierReports
+} from "../controllers/barrierReportController.js";
 import { getPendingBarrierReports } from "../controllers/pendingBarrierReportController.js";
 
 const router = Router();
@@ -10,7 +15,10 @@ router.post("/", createBarrierReport);
 // Story 24: Retrieve pending barrier reports.
 router.get("/pending", getPendingBarrierReports);
 
-// Story 25: locations of approved barriers, so a new route can avoid them.
+// Story 25: Retrieve approved barriers for navigation.
 router.get("/approved", getApprovedBarrierReports);
+
+// Story 27: Mark an approved barrier as resolved.
+router.patch("/:id/resolve", resolveBarrierReport);
 
 export default router;
