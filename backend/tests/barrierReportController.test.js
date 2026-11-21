@@ -115,6 +115,43 @@ test("Story 12 does not accept a description over 300 characters", async () => {
   }
 });
 
+test("Story 38 saves a faculty classroom report in the existing barrier reports collection", async () => {
+  assert.equal(BarrierReport.modelName, "BarrierReport");
+  assert.equal(BarrierReport.collection.collectionName, "barrierreports");
+
+  const originalCreate = BarrierReport.create;
+  let saved;
+
+  try {
+    BarrierReport.create = async (input) => {
+      saved = input;
+      return { _id: "report-id", ...input };
+    };
+
+    const res = mockResponse();
+    await createBarrierReport(
+      {
+        body: {
+          type: "broken-elevator",
+          location: "  B230  ",
+          description: "  The elevator beside the classroom is out of service  "
+        }
+      },
+      res
+    );
+
+    assert.equal(res.statusCode, 201);
+    assert.equal(res.body.success, true);
+    assert.equal(res.body.message, "Barrier report saved for review");
+    assert.equal(saved.location, "B230");
+    assert.equal(saved.description, "The elevator beside the classroom is out of service");
+    assert.equal(saved.status, "Pending");
+    assert.equal(res.body.report.status, "Pending");
+  } finally {
+    BarrierReport.create = originalCreate;
+  }
+});
+
 test("Story 12 does not accept a report without a barrier type", async () => {
   const res = mockResponse();
 
