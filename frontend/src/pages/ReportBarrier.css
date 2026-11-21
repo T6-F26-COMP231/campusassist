@@ -33,3 +33,6 @@
 .barrier__summary { align-self: stretch; text-align: left; }
 
 input[type='text'][aria-invalid='true'], textarea[aria-invalid='true'] { border-color: #c0392b; }
+
+.options--row { flex-direction: row; flex-wrap: wrap; }
+.options--row .option { flex: 1 1 150px; }

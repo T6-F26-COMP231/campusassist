@@ -8,8 +8,19 @@ export const BARRIER_TYPES = [
   { value: 'other', label: 'Other', hint: 'Describe the barrier below' },
 ];
 
+// Who is reporting. Faculty Staff report a barrier near their classroom.
+export const REPORTER_ROLES = [
+  { value: 'campus-user', label: 'Campus User', hint: 'A barrier you found on campus' },
+  { value: 'faculty-staff', label: 'Faculty Staff', hint: 'A barrier near your classroom' },
+];
+
 export const MISSING_LOCATION_MESSAGE =
   'A report without a location is not accepted. Tell us where the barrier is.';
+export const MISSING_CLASSROOM_MESSAGE =
+  'A report without a classroom is not accepted. Tell us which classroom the barrier is near.';
+export const MISSING_ROLE_MESSAGE = 'Choose who is reporting.';
+export const LOCATION_LIMIT = 120;
+export const LOCATION_TOO_LONG_MESSAGE = `Keep the location to ${LOCATION_LIMIT} characters or fewer.`;
 export const MISSING_TYPE_MESSAGE = 'Choose a barrier type.';
 export const DESCRIPTION_LIMIT = 300;
 export const PHOTO_LIMIT_MB = 5;
@@ -19,14 +30,20 @@ export const PHOTO_NOT_IMAGE_MESSAGE = 'Choose an image file for the photo.';
 const clean = (value) => (typeof value === 'string' ? value.trim() : '');
 
 // Checks the form. `errors` has a message for each field that needs fixing.
-export function validateBarrierReport({ type, location, description } = {}) {
+export function validateBarrierReport({ role = 'campus-user', type, location, description } = {}) {
   const errors = {};
+
+  if (!REPORTER_ROLES.some((entry) => entry.value === role)) {
+    errors.role = MISSING_ROLE_MESSAGE;
+  }
 
   if (!BARRIER_TYPES.some((entry) => entry.value === type)) {
     errors.type = MISSING_TYPE_MESSAGE;
   }
   if (clean(location) === '') {
-    errors.location = MISSING_LOCATION_MESSAGE;
+    errors.location = role === 'faculty-staff' ? MISSING_CLASSROOM_MESSAGE : MISSING_LOCATION_MESSAGE;
+  } else if (clean(location).length > LOCATION_LIMIT) {
+    errors.location = LOCATION_TOO_LONG_MESSAGE;
   }
   if (clean(description).length > DESCRIPTION_LIMIT) {
     errors.description = `Keep the description to ${DESCRIPTION_LIMIT} characters or fewer.`;
@@ -54,10 +71,13 @@ export function buildBarrierReport(fields, existingCount = 0, photoName = '') {
   if (!check.ok) return check;
 
   const type = BARRIER_TYPES.find((entry) => entry.value === fields.type);
+  const role = REPORTER_ROLES.find((entry) => entry.value === (fields.role ?? 'campus-user'));
   return {
     ok: true,
     report: {
       id: reportNumber(existingCount),
+      role: role.value,
+      roleLabel: role.label,
       type: type.value,
       typeLabel: type.label,
       location: clean(fields.location),
