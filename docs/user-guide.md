@@ -185,11 +185,15 @@ Approving a barrier report causes walking routes to avoid the approved barrier.
 
 An administrator rejects a barrier report that is false or a mistake, so the barriers on record stay accurate. A rejected report leaves **Pending** and appears on **Closed**.
 
+The report title below is an example. Your report will show its actual saved ID.
+
 1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
 2. On the **Pending** tab, choose **View Details** on the report.
 3. Choose **Reject**. The screen asks: "Reject Report 001 · Blocked Entrance?" It explains: "Use this for a report that is false or a mistake. It moves to Closed and no longer counts as pending. You cannot undo this here."
 4. Choose **Yes, reject**. To keep the report as it was, choose **Cancel**.
 5. The screen shows "Report 001 · Blocked Entrance was rejected. It is now listed under Closed." The **Status** is **Rejected** and **Approve**, **Reject**, and **Mark as Resolved** are gone. Choose **Back to reports**: the **Pending** count goes down by one, the **Closed** count goes up by one, and the badge on **Admin Home** counts one fewer report.
+
+Rejecting a pending report does not add it to the approved barriers that walking routes avoid.
 
 ### Examples
 
@@ -199,7 +203,7 @@ An administrator rejects a barrier report that is false or a mistake, so the bar
 - **A report that is not pending.** A report that is already approved, rejected, or resolved has no **Reject** button, so it cannot be rejected twice. An approved report is not rejected here. It can be marked resolved.
 - **A rejected report is final.** It has no **Approve**, **Reject**, or **Mark as Resolved** button.
 
-Routes are not changed by rejecting a report. The app does not block a route because of a barrier report, so a rejected report never affected a route.
+Routes are not changed by rejecting a report. An approved barrier is kept off the walking route. A rejected report does not change the route.
 
 
 ## Mark a barrier as resolved
