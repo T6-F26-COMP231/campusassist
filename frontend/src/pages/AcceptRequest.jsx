@@ -12,6 +12,7 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [status, setStatus] = useState('Pending');
 
   const handleAccept = async () => {
     if (!request.id) return;
@@ -23,6 +24,7 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
     if (result.ok) {
       setAccepted(true);
       setMessage(result.message);
+      setStatus(result.request?.status || 'Accepted');
     } else {
       setError(result.error);
     }
@@ -50,7 +52,7 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
           )}
           <div>
             <dt>Status</dt>
-            <dd>{accepted ? 'Accepted' : 'Pending'}</dd>
+            <dd>{status}</dd>
           </div>
         </dl>
         <FloorPlan location={request.location} />
@@ -83,6 +85,11 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
           <div className="notice notice--error" role="alert">
             {error}
           </div>
+        )}
+        {(accepted || error) && (
+          <button type="button" className="btn btn--secondary" onClick={onBack}>
+            Back to open requests
+          </button>
         )}
       </main>
     </div>

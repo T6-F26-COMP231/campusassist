@@ -89,3 +89,6 @@
 .status-message + .btn {
   width: 100%;
 }
+
+.status-refresh { display: flex; flex-direction: column; gap: 8px; }
+.status-refresh small { color: var(--charcoal-soft); }

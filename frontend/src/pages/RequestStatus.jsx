@@ -1,9 +1,10 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
+import { fetchRequestStatus, isFinalStatus } from '../lib/helpRequests';
 import './RequestStatus.css';
 
-const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const POLL_MS = 10000;
 
 const steps = [
   'Request Submitted',
@@ -24,51 +25,49 @@ export default function RequestStatus({ onBack, requestId }) {
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [checkedAt, setCheckedAt] = useState(null);
+  const refreshNow = useRef(() => {});
 
-  // Retrieve request details from MongoDB through Express
+  // Retrieve request details from MongoDB through Express, and check again every few
+  // seconds so the user sees when a helper accepts without reloading the page.
   useEffect(() => {
     let active = true;
+    let timer = null;
 
-    async function loadStatus() {
-      setLoading(true);
-      setError('');
-      setRequest(null);
-
-      if (!requestId) {
-        setError('No request selected.');
-        setLoading(false);
-        return;
+    async function loadStatus(silent) {
+      if (!silent) {
+        setLoading(true);
+        setError('');
+        setRequest(null);
       }
 
-      try {
-        const response = await fetch(
-          `${API_BASE}/api/help-requests/${encodeURIComponent(requestId)}/status`
-        );
+      const result = await fetchRequestStatus(requestId);
+      if (!active) return;
 
-        if (!response.ok) {
-          throw new Error('Unable to load request status.');
+      if (result.ok) {
+        setRequest(result.request);
+        setError('');
+        setCheckedAt(new Date());
+        if (isFinalStatus(result.request.status) && timer) {
+          clearInterval(timer);
+          timer = null;
         }
-
-        const data = await response.json();
-
-        if (active) {
-          setRequest(data.request);
-        }
-      } catch (err) {
-        if (active) {
-          setError(err.message);
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
+      } else if (!silent) {
+        setError(result.error);
       }
+      // A failed check in the background keeps showing the last known status.
+      setLoading(false);
     }
 
-    loadStatus();
+    loadStatus(false);
+    if (requestId) {
+      timer = setInterval(() => loadStatus(true), POLL_MS);
+    }
+    refreshNow.current = () => loadStatus(true);
 
     return () => {
       active = false;
+      if (timer) clearInterval(timer);
     };
   }, [requestId]);
 
@@ -190,6 +189,22 @@ export default function RequestStatus({ onBack, requestId }) {
                   'Status information unavailable.'}
               </p>
             </section>
+
+            {!isFinalStatus(currentStatus) && (
+              <div className="status-refresh">
+                <small>
+                  Checks for updates every few seconds
+                  {checkedAt && ` \u00b7 last checked ${checkedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' })}`}
+                </small>
+                <button
+                  type="button"
+                  className="btn btn--secondary"
+                  onClick={() => refreshNow.current()}
+                >
+                  Check now
+                </button>
+              </div>
+            )}
           </>
         )}
 

@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  NO_HELPER_MESSAGE,
   acceptHelpRequest,
+  fetchRequestStatus,
+  isFinalStatus,
   createHelpStore,
   fetchPendingRequests,
   openHelpRequests,
@@ -89,4 +92,62 @@ test('accept reports an unreachable server', async () => {
   const result = await acceptHelpRequest('abc123', 'helper1');
   assert.equal(result.ok, false);
   assert.equal(result.error, 'Could not reach the server. Please try again.');
+});
+
+test('accept without a helper account makes no request and says why', async () => {
+  let called = false;
+  globalThis.fetch = async () => {
+    called = true;
+    return { ok: true, json: async () => ({}) };
+  };
+  for (const helperId of [undefined, '']) {
+    const result = await acceptHelpRequest('abc123', helperId);
+    assert.equal(result.ok, false);
+    assert.equal(result.error, NO_HELPER_MESSAGE);
+  }
+  assert.equal(called, false);
+});
+
+test('accept success returns the saved request with its Accepted status', async () => {
+  globalThis.fetch = async () => ({
+    ok: true,
+    json: async () => ({ message: 'Help request accepted successfully', request: { _id: 'abc123', status: 'Accepted' } }),
+  });
+  const result = await acceptHelpRequest('abc123', 'helper1');
+  assert.equal(result.request.status, 'Accepted');
+});
+
+test('the user status check asks for the status of their own request', async () => {
+  let url;
+  globalThis.fetch = async (u) => {
+    url = u;
+    return { ok: true, json: async () => ({ request: { _id: 'abc123', status: 'Accepted', helperId: 'helper1' } }) };
+  };
+  const result = await fetchRequestStatus('abc123');
+  assert.match(url, /\/api\/help-requests\/abc123\/status$/);
+  assert.equal(result.ok, true);
+  assert.equal(result.request.status, 'Accepted');
+});
+
+test('the user status check reports a missing request, a server error and no connection', async () => {
+  assert.equal((await fetchRequestStatus('')).error, 'No request selected.');
+
+  globalThis.fetch = async () => ({ ok: false, json: async () => ({ message: 'Not found' }) });
+  assert.equal((await fetchRequestStatus('abc123')).error, 'Unable to load request status.');
+
+  globalThis.fetch = async () => ({ ok: true, json: async () => '<html>' });
+  assert.equal((await fetchRequestStatus('abc123')).ok, false);
+
+  globalThis.fetch = async () => {
+    throw new Error('network down');
+  };
+  assert.equal((await fetchRequestStatus('abc123')).error, 'Could not reach the server. Please try again.');
+});
+
+test('a request stops changing once it is completed or cancelled', () => {
+  assert.equal(isFinalStatus('Completed'), true);
+  assert.equal(isFinalStatus('Cancelled'), true);
+  for (const status of ['Pending', 'Accepted', 'On the Way']) {
+    assert.equal(isFinalStatus(status), false);
+  }
 });
