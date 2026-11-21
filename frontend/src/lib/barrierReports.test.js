@@ -11,6 +11,7 @@ import {
   pendingCount,
   reportTitle,
   reportsForTab,
+  resolveBarrierReport,
   resolveReport,
   tabCounts,
 } from './barrierReports.js';
@@ -144,4 +145,67 @@ test('a resolved barrier cannot be resolved twice', () => {
 
   assert.equal(twice.ok, false);
   assert.equal(twice.error, ALREADY_RESOLVED_MESSAGE);
+});
+
+test('Mark as Resolved calls the backend resolve route', async () => {
+  const originalFetch = globalThis.fetch;
+  let call;
+
+  try {
+    globalThis.fetch = async (url, options) => {
+      call = { url, method: options.method };
+      return {
+        ok: true,
+        json: async () => ({
+          success: true,
+          message: 'Barrier report marked resolved',
+          report: { _id: '507f1f77bcf86cd799439011', status: 'Resolved' },
+        }),
+      };
+    };
+
+    const result = await resolveBarrierReport('507f1f77bcf86cd799439011');
+
+    assert.equal(call.method, 'PATCH');
+    assert.match(call.url, /\/api\/barrier-reports\/507f1f77bcf86cd799439011\/resolve$/);
+    assert.equal(result.ok, true);
+    assert.equal(result.report.status, 'Resolved');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('Mark as Resolved shows the server failure on its own', async () => {
+  const originalFetch = globalThis.fetch;
+
+  try {
+    globalThis.fetch = async () => ({
+      ok: false,
+      json: async () => ({ success: false, message: RESOLVE_BLOCKED_MESSAGE }),
+    });
+
+    const result = await resolveBarrierReport('507f1f77bcf86cd799439011');
+
+    assert.equal(result.ok, false);
+    assert.equal(result.error, RESOLVE_BLOCKED_MESSAGE);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('Mark as Resolved says when the server cannot be reached', async () => {
+  const originalFetch = globalThis.fetch;
+
+  try {
+    globalThis.fetch = async () => {
+      throw new Error('network down');
+    };
+
+    const result = await resolveBarrierReport('507f1f77bcf86cd799439011');
+
+    assert.equal(result.ok, false);
+    assert.equal(result.error, 'Could not reach the server. Please try again.');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

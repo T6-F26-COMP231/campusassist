@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import BarrierReport from "../models/BarrierReport.js";
 
 const BARRIER_TYPES = [
@@ -63,6 +64,63 @@ export async function createBarrierReport(req, res) {
     return res.status(500).json({
       success: false,
       message: "Unable to save the barrier report"
+    });
+  }
+}
+
+const NOT_FOUND_MESSAGE = "That report was not found.";
+const ONLY_APPROVED_MESSAGE = "Only approved barriers can be marked resolved.";
+const ALREADY_RESOLVED_MESSAGE = "This barrier is already resolved.";
+
+// Story 27: Mark one approved barrier resolved in the existing collection.
+export async function resolveBarrierReport(req, res) {
+  try {
+    const id = req.params.id;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(404).json({
+        success: false,
+        message: NOT_FOUND_MESSAGE
+      });
+    }
+
+    const report = await BarrierReport.findById(id);
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: NOT_FOUND_MESSAGE
+      });
+    }
+
+    if (report.status === "Resolved") {
+      return res.status(400).json({
+        success: false,
+        message: ALREADY_RESOLVED_MESSAGE
+      });
+    }
+
+    if (report.status !== "Approved") {
+      return res.status(400).json({
+        success: false,
+        message: ONLY_APPROVED_MESSAGE
+      });
+    }
+
+    report.status = "Resolved";
+    await report.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Barrier report marked resolved",
+      report
+    });
+  } catch (error) {
+    console.error("Error resolving barrier report:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to mark the barrier resolved"
     });
   }
 }

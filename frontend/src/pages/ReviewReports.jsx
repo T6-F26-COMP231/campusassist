@@ -16,6 +16,7 @@ export default function ReviewReports({ onBack, reports, onResolve }) {
   const [tab, setTab] = useState('pending');
   const [openId, setOpenId] = useState(null);
   const [confirming, setConfirming] = useState(false);
+  const [resolving, setResolving] = useState(false);
   const [outcome, setOutcome] = useState(null);
   const tabRefs = useRef({});
 
@@ -36,11 +37,14 @@ export default function ReviewReports({ onBack, reports, onResolve }) {
   const closeDetails = () => {
     setOpenId(null);
     setConfirming(false);
+    setResolving(false);
     setOutcome(null);
   };
 
-  const resolve = () => {
-    const result = onResolve?.(open.id);
+  const resolve = async () => {
+    setResolving(true);
+    const result = await onResolve?.(open.id);
+    setResolving(false);
     setConfirming(false);
     setOutcome(result ?? { ok: false, error: 'This barrier could not be marked resolved.' });
   };
@@ -103,10 +107,10 @@ export default function ReviewReports({ onBack, reports, onResolve }) {
                 cannot undo this here.
               </p>
               <div className="resolve__actions">
-                <button type="button" className="btn btn--primary" onClick={resolve} autoFocus>
+                <button type="button" className="btn btn--primary" onClick={resolve} disabled={resolving} autoFocus>
                   Yes, mark resolved
                 </button>
-                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(false)}>
+                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(false)} disabled={resolving}>
                   Cancel
                 </button>
               </div>
