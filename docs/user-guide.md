@@ -58,19 +58,23 @@ The report is not accepted. The form stays open and shows: "A report without a l
 An administrator uses this list so a barrier report is not missed. Only reports that are still waiting for review appear on the **Pending** tab. Only reports sent from the app are listed. There are no sample reports.
 
 1. Open CampusAssist. On **Home**, choose **Administrator**.
-2. On **Admin Home**, choose **Review Barrier Reports**. The row says how many reports are pending, such as "1 report is pending" or "2 reports are pending". A red badge shows that count when it is above zero. When none are waiting, the row says "No reports are waiting" and there is no badge.
-3. **Barrier Reports** opens with the **Pending** tab selected. The tabs show a count: **Pending (2)**, **Approved (0)**, **Closed (0)**.
-4. The Pending tab says how many reports are waiting, such as "2 reports are waiting for review, oldest first". It lists each waiting report with its title, **Location**, and **Description**, for example **Report 001 · Broken Elevator**. A report with no description says "No description".
-5. Choose **View Details** to open one report. It shows **Status**, **Type**, **Location**, **Details**, and, when there is one, **Reported by** and **Photo**. Choose **Back to reports** to return to the list.
+2. **Admin Home** says "Check the reports that need your review." Choose **Review Barrier Reports**.
+3. When no report is waiting, the row says "No reports are waiting" and there is no badge. When reports are waiting, the row says "1 report is pending" or "2 reports are pending", and a badge shows that count.
+4. **Barrier Reports** opens with the **Pending** tab selected. The tabs show a count, such as **Pending (0)**, **Approved (0)**, and **Closed (0)**.
+5. When the **Pending** tab has no reports, it says "No reports are waiting."
+6. Choose **View Details** to open one report. It shows **Status**, **Type**, **Location**, and **Details**. **Details** says "No description" when the report has none. **Reported by** and **Photo** appear when the report has them. Choose **Back to reports** to return to the list.
 
-Reports are listed in the order they arrived, so the report that has waited longest is first. Approved reports are on the **Approved** tab. Rejected or resolved reports are on the **Closed** tab, so they are not in Pending. The screen notes: "Reports sent from the app appear here until the app is reloaded."
+A submitted report appears in **Pending** with **Status** **Pending**. The list shows its title, **Location**, and **Description**. One waiting report makes the tab say "1 report is waiting for review, oldest first". The oldest waiting report stays first.
+
+An approved report leaves **Pending** and appears on **Approved**. A rejected report leaves **Pending** and appears on **Closed**. Neither one is counted in the Pending badge. The screen says "Reports sent from the app appear here until the app is reloaded."
 
 ### Examples
 
 - **No reports sent yet.** Open **Review Barrier Reports**. The row says "No reports are waiting" with no badge. The **Pending** tab says "No reports are waiting." and shows **Pending (0)**.
-- **A Campus User sends a report.** On **Home**, choose **Report Barrier**, choose **Broken Elevator**, enter the location `Near room B230, Block B`, and choose **Submit for review**. The app shows **Report sent**: "Your barrier report was saved successfully and is Pending review. An administrator will review it before any routes change." Go to **Administrator**, then **Review Barrier Reports**. The row says "1 report is pending" with a badge of 1. The Pending tab lists **Report 001 · Broken Elevator**, Location: Near room B230, Block B.
+- **A Campus User sends a report.** On **Home**, choose **Report Barrier**, choose **Broken Elevator**, enter the location `Near room B230, Block B`, and choose **Submit for review**. The app shows **Report sent**: "Your barrier report was saved successfully and is Pending review. An administrator will review it before any routes change." Go to **Administrator**, then **Review Barrier Reports**. The row says "1 report is pending" with a badge of 1. The **Pending** tab says "1 report is waiting for review, oldest first" and lists **Report 001 · Broken Elevator**, Location: Near room B230, Block B. **View Details** shows **Status** **Pending**.
 - **Two reports wait.** After a second report is sent, the badge shows 2 and the Pending tab says "2 reports are waiting for review, oldest first". **Report 001** is listed first, then **Report 002**.
-- **A report that is not pending.** A report that is approved, rejected, or resolved is not in the Pending list and does not count in the badge. It appears under **Approved** or **Closed**.
+- **An approved report leaves Pending.** It is no longer in the **Pending** list or the badge. It appears on **Approved**.
+- **A rejected report leaves Pending.** It is no longer in the **Pending** list or the badge. It appears on **Closed**.
 
 
 ## Mark a barrier as resolved
