@@ -11,6 +11,8 @@ import { routeGroups } from '../lib/routes';
 import './RequestHelp.css';
 import './ReportBarrier.css';
 
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
 // Names of campus places, offered as suggestions while typing the location.
 const PLACE_SUGGESTIONS = routeGroups().flatMap((group) =>
   group.places.map(({ name, floor }) => `${name} (Floor ${floor})`),
@@ -25,6 +27,8 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
   const [photoError, setPhotoError] = useState('');
   const [errors, setErrors] = useState({});
   const [sent, setSent] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const summary = useRef(null);
   const faculty = role === 'faculty-staff';
   const fileInput = useRef(null);
@@ -60,18 +64,71 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
     if (fileInput.current) fileInput.current.value = '';
   };
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
-    const result = buildBarrierReport({ role, type, location, description }, reportCount, photo?.name ?? '');
+
+  if (submitting) return;
+
+  const result = buildBarrierReport(
+    { role, type, location, description },
+    reportCount,
+    photo?.name ?? ''
+  );
+
     if (!result.ok) {
       setErrors(result.errors);
+      setSubmitError('');
       // Move to the problem list so a screen reader announces it.
       setTimeout(() => summary.current?.focus(), 0);
       return;
     }
+
     setErrors({});
-    onReported?.(result.report);
-    setSent(result.report);
+    setSubmitError('');
+    setSubmitting(true);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/barrier-reports`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          type,
+          location: location.trim(),
+          description: description.trim(),
+          photoName: photo?.name ?? ''
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success || !data.report?._id) {
+        throw new Error(
+          data.message || 'Unable to submit the barrier report.'
+        );
+      }
+
+      // The backend has successfully saved the report.
+      const savedReport = {
+        ...result.report,
+        id: String(data.report._id),
+        status: data.report.status,
+        location: data.report.location,
+        description: data.report.description,
+        photoName: data.report.photoName
+      };
+
+      setSent(savedReport);
+      onReported?.(savedReport);
+
+    } catch (err) {
+      setSubmitError(
+        err.message || 'Could not connect to the server. Please try again.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const reportAnother = () => {
@@ -81,6 +138,7 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
     setDescription('');
     removePhoto();
     setSent(null);
+    setSubmitError('');
   };
 
   if (sent) {
@@ -93,8 +151,9 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
           </div>
           <h2>Report sent</h2>
           <p>
-            Report <strong>{sent.id}</strong> was sent for review. An administrator reviews it before
-            any routes change.
+            Your barrier report was saved successfully and is
+            <strong> Pending review</strong>. An administrator will
+            review it before any routes change.
           </p>
           <dl className="request-details barrier__summary">
             <div><dt>Reported by</dt><dd>{sent.roleLabel}</dd></div>
@@ -260,7 +319,19 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
           )}
         </div>
 
-        <button type="submit" className="btn btn--primary">Submit for review</button>
+        {submitError && (
+          <div className="notice notice--error" role="alert">
+            {submitError}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className="btn btn--primary"
+          disabled={submitting}
+        >
+          {submitting ? 'Submitting...' : 'Submit for review'}
+        </button>
       </form>
     </div>
   );
