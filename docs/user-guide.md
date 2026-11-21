@@ -149,3 +149,31 @@ Choose different locations or seek assistance.
 CampusAssist remembers your Step-free route setting on your device when browser storage is available. You can turn the option on or off at any time.
 
 **Note:** Step-free routing avoids stairs recorded in the campus routing data. It does not guarantee that every corridor, elevator, doorway, or other part of the route is currently accessible. Actual conditions may change because of maintenance, construction, or temporary barriers.
+
+## Search for a location by name
+
+A Campus User can search for a named place and see its location.
+
+1. On **Home**, choose **Search Location**.
+2. In **Location name**, enter a place name, such as **Bookstore**.
+3. Choose **Search** or press **Enter**.
+4. Review the matching results. Each result shows the place name and its location.
+5. Change the name and search again to find another place.
+
+Search ignores capital letters and accepts part of a name.
+
+### Search examples
+
+- Search for **Bookstore**. The result shows **Bookstore** and **Second floor**.
+- Search for **bookstore**. The same result appears.
+- Search for **Student**. The results include **Student HUB** on the **Second floor** and **Student Centre** at **Progress Campus**.
+
+### If the search is empty
+
+An empty search or one containing only spaces shows: "Enter a location name to search." Enter a place name and choose **Search** again.
+
+### If no places match
+
+The page shows: "No results were found." Check the spelling or try part of a place name.
+
+The current search list contains **Bookstore**, **Student HUB**, **Student Centre**, and **Transit Hub**.
