@@ -140,7 +140,7 @@ Report titles use the saved report ID, for example **Report [report ID] · Broke
 
 Reports with status **Approved** appear on **Approved**. Reports with status **Rejected** or **Resolved** appear on **Closed**.
 
-The current app has no action for approving or rejecting a report. These tabs group reports according to their existing status.
+
 
 The screen says:
 
