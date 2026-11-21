@@ -77,12 +77,15 @@ export default function AccessibleFacilities({ onBack }) {
         </p>
 
         {results.length === 0 ? (
-          <div className="facilities__empty">
-            <p>No facilities match these filters.</p>
-            <button type="button" className="filters__clear" onClick={clear}>
-              Clear filters
-            </button>
-          </div>
+          <div className="facilities__empty" role="status" aria-live="polite">
+  <p>
+    No facilities match these filters. Try another facility type or campus
+    location, or clear the filters.
+  </p>
+  <button type="button" className="filters__clear" onClick={clear}>
+    Clear filters
+  </button>
+</div>
         ) : (
           <ul className="facility-list">
             {results.map((facility) => (
