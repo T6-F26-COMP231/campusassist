@@ -94,6 +94,7 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          role,
           type,
           location: location.trim(),
           description: description.trim(),
