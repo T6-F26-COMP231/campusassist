@@ -1,4 +1,5 @@
 import Location from "../models/Location.js";
+import BarrierReport from "../models/BarrierReport.js";
 
 // Story 6 - Issue #60
 // Calculate a walking route between two campus places.
@@ -166,14 +167,23 @@ export async function calculateRoute(from, to, { avoidStairs = false } = {}) {
     };
   }
 
+  // Story 25: only an approved barrier changes the walk. Pending, rejected, and resolved
+  // reports are not loaded, so they leave the route as it is.
+  const approved = await BarrierReport.find({ status: "Approved" })
+    .select("location")
+    .lean();
+  const blocked = engine.blockedPlaceIds(approved.map((report) => report.location));
+
   const result = engine.routeDirections(start.place.id, end.place.id, {
-    avoidStairs
+    avoidStairs,
+    blocked
   });
 
   if (!result.ok) {
+    const blockedWalk = /approved barrier/i.test(result.error);
     return {
       ok: false,
-      status: 404,
+      status: blockedWalk ? 409 : 404,
       error: String(result.error).replace(/\.$/, ""),
       ...(result.stairsRouteExists ? { stairsRouteExists: true } : {})
     };
