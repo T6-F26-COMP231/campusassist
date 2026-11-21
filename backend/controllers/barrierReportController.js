@@ -76,3 +76,30 @@ export async function createBarrierReport(req, res) {
     });
   }
 }
+
+// Story 25: the walking route reads approved barriers only.
+// A pending, rejected, or resolved report is not returned.
+export async function getApprovedBarrierReports(req, res) {
+  try {
+    const reports = await BarrierReport.find({ status: "Approved" })
+      .select("location status")
+      .sort({ createdAt: 1 })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      count: reports.length,
+      reports: reports.map((report) => ({
+        location: report.location,
+        status: "Approved"
+      }))
+    });
+  } catch (error) {
+    console.error("Error reading approved barrier reports:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load approved barrier reports"
+    });
+  }
+}

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import RouteMap from '../components/RouteMap';
-import { routeDirections, routeGroups } from '../lib/routes';
+import { approvedBarrierLocations, BARRIERS_UNAVAILABLE_MESSAGE } from '../lib/approvedBarriers';
+import { blockedPlaceIds, routeDirections, routeGroups } from '../lib/routes';
 import './RequestHelp.css';
 import './StepByStepDirections.css';
 
@@ -31,7 +32,17 @@ export default function StepByStepDirections({ onBack }) {
   const [stepFree, setStepFree] = useState(savedChoice);
   const [result, setResult] = useState(null);
 
-  const show = (avoidStairs) => setResult(routeDirections(from, to, { avoidStairs }));
+  const show = async (avoidStairs) => {
+    try {
+      const locations = await approvedBarrierLocations();
+      setResult(routeDirections(from, to, { avoidStairs, blocked: blockedPlaceIds(locations) }));
+    } catch {
+      setResult({
+        ok: false,
+        error: BARRIERS_UNAVAILABLE_MESSAGE,
+      });
+    }
+  };
 
   const choose = (value) => {
     setStepFree(value);
