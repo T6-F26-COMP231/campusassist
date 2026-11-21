@@ -11,6 +11,8 @@ import StepByStepDirections from './pages/StepByStepDirections';
 import RequestStatus from './pages/RequestStatus';
 import AccessibilityFeatures from './pages/AccessibilityFeatures';
 import ReportBarrier from './pages/ReportBarrier';
+import AdminHome from './pages/AdminHome';
+import ReviewReports from './pages/ReviewReports';
 import './pages/RequestHelp.css';
 
 function Home({
@@ -21,7 +23,8 @@ function Home({
   onSearch,
   onGetDirections,
   onFeatures,
-  onReportBarrier
+  onReportBarrier,
+  onAdmin
 }) {
   return (
     <div className="screen">
@@ -91,6 +94,13 @@ onClick={onSearch}
         >
           Report Barrier
         </button>
+
+        <button
+          className="btn btn--secondary"
+          onClick={onAdmin}
+        >
+          Administrator
+        </button>
       </main>
     </div>
   );
@@ -100,7 +110,8 @@ export default function App() {
   const [page, setPage] = useState('home');
   const [selected, setSelected] = useState(null);
 
-  // Story 12: Barrier reports sent during this visit. They set the next report number.
+  // Story 12 and 24: Barrier reports sent during this visit. They start as Pending and set the
+  // next report number.
   const [barrierReports, setBarrierReports] = useState([]);
 
   // Story 10: Remember the request submitted by the campus user.
@@ -153,6 +164,21 @@ export default function App() {
     return <AccessibleFacilities onBack={goHome} />;
   }
 
+
+  // Story 24: Administrator home and the list of barrier reports.
+  if (page === 'admin') {
+    return (
+      <AdminHome
+        onBack={goHome}
+        reports={barrierReports}
+        onReviewReports={() => setPage('reports')}
+      />
+    );
+  }
+
+  if (page === 'reports') {
+    return <ReviewReports onBack={() => setPage('admin')} reports={barrierReports} />;
+  }
 
   // Story 12: Report a barrier with its location.
   if (page === 'barrier') {
@@ -213,6 +239,7 @@ export default function App() {
 onSearch={() => setPage('search')}
       onGetDirections={() => setPage('route')}
       onReportBarrier={() => setPage('barrier')}
+      onAdmin={() => setPage('admin')}
 onFeatures={() => setPage('features')}
 
     />

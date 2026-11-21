@@ -83,6 +83,7 @@ test('a valid report is built with its number, type name and trimmed text', () =
   assert.equal(result.ok, true);
   assert.deepEqual(result.report, {
     id: 'R-003',
+    status: 'Pending',
     role: 'campus-user',
     roleLabel: 'Campus User',
     type: 'broken-elevator',
