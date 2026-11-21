@@ -162,6 +162,3 @@ export async function getApprovedBarrierReports(req, res) {
     });
   }
 }
-
-  }
-}
