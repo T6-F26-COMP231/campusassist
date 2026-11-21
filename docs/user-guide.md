@@ -77,6 +77,29 @@ An approved report leaves **Pending** and appears on **Approved**. A rejected re
 - **A rejected report leaves Pending.** It is no longer in the **Pending** list or the badge. It appears on **Closed**.
 
 
+## Approve a barrier report
+
+An administrator approves a barrier report after checking it. An approved report leaves **Pending** and appears on **Approved**.
+
+1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
+2. On the **Pending** tab, choose **View Details** on the report.
+3. Choose **Approve**. The screen asks: "Approve Report 001 · Broken Elevator?" It explains: "The report moves to Approved and no longer counts as pending. Only an approved barrier can be marked resolved later."
+4. Choose **Yes, approve**. To keep the report as it was, choose **Cancel**.
+5. The screen shows "Report 001 · Broken Elevator was approved. It is now listed under Approved." The **Status** is **Approved** and **Approve** is gone. Choose **Back to reports**: the **Pending** count goes down by one, the **Approved** count goes up by one, and the badge on **Admin Home** counts one fewer report.
+
+An approved report can then be marked resolved. See "Mark a barrier as resolved".
+
+### Examples
+
+- **A pending report is approved.** The **Pending** tab says "1 report is waiting for review, oldest first" and lists **Report 001 · Broken Elevator**. Choose **View Details**, **Approve**, then **Yes, approve**. The screen shows "Report 001 · Broken Elevator was approved. It is now listed under Approved." The tabs now read **Pending (0)**, **Approved (1)** and **Closed (0)**. The **Pending** tab says "No reports are waiting." and the badge on **Admin Home** is gone.
+- **Cancel.** On the question "Approve Report 001 · Broken Elevator?", choose **Cancel**. The **Status** is still **Pending** and **Approve** is still there.
+- **Two reports wait.** Approve **Report 001**. The **Pending** tab now says "1 report is waiting for review, oldest first" and lists **Report 002**. The badge shows 1.
+- **A report that is not pending.** A report that is already approved, rejected, or resolved has no **Approve** button, so it cannot be approved twice.
+- **Resolve it later.** After a report is approved, **Mark as Resolved** is available on it. Before that, it is not, and the screen says "Only approved barriers can be marked resolved."
+
+Routes are not changed by approving a report yet. The app does not block a route because of a barrier report.
+
+
 ## Mark a barrier as resolved
 
 An administrator marks a barrier as resolved once it is cleared, so it no longer counts as an open barrier. Only a barrier that has been approved can be marked resolved.
