@@ -13,7 +13,6 @@ import AccessibilityFeatures from './pages/AccessibilityFeatures';
 import ReportBarrier from './pages/ReportBarrier';
 import AdminHome from './pages/AdminHome';
 import ReviewReports from './pages/ReviewReports';
-import { DEMO_REPORTS } from './lib/barrierReports';
 import './pages/RequestHelp.css';
 
 function Home({
@@ -111,8 +110,9 @@ export default function App() {
   const [page, setPage] = useState('home');
   const [selected, setSelected] = useState(null);
 
-  // Story 12 and 24: Barrier reports. The sample reports come first, and new ones follow.
-  const [barrierReports, setBarrierReports] = useState(DEMO_REPORTS);
+  // Story 12 and 24: Barrier reports sent during this visit. They start as Pending and set the
+  // next report number.
+  const [barrierReports, setBarrierReports] = useState([]);
 
   // Story 10: Remember the request submitted by the campus user.
   const [submittedRequestId, setSubmittedRequestId] = useState(null);

@@ -5,29 +5,7 @@ export const REPORT_TABS = [
   { id: 'closed', label: 'Closed', statuses: ['Rejected', 'Resolved'] },
 ];
 
-// Reports shown before any are stored on the server (the same two the user guide describes).
-export const DEMO_REPORTS = [
-  {
-    id: 'R-001',
-    status: 'Pending',
-    type: 'broken-elevator',
-    typeLabel: 'Broken Elevator',
-    location: 'Block A, Elevator 2 near Cafeteria',
-    description: '',
-    photoName: '',
-  },
-  {
-    id: 'R-002',
-    status: 'Pending',
-    type: 'blocked-entrance',
-    typeLabel: 'Blocked Entrance',
-    location: 'Block A Main Entrance',
-    description: '',
-    photoName: '',
-  },
-];
-
-// "Report 003 · Broken Elevator"
+// "Report 001 · Broken Elevator"
 export function reportTitle(report) {
   const number = String(report.id ?? '').replace(/^R-/, '');
   return `Report ${number} · ${report.typeLabel}`;
@@ -48,7 +26,7 @@ export const pendingCount = (reports) => reportsForTab(reports, 'pending').lengt
 
 export function emptyMessage(tabId) {
   return {
-    pending: 'No pending reports. Every report has been reviewed.',
+    pending: 'No reports are waiting.',
     approved: 'No approved reports yet.',
     closed: 'No closed reports yet.',
   }[tabId];

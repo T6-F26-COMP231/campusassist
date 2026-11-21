@@ -35,6 +35,7 @@
 .reports__count { font-weight: 500; color: var(--charcoal-soft); }
 
 .reports__panel { display: flex; flex-direction: column; gap: 12px; }
+.reports__summary:empty { display: none; }
 .reports__summary { margin: 0; font-size: 0.9rem; color: var(--charcoal-soft); }
 
 /* Report cards */

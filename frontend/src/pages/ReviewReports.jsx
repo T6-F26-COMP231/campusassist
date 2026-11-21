@@ -80,9 +80,11 @@ export default function ReviewReports({ onBack, reports }) {
 
         <div id="reports-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="reports__panel">
           <p className="reports__summary" role="status" aria-live="polite">
-            {tab === 'pending' && counts.pending > 0
-              ? `${counts.pending} ${counts.pending === 1 ? 'report is' : 'reports are'} waiting for review, oldest first`
-              : `${shown.length} ${shown.length === 1 ? 'report' : 'reports'}`}
+            {shown.length === 0
+              ? ''
+              : tab === 'pending'
+                ? `${counts.pending} ${counts.pending === 1 ? 'report is' : 'reports are'} waiting for review, oldest first`
+                : `${shown.length} ${shown.length === 1 ? 'report' : 'reports'}`}
           </p>
 
           {shown.length === 0 ? (
@@ -109,8 +111,7 @@ export default function ReviewReports({ onBack, reports }) {
         </div>
 
         <p className="reports__footnote">
-          Reports 001 and 002 are sample data. Reports sent from the app appear here until the app is
-          reloaded.
+          Reports sent from the app appear here until the app is reloaded.
         </p>
       </main>
     </div>

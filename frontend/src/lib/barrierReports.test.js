@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildBarrierReport } from './barriers.js';
 import {
-  DEMO_REPORTS,
   REPORT_TABS,
   emptyMessage,
   pendingCount,
@@ -17,14 +16,11 @@ test('the review screen has Pending, Approved and Closed tabs', () => {
   assert.deepEqual(REPORT_TABS.map((tab) => tab.label), ['Pending', 'Approved', 'Closed']);
 });
 
-test('the sample data starts with Report 001 and Report 002, both pending', () => {
-  assert.deepEqual(DEMO_REPORTS.map((r) => reportTitle(r)), [
-    'Report 001 · Broken Elevator',
-    'Report 002 · Blocked Entrance',
-  ]);
-  assert.equal(pendingCount(DEMO_REPORTS), 2);
-  assert.equal(DEMO_REPORTS[0].location, 'Block A, Elevator 2 near Cafeteria');
-  assert.equal(DEMO_REPORTS[1].location, 'Block A Main Entrance');
+test('with no reports submitted, nothing is pending and the list says so', () => {
+  assert.equal(pendingCount([]), 0);
+  assert.deepEqual(reportsForTab([], 'pending'), []);
+  assert.deepEqual(tabCounts([]), { pending: 0, approved: 0, closed: 0 });
+  assert.equal(emptyMessage('pending'), 'No reports are waiting.');
 });
 
 test('the Pending tab lists only reports that are still waiting', () => {
@@ -61,17 +57,31 @@ test('reports keep the order they arrived in', () => {
   assert.deepEqual(reportsForTab(all, 'pending').map((r) => r.id), ['R-001', 'R-002', 'R-003']);
 });
 
-test('a report sent from the form joins the pending list as the next number', () => {
-  const sent = buildBarrierReport(
-    { type: 'broken-elevator', location: 'Near room B230, Block B' },
-    DEMO_REPORTS.length,
-  );
-  const all = [...DEMO_REPORTS, sent.report];
+test('a report submitted from the form appears in the Pending list and is counted', () => {
+  const sent = buildBarrierReport({ type: 'broken-elevator', location: 'Near room B230, Block B' }, 0);
+  const all = [sent.report];
 
-  assert.equal(sent.report.id, 'R-003');
+  assert.equal(sent.report.id, 'R-001');
   assert.equal(sent.report.status, 'Pending');
-  assert.equal(pendingCount(all), 3);
-  assert.equal(reportTitle(sent.report), 'Report 003 · Broken Elevator');
+  assert.deepEqual(reportsForTab(all, 'pending').map((r) => r.id), ['R-001']);
+  assert.equal(pendingCount(all), 1);
+  assert.equal(reportTitle(sent.report), 'Report 001 \u00b7 Broken Elevator');
+});
+
+test('the badge counts only submitted reports that are still pending', () => {
+  const first = buildBarrierReport({ type: 'broken-elevator', location: 'A Block' }, 0).report;
+  const second = buildBarrierReport({ type: 'blocked-ramp', location: 'B Block' }, 1).report;
+  const all = [first, { ...second, status: 'Approved' }];
+
+  assert.equal(second.id, 'R-002');
+  assert.equal(pendingCount(all), 1);
+  assert.deepEqual(tabCounts(all), { pending: 1, approved: 1, closed: 0 });
+});
+
+test('no report is listed that was not submitted', () => {
+  for (const tab of REPORT_TABS) {
+    assert.deepEqual(reportsForTab([], tab.id), []);
+  }
 });
 
 test('each tab has a message for when it is empty', () => {
