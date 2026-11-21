@@ -100,6 +100,27 @@ An approved report can then be marked resolved. See "Mark a barrier as resolved"
 Routes are not changed by approving a report yet. The app does not block a route because of a barrier report.
 
 
+## Reject a false barrier report
+
+An administrator rejects a barrier report that is false or a mistake, so the barriers on record stay accurate. A rejected report leaves **Pending** and appears on **Closed**.
+
+1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
+2. On the **Pending** tab, choose **View Details** on the report.
+3. Choose **Reject**. The screen asks: "Reject Report 001 · Blocked Entrance?" It explains: "Use this for a report that is false or a mistake. It moves to Closed and no longer counts as pending. You cannot undo this here."
+4. Choose **Yes, reject**. To keep the report as it was, choose **Cancel**.
+5. The screen shows "Report 001 · Blocked Entrance was rejected. It is now listed under Closed." The **Status** is **Rejected** and **Approve**, **Reject**, and **Mark as Resolved** are gone. Choose **Back to reports**: the **Pending** count goes down by one, the **Closed** count goes up by one, and the badge on **Admin Home** counts one fewer report.
+
+### Examples
+
+- **A false report is rejected.** Two reports wait, so the row on **Admin Home** says "2 reports are pending" with a badge of 2. Open **Report 001 · Blocked Entrance**, choose **Reject**, then **Yes, reject**. The screen shows "Report 001 · Blocked Entrance was rejected. It is now listed under Closed." The tabs now read **Pending (1)**, **Approved (0)** and **Closed (1)**. The **Pending** tab lists only **Report 002**, and the badge shows 1.
+- **Cancel.** On the question "Reject Report 001 · Blocked Entrance?", choose **Cancel**. The **Status** is still **Pending**, and **Approve** and **Reject** are still there.
+- **A rejected report stays out of Pending.** A rejected report is not in the **Pending** list and does not count in the badge. It is on **Closed**.
+- **A report that is not pending.** A report that is already approved, rejected, or resolved has no **Reject** button, so it cannot be rejected twice. An approved report is not rejected here. It can be marked resolved.
+- **A rejected report is final.** It has no **Approve**, **Reject**, or **Mark as Resolved** button.
+
+Routes are not changed by rejecting a report. The app does not block a route because of a barrier report, so a rejected report never affected a route.
+
+
 ## Mark a barrier as resolved
 
 An administrator marks a barrier as resolved once it is cleared, so it no longer counts as an open barrier. Only a barrier that has been approved can be marked resolved.

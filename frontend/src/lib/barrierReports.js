@@ -78,3 +78,25 @@ export function approveReport(reports, reportId) {
     reports: reports.map((entry) => (entry.id === reportId ? { ...entry, status: 'Approved' } : entry)),
   };
 }
+
+export const REJECT_BLOCKED_MESSAGE = 'Only pending reports can be rejected.';
+export const ALREADY_REJECTED_MESSAGE = 'This report is already rejected.';
+
+// Only a report that is still waiting for review can be rejected.
+export const canReject = (report) => Boolean(report) && (report.status ?? 'Pending') === 'Pending';
+
+// Marks one pending report as Rejected, for a report that is false or a mistake. Returns the new
+// list, or why it could not be done. The list that was passed in is not changed.
+export function rejectReport(reports, reportId) {
+  const report = reports.find((entry) => entry.id === reportId);
+
+  if (!report) return { ok: false, error: REPORT_NOT_FOUND_MESSAGE };
+  if (report.status === 'Rejected') return { ok: false, error: ALREADY_REJECTED_MESSAGE };
+  if (!canReject(report)) return { ok: false, error: REJECT_BLOCKED_MESSAGE };
+
+  return {
+    ok: true,
+    report: { ...report, status: 'Rejected' },
+    reports: reports.map((entry) => (entry.id === reportId ? { ...entry, status: 'Rejected' } : entry)),
+  };
+}
