@@ -13,6 +13,7 @@ import AccessibilityFeatures from './pages/AccessibilityFeatures';
 import ReportBarrier from './pages/ReportBarrier';
 import AdminHome from './pages/AdminHome';
 import ReviewReports from './pages/ReviewReports';
+import { resolveReport } from './lib/barrierReports';
 import './pages/RequestHelp.css';
 
 function Home({
@@ -177,7 +178,18 @@ export default function App() {
   }
 
   if (page === 'reports') {
-    return <ReviewReports onBack={() => setPage('admin')} reports={barrierReports} />;
+    return (
+      <ReviewReports
+        onBack={() => setPage('admin')}
+        reports={barrierReports}
+        onResolve={(reportId) => {
+          // Story 27: mark an approved barrier as resolved.
+          const result = resolveReport(barrierReports, reportId);
+          if (result.ok) setBarrierReports(result.reports);
+          return result;
+        }}
+      />
+    );
   }
 
   // Story 12: Report a barrier with its location.

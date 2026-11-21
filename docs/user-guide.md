@@ -73,6 +73,28 @@ Reports are listed in the order they arrived, so the report that has waited long
 - **A report that is not pending.** A report that is approved, rejected, or resolved is not in the Pending list and does not count in the badge. It appears under **Approved** or **Closed**.
 
 
+## Mark a barrier as resolved
+
+An administrator marks a barrier as resolved once it is cleared, so it no longer counts as an open barrier. Only a barrier that has been approved can be marked resolved.
+
+1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
+2. Choose **View Details** on the report. Reports that are waiting for approval are on **Pending**, and approved reports are on **Approved**.
+3. On an approved report, choose **Mark as Resolved**. The screen asks: "Mark Report 001 · Broken Elevator as resolved?" It explains: "The barrier is cleared. It moves to Closed and no longer counts as an open barrier. You cannot undo this here."
+4. Choose **Yes, mark resolved**. To keep the report as it was, choose **Cancel**.
+5. The screen shows "Report 001 · Broken Elevator was marked resolved. It is now listed under Closed." The **Status** is **Resolved** and **Mark as Resolved** is gone. Choose **Back to reports**: the count on **Approved** goes down by one and the count on **Closed** goes up by one.
+
+Approving a report is not in the app yet, so for now no report has the status Approved. When one does, it follows the steps above.
+
+### Examples
+
+- **An approved barrier is resolved.** Report 001 · Broken Elevator is on the **Approved** tab, so the tabs read **Pending (0)**, **Approved (1)** and **Closed (0)**. Choose **View Details**, **Mark as Resolved**, then **Yes, mark resolved**. The screen shows "Report 001 · Broken Elevator was marked resolved. It is now listed under Closed." The tabs now read **Pending (0)**, **Approved (0)** and **Closed (1)**, and Report 001 is on **Closed**.
+- **Cancel.** On the question "Mark Report 001 · Broken Elevator as resolved?", choose **Cancel**. The **Status** is still **Approved**, and **Mark as Resolved** is still there.
+- **A barrier that is not approved.** Open a report on the **Pending** tab with **View Details**. **Mark as Resolved** is not available, and the screen says "Only approved barriers can be marked resolved."
+- **A barrier that is already resolved.** A report on the **Closed** tab has no **Mark as Resolved** button, so it cannot be resolved twice.
+
+Routes are not changed by resolving a barrier yet. The app does not block a route because of a barrier report.
+
+
 ## See open help requests
 
 An Authorized Helper can see the open help requests for a campus block and choose one to take. Only requests that are still waiting for a helper appear in the list.

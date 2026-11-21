@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import {
   REPORT_TABS,
+  RESOLVE_BLOCKED_MESSAGE,
+  canResolve,
   emptyMessage,
   reportTitle,
   reportsForTab,
@@ -10,9 +12,11 @@ import {
 import './RequestHelp.css';
 import './ReviewReports.css';
 
-export default function ReviewReports({ onBack, reports }) {
+export default function ReviewReports({ onBack, reports, onResolve }) {
   const [tab, setTab] = useState('pending');
   const [openId, setOpenId] = useState(null);
+  const [confirming, setConfirming] = useState(false);
+  const [outcome, setOutcome] = useState(null);
   const tabRefs = useRef({});
 
   const counts = tabCounts(reports);
@@ -29,10 +33,22 @@ export default function ReviewReports({ onBack, reports }) {
     tabRefs.current[next.id]?.focus();
   };
 
+  const closeDetails = () => {
+    setOpenId(null);
+    setConfirming(false);
+    setOutcome(null);
+  };
+
+  const resolve = () => {
+    const result = onResolve?.(open.id);
+    setConfirming(false);
+    setOutcome(result ?? { ok: false, error: 'This barrier could not be marked resolved.' });
+  };
+
   if (open) {
     return (
       <div className="screen">
-        <AppHeader subtitle="Barrier Report" onBack={() => setOpenId(null)} />
+        <AppHeader subtitle="Barrier Report" onBack={closeDetails} />
         <main className="content">
           <h2 className="page-title">{reportTitle(open)}</h2>
           <dl className="request-details">
@@ -43,7 +59,61 @@ export default function ReviewReports({ onBack, reports }) {
             {open.roleLabel && <div><dt>Reported by</dt><dd>{open.roleLabel}</dd></div>}
             {open.photoName && <div><dt>Photo</dt><dd>{open.photoName}</dd></div>}
           </dl>
-          <button type="button" className="btn btn--secondary" onClick={() => setOpenId(null)}>
+
+          <div role="status" aria-live="polite">
+            {outcome?.ok && (
+              <div className="notice notice--success">
+                <span className="notice__icon" aria-hidden="true">&#10003;</span>
+                {reportTitle(open)} was marked resolved. It is now listed under Closed.
+              </div>
+            )}
+          </div>
+          {outcome && !outcome.ok && (
+            <div className="notice notice--error" role="alert">
+              <span className="notice__icon" aria-hidden="true">!</span>
+              {outcome.error}
+            </div>
+          )}
+
+          {open.status !== 'Resolved' && open.status !== 'Rejected' && !confirming && (
+            <>
+              <button
+                type="button"
+                className="btn btn--primary"
+                disabled={!canResolve(open)}
+                aria-describedby={canResolve(open) ? undefined : 'resolve-help'}
+                onClick={() => {
+                  setOutcome(null);
+                  setConfirming(true);
+                }}
+              >
+                Mark as Resolved
+              </button>
+              {!canResolve(open) && (
+                <p id="resolve-help" className="resolve__help">{RESOLVE_BLOCKED_MESSAGE}</p>
+              )}
+            </>
+          )}
+
+          {confirming && (
+            <section className="resolve__confirm" role="group" aria-labelledby="resolve-title">
+              <h3 id="resolve-title">Mark {reportTitle(open)} as resolved?</h3>
+              <p>
+                The barrier is cleared. It moves to Closed and no longer counts as an open barrier. You
+                cannot undo this here.
+              </p>
+              <div className="resolve__actions">
+                <button type="button" className="btn btn--primary" onClick={resolve} autoFocus>
+                  Yes, mark resolved
+                </button>
+                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(false)}>
+                  Cancel
+                </button>
+              </div>
+            </section>
+          )}
+
+          <button type="button" className="btn btn--secondary" onClick={closeDetails}>
             Back to reports
           </button>
         </main>
