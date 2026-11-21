@@ -59,7 +59,7 @@ Locations come from the Progress Campus map and floor plan.
 
 ## Report a barrier
 
-A Campus User or Faculty Staff member can report a barrier. The confirmation explains that an administrator will review it before any routes change. Barrier reports do not currently change routes automatically.
+A Campus User or Faculty Staff member can report a barrier. The confirmation explains that an administrator will review it before any routes change. A pending report does not change the walking route. After an administrator approves it, that barrier is kept off the walking route.
 
 1. On **Home**, choose **Report Barrier**.
 2. Under **Who is reporting?**, choose **Campus User** or **Faculty Staff**.
@@ -146,7 +146,7 @@ The screen says:
 
 "Reports sent from the app appear here until the app is reloaded."
 
-Reloading clears the current administrator list. This does not mean the submitted reports were deleted from the database; the current list does not reload them from the server.
+The Pending tab loads the waiting reports from the server. Reloading the app loads that list again.
 
 ### Examples
 
@@ -158,9 +158,7 @@ Reloading clears the current administrator list. This does not mean the submitte
 
 ## Mark a barrier as resolved
 
-Only a report with status **Approved** can be marked resolved.
-
-The current app does not provide an approval action, so a newly submitted pending report cannot reach this step through the current interface. The following steps apply when an approved report is available in the list.
+Only a report with status **Approved** can be marked resolved. Approve the report first, then follow these steps.
 
 1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
 2. Open **Approved** and choose **View Details** on the report.
@@ -171,7 +169,7 @@ The current app does not provide an approval action, so a newly submitted pendin
 7. After success, the screen says "Report [report ID] · Broken Elevator was marked resolved. It is now listed under Closed." using the selected report's title.
 8. **Status** shows **Resolved**, and **Mark as Resolved** is gone. Choose **Back to reports** to view the updated counts.
 
-Resolution currently changes the report in the current app visit. It is not saved back to the server.
+**Mark as Resolved** saves the report on the server. **Status** becomes **Resolved**, and the report is listed under **Closed**.
 
 ### Examples
 
@@ -181,7 +179,7 @@ Resolution currently changes the report in the current app visit. It is not save
 - **An already resolved barrier.** A resolved report has no **Mark as Resolved** button, so it cannot be resolved twice.
 - **Resolution fails.** An error message appears instead of the success message. Review the message and return to the report list if necessary.
 
-Routes are not changed by resolving a barrier. The app does not currently block a route because of a barrier report.
+An approved barrier is kept off the walking route. After it is marked resolved, later routes can use that place again.
 
 ## See open help requests
 
