@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import BarrierReport from "../models/BarrierReport.js";
 
 const BARRIER_TYPES = [
@@ -73,6 +74,63 @@ export async function createBarrierReport(req, res) {
     return res.status(500).json({
       success: false,
       message: "Unable to save the barrier report"
+    });
+  }
+}
+
+const NOT_FOUND_MESSAGE = "That report was not found.";
+const ONLY_PENDING_MESSAGE = "Only pending reports can be approved.";
+const ALREADY_APPROVED_MESSAGE = "This report is already approved.";
+
+// Story 25: Change one saved report from Pending to Approved.
+export async function approveBarrierReport(req, res) {
+  try {
+    const id = req.params.id;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(404).json({
+        success: false,
+        message: NOT_FOUND_MESSAGE
+      });
+    }
+
+    const report = await BarrierReport.findById(id);
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: NOT_FOUND_MESSAGE
+      });
+    }
+
+    if (report.status === "Approved") {
+      return res.status(400).json({
+        success: false,
+        message: ALREADY_APPROVED_MESSAGE
+      });
+    }
+
+    if (report.status !== "Pending") {
+      return res.status(400).json({
+        success: false,
+        message: ONLY_PENDING_MESSAGE
+      });
+    }
+
+    report.status = "Approved";
+    await report.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Barrier report approved",
+      report
+    });
+  } catch (error) {
+    console.error("Error approving barrier report:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to approve the barrier report"
     });
   }
 }
