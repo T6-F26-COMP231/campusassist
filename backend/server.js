@@ -1,6 +1,7 @@
 
 import helpRequestRoutes from "./routes/helpRequestRoutes.js";
 import accessibilityRoutes from "./routes/accessibilityRoutes.js";
+import barrierReportRoutes from "./routes/barrierReportRoutes.js";
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
@@ -42,6 +43,9 @@ app.use("/api/locations", locationRoutes);
 
 // Story 4: Destination accessibility details
 app.use("/api/locations", accessibilityRoutes);
+
+// Story 12: Submit a barrier report
+app.use("/api/barrier-reports", barrierReportRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
