@@ -4,6 +4,7 @@ import {
   REPORT_TABS,
   RESOLVE_BLOCKED_MESSAGE,
   canApprove,
+  canReject,
   canResolve,
   emptyMessage,
   reportTitle,
@@ -13,10 +14,10 @@ import {
 import './RequestHelp.css';
 import './ReviewReports.css';
 
-export default function ReviewReports({ onBack, reports, onApprove, onResolve }) {
+export default function ReviewReports({ onBack, reports, onApprove, onReject, onResolve }) {
   const [tab, setTab] = useState('pending');
   const [openId, setOpenId] = useState(null);
-  const [confirming, setConfirming] = useState(null); // 'approve', 'resolve' or null
+  const [confirming, setConfirming] = useState(null); // 'approve', 'reject', 'resolve' or null
   const [outcome, setOutcome] = useState(null);
   const tabRefs = useRef({});
 
@@ -46,6 +47,12 @@ export default function ReviewReports({ onBack, reports, onApprove, onResolve })
     setOutcome({ kind: 'approved', ...(result ?? { ok: false, error: 'This report could not be approved.' }) });
   };
 
+  const reject = () => {
+    const result = onReject?.(open.id);
+    setConfirming(null);
+    setOutcome({ kind: 'rejected', ...(result ?? { ok: false, error: 'This report could not be rejected.' }) });
+  };
+
   const resolve = () => {
     const result = onResolve?.(open.id);
     setConfirming(null);
@@ -71,9 +78,11 @@ export default function ReviewReports({ onBack, reports, onApprove, onResolve })
             {outcome?.ok && (
               <div className="notice notice--success">
                 <span className="notice__icon" aria-hidden="true">&#10003;</span>
-                {outcome.kind === 'approved'
-                  ? `${reportTitle(open)} was approved. It is now listed under Approved.`
-                  : `${reportTitle(open)} was marked resolved. It is now listed under Closed.`}
+                {{
+                  approved: `${reportTitle(open)} was approved. It is now listed under Approved.`,
+                  rejected: `${reportTitle(open)} was rejected. It is now listed under Closed.`,
+                  resolved: `${reportTitle(open)} was marked resolved. It is now listed under Closed.`,
+                }[outcome.kind]}
               </div>
             )}
           </div>
@@ -94,6 +103,19 @@ export default function ReviewReports({ onBack, reports, onApprove, onResolve })
               }}
             >
               Approve
+            </button>
+          )}
+
+          {canReject(open) && !confirming && (
+            <button
+              type="button"
+              className="btn btn--secondary"
+              onClick={() => {
+                setOutcome(null);
+                setConfirming('reject');
+              }}
+            >
+              Reject
             </button>
           )}
 
@@ -127,6 +149,24 @@ export default function ReviewReports({ onBack, reports, onApprove, onResolve })
               <div className="resolve__actions">
                 <button type="button" className="btn btn--primary" onClick={approve} autoFocus>
                   Yes, approve
+                </button>
+                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(null)}>
+                  Cancel
+                </button>
+              </div>
+            </section>
+          )}
+
+          {confirming === 'reject' && (
+            <section className="resolve__confirm" role="group" aria-labelledby="reject-title">
+              <h3 id="reject-title">Reject {reportTitle(open)}?</h3>
+              <p>
+                Use this for a report that is false or a mistake. It moves to Closed and no longer counts as
+                pending. You cannot undo this here.
+              </p>
+              <div className="resolve__actions">
+                <button type="button" className="btn btn--primary" onClick={reject} autoFocus>
+                  Yes, reject
                 </button>
                 <button type="button" className="btn btn--secondary" onClick={() => setConfirming(null)}>
                   Cancel
