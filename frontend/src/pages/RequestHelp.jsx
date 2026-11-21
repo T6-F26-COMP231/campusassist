@@ -2,6 +2,8 @@ import { useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import './RequestHelp.css';
 
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
 const ASSISTANCE_TYPES = [
   { value: 'standard', label: 'Standard Guiding', hint: 'A volunteer walks with you to your destination' },
   { value: 'mobility', label: 'Mobility Assistance', hint: 'Accessible routes and physical support' },
@@ -37,7 +39,7 @@ export default function RequestHelp({
       ASSISTANCE_TYPES.find((opt) => opt.value === type)?.label;
 
     try {
-      const response = await fetch('/api/help-requests', {
+      const response = await fetch(`${API_BASE}/api/help-requests`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
