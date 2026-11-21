@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import {
   REPORT_TABS,
@@ -11,15 +11,44 @@ import {
   reportsForTab,
   tabCounts,
 } from '../lib/barrierReports';
+import { fetchPendingReports } from '../lib/pendingReports';
 import './RequestHelp.css';
 import './ReviewReports.css';
 
-export default function ReviewReports({ onBack, reports, onApprove, onReject, onResolve }) {
+export default function ReviewReports({ onBack, reports, onLoaded, onApprove, onReject, onResolve }) {
   const [tab, setTab] = useState('pending');
   const [openId, setOpenId] = useState(null);
   const [confirming, setConfirming] = useState(null); // 'approve', 'reject', 'resolve' or null
   const [outcome, setOutcome] = useState(null);
   const tabRefs = useRef({});
+
+  // Story 24: load the pending reports from the backend each time this page opens.
+  // `onLoaded` must stay the same function between renders, or the reports load again.
+  const [load, setLoad] = useState({ loading: true, error: '', attempt: 0 });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchPendingReports().then((result) => {
+      if (cancelled) return;
+
+      if (result.ok) {
+        onLoaded?.(result.reports);
+        setLoad((current) => ({ ...current, loading: false, error: '' }));
+      } else {
+        setLoad((current) => ({ ...current, loading: false, error: result.error }));
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [load.attempt, onLoaded]);
+
+  const retry = () => setLoad((current) => ({ loading: true, error: '', attempt: current.attempt + 1 }));
+
+  // Only the Pending tab depends on the backend, so Approved and Closed stay usable.
+  const pendingUnavailable = tab === 'pending' && Boolean(load.loading || load.error);
 
   const counts = tabCounts(reports);
   const shown = reportsForTab(reports, tab);
@@ -230,14 +259,28 @@ export default function ReviewReports({ onBack, reports, onApprove, onReject, on
 
         <div id="reports-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="reports__panel">
           <p className="reports__summary" role="status" aria-live="polite">
-            {shown.length === 0
+            {shown.length === 0 || pendingUnavailable
               ? ''
               : tab === 'pending'
                 ? `${counts.pending} ${counts.pending === 1 ? 'report is' : 'reports are'} waiting for review, oldest first`
                 : `${shown.length} ${shown.length === 1 ? 'report' : 'reports'}`}
           </p>
 
-          {shown.length === 0 ? (
+          {pendingUnavailable && load.loading ? (
+            <div className="reports__empty" role="status">
+              <p>Loading barrier reports...</p>
+            </div>
+          ) : pendingUnavailable ? (
+            <>
+              <div className="notice notice--error" role="alert">
+                <span className="notice__icon" aria-hidden="true">!</span>
+                {load.error}
+              </div>
+              <button type="button" className="btn btn--secondary" onClick={retry}>
+                Try again
+              </button>
+            </>
+          ) : shown.length === 0 ? (
             <div className="reports__empty">
               <p>{emptyMessage(tab)}</p>
             </div>

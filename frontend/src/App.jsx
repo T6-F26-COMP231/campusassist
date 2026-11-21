@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import AppHeader from './components/AppHeader';
 import RequestHelp from './pages/RequestHelp';
 import AcceptRequest from './pages/AcceptRequest';
@@ -14,6 +14,7 @@ import ReportBarrier from './pages/ReportBarrier';
 import AdminHome from './pages/AdminHome';
 import ReviewReports from './pages/ReviewReports';
 import { approveReport, rejectReport, resolveReport } from './lib/barrierReports';
+import { mergePendingReports } from './lib/pendingReports';
 import './pages/RequestHelp.css';
 
 function Home({
@@ -69,16 +70,16 @@ function Home({
 
         <button
           className="btn btn--secondary"
-onClick={onSearch}
->
-  Search Location
-</button>
+          onClick={onSearch}
+        >
+          Search Location
+        </button>
 
-<button
-  className="btn btn--secondary"
-  onClick={onFeatures}
->
-  Check Destination Accessibility
+        <button
+          className="btn btn--secondary"
+          onClick={onFeatures}
+        >
+          Check Destination Accessibility
 
         </button>
 
@@ -114,6 +115,13 @@ export default function App() {
   // Story 12 and 24: Barrier reports sent during this visit. They start as Pending and set the
   // next report number.
   const [barrierReports, setBarrierReports] = useState([]);
+
+  // Story 24: add the pending reports loaded from the backend. A report already in the list keeps
+  // its own copy, so one approved or rejected here is not shown as pending again.
+  const addLoadedReports = useCallback(
+    (loaded) => setBarrierReports((list) => mergePendingReports(list, loaded)),
+    []
+  );
 
   // Story 10: Remember the request submitted by the campus user.
   const [submittedRequestId, setSubmittedRequestId] = useState(null);
@@ -182,6 +190,7 @@ export default function App() {
       <ReviewReports
         onBack={() => setPage('admin')}
         reports={barrierReports}
+        onLoaded={addLoadedReports}
         onApprove={(reportId) => {
           // Story 25: approve a pending barrier report.
           const result = approveReport(barrierReports, reportId);
@@ -260,11 +269,11 @@ export default function App() {
       onRequestStatus={() => setPage('status')}
       onFacilities={() => setPage('facilities')}
 
-onSearch={() => setPage('search')}
+      onSearch={() => setPage('search')}
       onGetDirections={() => setPage('route')}
       onReportBarrier={() => setPage('barrier')}
       onAdmin={() => setPage('admin')}
-onFeatures={() => setPage('features')}
+      onFeatures={() => setPage('features')}
 
     />
   );
