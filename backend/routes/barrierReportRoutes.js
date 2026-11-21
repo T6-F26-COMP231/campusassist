@@ -1,11 +1,19 @@
 import { Router } from "express";
 import { createBarrierReport, getApprovedBarrierReports } from "../controllers/barrierReportController.js";
-import { getPendingBarrierReports } from "../controllers/pendingBarrierReportController.js";
+import {
+  getPendingBarrierReports,
+  updateBarrierReportStatus
+} from "../controllers/barrierReportReviewController.js";
 
 const router = Router();
 
 // Story 12: Submit a barrier report.
 router.post("/", createBarrierReport);
+
+import {
+  getPendingBarrierReports,
+  updateBarrierReportStatus
+} from "../controllers/barrierReportReviewController.js";
 
 // Story 24: Retrieve pending barrier reports.
 router.get("/pending", getPendingBarrierReports);

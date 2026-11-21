@@ -1,5 +1,5 @@
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import AppHeader from './components/AppHeader';
 import RequestHelp from './pages/RequestHelp';
 import AcceptRequest from './pages/AcceptRequest';
@@ -14,6 +14,7 @@ import ReportBarrier from './pages/ReportBarrier';
 import AdminHome from './pages/AdminHome';
 import ReviewReports from './pages/ReviewReports';
 import { approveReport, rejectReport, resolveReport } from './lib/barrierReports';
+import { fetchPendingReports, mergePendingReports, saveReviewDecision } from './lib/barrierReportsApi';
 import { mergePendingReports } from './lib/pendingReports';
 import './pages/RequestHelp.css';
 
@@ -116,6 +117,16 @@ export default function App() {
   // next report number.
   const [barrierReports, setBarrierReports] = useState([]);
 
+  // Issue #82: load the reports still pending on the server whenever the review list is opened.
+  useEffect(() => {
+    if (page !== 'reports') return;
+    let active = true;
+    fetchPendingReports().then((result) => {
+      if (active && result.ok) setBarrierReports((list) => mergePendingReports(list, result.reports));
+    });
+    return () => { active = false; };
+  }, [page]);
+
   // Story 24: add the pending reports loaded from the backend. A report already in the list keeps
   // its own copy, so one approved or rejected here is not shown as pending again.
   const addLoadedReports = useCallback(
@@ -191,16 +202,23 @@ export default function App() {
         onBack={() => setPage('admin')}
         reports={barrierReports}
         onLoaded={addLoadedReports}
-        onApprove={(reportId) => {
+        onApprove={async (reportId) => {
           // Story 25: approve a pending barrier report.
           const result = approveReport(barrierReports, reportId);
-          if (result.ok) setBarrierReports(result.reports);
+          if (!result.ok) return result;
+          // Issue #82: only change the list after the server has saved the decision.
+          const saved = await saveReviewDecision(reportId, 'approved');
+          if (!saved.ok) return saved;
+          setBarrierReports((list) => approveReport(list, reportId).reports ?? list);
           return result;
         }}
-        onReject={(reportId) => {
+        onReject={async (reportId) => {
           // Story 26: reject a false barrier report.
           const result = rejectReport(barrierReports, reportId);
-          if (result.ok) setBarrierReports(result.reports);
+          if (!result.ok) return result;
+          const saved = await saveReviewDecision(reportId, 'rejected');
+          if (!saved.ok) return saved;
+          setBarrierReports((list) => rejectReport(list, reportId).reports ?? list);
           return result;
         }}
         onResolve={(reportId) => {
