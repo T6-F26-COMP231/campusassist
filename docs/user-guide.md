@@ -104,11 +104,15 @@ Routes are not changed by approving a report yet. The app does not block a route
 
 An administrator rejects a barrier report that is false or a mistake, so the barriers on record stay accurate. A rejected report leaves **Pending** and appears on **Closed**.
 
+The report title below is an example. Your report will show its actual saved ID.
+
 1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
 2. On the **Pending** tab, choose **View Details** on the report.
 3. Choose **Reject**. The screen asks: "Reject Report 001 · Blocked Entrance?" It explains: "Use this for a report that is false or a mistake. It moves to Closed and no longer counts as pending. You cannot undo this here."
 4. Choose **Yes, reject**. To keep the report as it was, choose **Cancel**.
 5. The screen shows "Report 001 · Blocked Entrance was rejected. It is now listed under Closed." The **Status** is **Rejected** and **Approve**, **Reject**, and **Mark as Resolved** are gone. Choose **Back to reports**: the **Pending** count goes down by one, the **Closed** count goes up by one, and the badge on **Admin Home** counts one fewer report.
+
+Rejecting a pending report does not add it to the approved barriers that walking routes avoid.
 
 ### Examples
 
