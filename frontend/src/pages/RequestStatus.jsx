@@ -26,6 +26,7 @@ export default function RequestStatus({ onBack, requestId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [checkedAt, setCheckedAt] = useState(null);
+  const [attempt, setAttempt] = useState(0);
   const refreshNow = useRef(() => {});
 
   // Retrieve request details from MongoDB through Express, and check again every few
@@ -69,9 +70,11 @@ export default function RequestStatus({ onBack, requestId }) {
       active = false;
       if (timer) clearInterval(timer);
     };
-  }, [requestId]);
+  }, [requestId, attempt]);
 
-  const currentStatus = request?.status || 'Pending';
+  // A missing or unrecognized status is shown as unavailable, not as Pending.
+  const currentStatus = request?.status;
+  const statusKnown = Object.hasOwn(statusMessages, currentStatus);
 
   const statusIndex = {
     Pending: 0,
@@ -96,12 +99,26 @@ export default function RequestStatus({ onBack, requestId }) {
           <p role="status">Loading request status...</p>
         )}
 
-        {!loading && error && (
-          <p role="alert">{error}</p>
+{!loading && error && (
+          <div className="notice notice--error" role="alert">
+            {error}
+          </div>
+        )}
+
+        {!loading && error && requestId && (
+          <button
+            type="button"
+            className="btn btn--secondary"
+            onClick={() => setAttempt((count) => count + 1)}
+          >
+            Try again
+          </button>
         )}
 
         {!loading && !error && !request && (
-          <p role="alert">Request not found.</p>
+          <div className="notice notice--error" role="alert">
+            Request not found.
+          </div>
         )}
 
         {!loading && !error && request && (
@@ -138,7 +155,7 @@ export default function RequestStatus({ onBack, requestId }) {
               <p className="status-message" role="status">
                 This request has been cancelled.
               </p>
-            ) : (
+              ) : statusKnown && (
               <ol className="status-timeline">
                 {steps.map((step, index) => (
                   <li
@@ -181,12 +198,13 @@ export default function RequestStatus({ onBack, requestId }) {
 
             <section className="status-message" role="status">
               <strong>
-                Current Status: {currentStatus}
+              Current Status: {statusKnown ? currentStatus : 'Unavailable'}
               </strong>
 
               <p>
-                {statusMessages[currentStatus] ||
-                  'Status information unavailable.'}
+                {statusKnown
+                  ? statusMessages[currentStatus]
+                  : 'Status information unavailable. Please check again shortly.'}
               </p>
             </section>
 
