@@ -203,7 +203,7 @@ Rejecting a pending report does not add it to the approved barriers that walking
 - **A report that is not pending.** A report that is already approved, rejected, or resolved has no **Reject** button, so it cannot be rejected twice. An approved report is not rejected here. It can be marked resolved.
 - **A rejected report is final.** It has no **Approve**, **Reject**, or **Mark as Resolved** button.
 
-Routes are not changed by rejecting a report. The app does not block a route because of a barrier report, so a rejected report never affected a route.
+Routes are not changed by rejecting a report. An approved barrier is kept off the walking route. A rejected report does not change the route.
 
 
 ## Mark a barrier as resolved
