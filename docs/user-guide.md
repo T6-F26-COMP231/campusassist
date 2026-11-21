@@ -202,28 +202,43 @@ Routes are not changed by rejecting a report. The app does not block a route bec
 
 ## Mark a barrier as resolved
 
-Only a report with status **Approved** can be marked resolved. Approve the report first, then follow these steps.
+An administrator can mark an approved barrier as resolved after the obstruction has been cleared.
+
+### Resolve an approved barrier
 
 1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
-2. Open **Approved** and choose **View Details** on the report.
-3. Choose **Mark as Resolved**.
-4. The screen asks "Mark Report [report ID] · Broken Elevator as resolved?" using the selected report's title.
-5. Read the explanation: "The barrier is cleared. It moves to Closed and no longer counts as an open barrier. You cannot undo this here."
-6. Choose **Yes, mark resolved**, or choose **Cancel** to leave the report unchanged.
-7. After success, the screen says "Report [report ID] · Broken Elevator was marked resolved. It is now listed under Closed." using the selected report's title.
-8. **Status** shows **Resolved**, and **Mark as Resolved** is gone. Choose **Back to reports** to view the updated counts.
+2. Open the **Approved** tab and choose **View Details** on the relevant report.
+3. Confirm that the location and details identify the barrier that has been cleared.
+4. Choose **Mark as Resolved**.
+5. The screen asks "Mark [report title] as resolved?" and explains: "The barrier is cleared. It moves to Closed and no longer counts as an open barrier. You cannot undo this here."
+6. Choose **Yes, mark resolved** to confirm, or **Cancel** to leave the report unchanged.
+7. After success, **Status** shows **Resolved**. The message says "[report title] was marked resolved. It is now listed under Closed."
+8. Choose **Back to reports**, then **Closed**, to find the resolved report. The Approved count decreases by one and the Closed count increases by one.
+
+The placeholder [report title] means the actual title displayed for your selected report.
 
 **Mark as Resolved** saves the report on the server. **Status** becomes **Resolved**, and the report is listed under **Closed**.
 
+An approved barrier is kept off the walking route. After it is marked resolved, later routes can use that place again.
+
+### If the report is still Pending
+
+Only approved barriers can be resolved. A pending report shows a disabled **Mark as Resolved** button and:
+
+"Only approved barriers can be marked resolved."
+
+If the report is valid, choose **Approve**, then **Yes, approve**. Once its status is **Approved**, it can be resolved after the barrier has been cleared.
+
+### If resolution fails
+
+The page displays an error instead of the success confirmation. Do not assume the barrier was marked resolved. Read the error and check its displayed **Status**.
+
 ### Examples
 
-- **An approved barrier is resolved.** With one approved report and no other reports, the tabs read **Pending (0)**, **Approved (1)**, and **Closed (0)**. Resolve that report. The tabs become **Pending (0)**, **Approved (0)**, and **Closed (1)**.
-- **Cancel.** On the confirmation question, choose **Cancel**. **Status** remains **Approved**, and **Mark as Resolved** remains available.
-- **A pending barrier.** Open a pending report. **Mark as Resolved** is disabled, and the screen says "Only approved barriers can be marked resolved."
-- **An already resolved barrier.** A resolved report has no **Mark as Resolved** button, so it cannot be resolved twice.
-- **Resolution fails.** An error message appears instead of the success message. Review the message and return to the report list if necessary.
-
-An approved barrier is kept off the walking route. After it is marked resolved, later routes can use that place again.
+- **Resolve an approved report.** Open an approved report and choose **Mark as Resolved**, then **Yes, mark resolved**. Its status becomes **Resolved**, and it appears under **Closed**.
+- **Cancel the confirmation.** Choose **Cancel**. The report stays **Approved** and can still be resolved later.
+- **Try a pending report.** **Mark as Resolved** is disabled, and the page explains that only approved barriers can be resolved.
+- **Open a resolved or rejected report.** The **Mark as Resolved** button is not shown.
 
 ## See open help requests
 
