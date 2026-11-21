@@ -78,6 +78,7 @@ export async function createBarrierReport(req, res) {
   }
 }
 
+
 const NOT_FOUND_MESSAGE = "That report was not found.";
 const ONLY_APPROVED_MESSAGE = "Only approved barriers can be marked resolved.";
 const ALREADY_RESOLVED_MESSAGE = "This barrier is already resolved.";
@@ -132,5 +133,35 @@ export async function resolveBarrierReport(req, res) {
       success: false,
       message: "Unable to mark the barrier resolved"
     });
+  }
+}
+
+// Story 25: The walking route reads approved barriers only.
+// Pending, rejected and resolved reports are excluded.
+export async function getApprovedBarrierReports(req, res) {
+  try {
+    const reports = await BarrierReport.find({ status: "Approved" })
+      .select("location status")
+      .sort({ createdAt: 1 })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      count: reports.length,
+      reports: reports.map((report) => ({
+        location: report.location,
+        status: "Approved"
+      }))
+    });
+  } catch (error) {
+    console.error("Error reading approved barrier reports:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load approved barrier reports"
+    });
+  }
+}
+
   }
 }

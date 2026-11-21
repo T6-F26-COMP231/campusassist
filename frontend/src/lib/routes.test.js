@@ -5,6 +5,9 @@ import { planLeg, planPageForRouteFloor } from './routeMap.js';
 import {
   NO_PATH_MESSAGE,
   NO_STEP_FREE_MESSAGE,
+  barrierPlaceMessage,
+  blockedPlaceIds,
+  placeIdForLocation,
   routeDirections,
   routeGroups,
   routePlaceCount,
@@ -185,6 +188,48 @@ test('with no walkable route at all the step-free message is not used', () => {
 
   assert.equal(result.ok, false);
   assert.equal(result.error, NO_PATH_MESSAGE);
+});
+
+test('an approved barrier at the destination is not walked into', () => {
+  const hub = find('Student Hub');
+  const open = routeDirections(find('Bookstore'), hub);
+  const blocked = routeDirections(find('Bookstore'), hub, { blocked: [hub] });
+
+  assert.equal(open.ok, true);
+  assert.equal(open.steps.at(-1), 'Arrive at Student Hub');
+  assert.equal(blocked.ok, false);
+  assert.equal(blocked.error, barrierPlaceMessage('Student Hub'));
+});
+
+test('a barrier on another floor leaves this walk unchanged', () => {
+  const open = routeDirections(find('Bookstore'), find('Student Hub'));
+  const blocked = routeDirections(find('Bookstore'), find('Student Hub'), {
+    blocked: [find('A3-74')],
+  });
+
+  assert.equal(blocked.ok, true);
+  assert.deepEqual(blocked.steps, open.steps);
+});
+
+test('a barrier location matches a place name or one room code', () => {
+  const bookstore = find('Bookstore');
+
+  assert.equal(placeIdForLocation('Bookstore (B2-02)'), bookstore);
+  assert.equal(placeIdForLocation('near room B2-02'), bookstore);
+  assert.equal(placeIdForLocation('somewhere in the hallway'), null);
+  assert.deepEqual(blockedPlaceIds(['Bookstore (B2-02)', 'not a place', 'B2-02']), [bookstore]);
+});
+
+test('an approved barrier on the walk is routed around', () => {
+  const open = routeDirections(find('Bookstore'), find('Student Hub'));
+  const blocked = routeDirections(find('Bookstore'), find('Student Hub'), {
+    blocked: [find('C2-11I')],
+  });
+
+  assert.equal(blocked.ok, true);
+  assert.match(blocked.steps[0], /^Start at Bookstore/);
+  assert.equal(blocked.steps.at(-1), 'Arrive at Student Hub');
+  assert.ok(blocked.totalMetres > open.totalMetres);
 });
 
 test('choosing step-free does not change later routes that allow stairs', () => {
