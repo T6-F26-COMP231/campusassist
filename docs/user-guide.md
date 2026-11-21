@@ -2,6 +2,34 @@
 
 This guide explains how to use CampusAssist.
 
+## Start from Home
+
+**Home** is the starting point for everything in CampusAssist. It says "Find your way around campus and request in-person assistance when needed." and groups its buttons by what you want to do. Each button has a line underneath that says what it does.
+
+**Get help**
+- **Request In-Person Help**: "A volunteer walks with you to your destination". This is the main button.
+- **My Help Request Status**: "See how your request is going"
+
+**Find your way**
+- **Get Step-by-Step Directions**: "Walking directions with a map"
+- **Search Location**: "Find a place by name"
+- **Find Accessible Facilities**: "Elevators, accessible washrooms and more"
+- **Check Destination Accessibility**: "See what a place offers before you go"
+
+**Report a problem**
+- **Report Barrier**: "A broken elevator or a blocked path, with its location"
+
+**Volunteers and staff**
+- **View Open Requests (Volunteer)**: "Accept a request from someone near you"
+- **Administrator**: "Review barrier reports"
+
+### Examples
+
+- **Ask for help.** On **Home**, under **Get help**, choose **Request In-Person Help**. The request form opens.
+- **Find a route.** On **Home**, under **Find your way**, choose **Get Step-by-Step Directions**. **Get Directions** opens.
+- **Report a broken elevator.** On **Home**, under **Report a problem**, choose **Report Barrier**. **Report a Barrier** opens.
+- **Go back.** Every screen has a back arrow at the top that returns to the screen before it, and **Home** has no back arrow because it is the start.
+
 ## Request in-person help
 
 A Campus User can request in-person navigation assistance. This is for non-emergency navigation help.
