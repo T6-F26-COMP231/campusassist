@@ -76,6 +76,7 @@ export function buildBarrierReport(fields, existingCount = 0, photoName = '') {
     ok: true,
     report: {
       id: reportNumber(existingCount),
+      status: 'Pending',
       role: role.value,
       roleLabel: role.label,
       type: type.value,
