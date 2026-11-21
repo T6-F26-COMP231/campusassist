@@ -160,6 +160,8 @@ The Pending tab loads the waiting reports from the server. Reloading the app loa
 
 An administrator approves a barrier report after checking it. An approved report leaves **Pending** and appears on **Approved**.
 
+The report titles below are examples. Your report will show its actual saved ID.
+
 1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
 2. On the **Pending** tab, choose **View Details** on the report.
 3. Choose **Approve**. The screen asks: "Approve Report 001 · Broken Elevator?" It explains: "The report moves to Approved and no longer counts as pending. Only an approved barrier can be marked resolved later."
@@ -176,7 +178,7 @@ An approved report can then be marked resolved. See "Mark a barrier as resolved"
 - **A report that is not pending.** A report that is already approved, rejected, or resolved has no **Approve** button, so it cannot be approved twice.
 - **Resolve it later.** After a report is approved, **Mark as Resolved** is available on it. Before that, it is not, and the screen says "Only approved barriers can be marked resolved."
 
-Routes are not changed by approving a report yet. The app does not block a route because of a barrier report.
+Approving a barrier report causes walking routes to avoid the approved barrier.
 
 
 ## Reject a false barrier report
