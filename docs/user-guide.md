@@ -177,3 +177,40 @@ An empty search or one containing only spaces shows: "Enter a location name to s
 The page shows: "No results were found." Check the spelling or try part of a place name.
 
 The current search list contains **Bookstore**, **Student HUB**, **Student Centre**, and **Transit Hub**.
+
+## Get step-by-step directions
+
+A Campus User can use CampusAssist to find walking directions between campus locations. The instructions are displayed in walking order to help users reach their destination.
+
+### Find directions
+
+1. Open CampusAssist.
+2. On **Home**, choose **Get Step-by-Step Directions**.
+3. On the **Get Directions** page, select your starting location under **I am at**.
+4. Under **I am going to**, select your destination.
+5. Leave **Step-free route** turned **Off** for regular walking directions.
+6. Select **Show directions**.
+
+CampusAssist displays the starting location, destination, and step-by-step walking instructions. Depending on the route, the instructions may include corridors, turns, bridges, stairs, or elevators.
+
+The page also displays a campus floor-plan route, approximate walking distance, and estimated walking time.
+
+### If a route is unavailable
+
+If no connected walking route exists between the selected locations, the app displays:
+
+"The map shows no walkable route between these two places."
+
+Choose another starting location or destination and try again.
+
+If both selected locations are the same, the app displays:
+
+"You are already at your destination."
+
+### Change your route
+
+To find a different route, change either location using the dropdown menus and select **Show directions** again.
+
+If you need a route that avoids stairs, turn **Step-free route** to **On**, then select **Show step-free route**. See the *Find a step-free route* section for more information.
+
+**Note:** CampusAssist calculates directions using its recorded campus walking data. Temporary barriers, construction, and maintenance may affect actual route accessibility.
