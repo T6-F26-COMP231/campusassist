@@ -2,11 +2,16 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildBarrierReport } from './barriers.js';
 import {
+  ALREADY_RESOLVED_MESSAGE,
+  REPORT_NOT_FOUND_MESSAGE,
   REPORT_TABS,
+  RESOLVE_BLOCKED_MESSAGE,
+  canResolve,
   emptyMessage,
   pendingCount,
   reportTitle,
   reportsForTab,
+  resolveReport,
   tabCounts,
 } from './barrierReports.js';
 
@@ -88,4 +93,55 @@ test('each tab has a message for when it is empty', () => {
   for (const tab of REPORT_TABS) {
     assert.ok(emptyMessage(tab.id).length > 0);
   }
+});
+
+test('only an approved barrier can be marked resolved', () => {
+  assert.equal(canResolve(report('R-001', 'Approved')), true);
+  for (const status of ['Pending', 'Rejected', 'Resolved']) {
+    assert.equal(canResolve(report('R-001', status)), false, status);
+  }
+  assert.equal(canResolve(undefined), false);
+});
+
+test('marking an approved barrier resolved moves it to the Closed tab', () => {
+  const all = [report('R-001', 'Approved'), report('R-002', 'Approved'), report('R-003', 'Pending')];
+  const result = resolveReport(all, 'R-001');
+
+  assert.equal(result.ok, true);
+  assert.equal(result.report.status, 'Resolved');
+  assert.deepEqual(reportsForTab(result.reports, 'closed').map((r) => r.id), ['R-001']);
+  assert.deepEqual(reportsForTab(result.reports, 'approved').map((r) => r.id), ['R-002']);
+  assert.equal(pendingCount(result.reports), 1);
+});
+
+test('resolving one barrier leaves every other report as it was, and the list untouched', () => {
+  const all = [report('R-001', 'Approved'), report('R-002', 'Pending')];
+  const copy = JSON.parse(JSON.stringify(all));
+  const result = resolveReport(all, 'R-001');
+
+  assert.deepEqual(all, copy);
+  assert.deepEqual(result.reports[1], all[1]);
+  assert.equal(result.reports.length, 2);
+});
+
+test('a barrier that is not approved cannot be marked resolved', () => {
+  for (const status of ['Pending', 'Rejected']) {
+    const result = resolveReport([report('R-001', status)], 'R-001');
+
+    assert.equal(result.ok, false);
+    assert.equal(result.error, RESOLVE_BLOCKED_MESSAGE);
+  }
+});
+
+test('a barrier that is already resolved, or missing, gives a clear message', () => {
+  assert.equal(resolveReport([report('R-001', 'Resolved')], 'R-001').error, ALREADY_RESOLVED_MESSAGE);
+  assert.equal(resolveReport([report('R-001', 'Approved')], 'R-009').error, REPORT_NOT_FOUND_MESSAGE);
+});
+
+test('a resolved barrier cannot be resolved twice', () => {
+  const once = resolveReport([report('R-001', 'Approved')], 'R-001');
+  const twice = resolveReport(once.reports, 'R-001');
+
+  assert.equal(twice.ok, false);
+  assert.equal(twice.error, ALREADY_RESOLVED_MESSAGE);
 });

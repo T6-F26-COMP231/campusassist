@@ -62,3 +62,15 @@
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+/* Mark as resolved */
+.resolve__help { margin: -8px 0 0; font-size: 0.9rem; color: var(--charcoal-soft); }
+.resolve__confirm {
+  padding: 16px;
+  background: var(--lime-tint);
+  border: 2px solid var(--lime-dark); border-radius: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.resolve__confirm h3 { margin: 0; font-size: 1rem; font-weight: 700; }
+.resolve__confirm p { margin: 0; font-size: 0.95rem; line-height: 1.4; }
+.resolve__actions { display: flex; flex-direction: column; gap: 10px; }

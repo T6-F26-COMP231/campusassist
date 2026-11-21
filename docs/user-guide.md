@@ -55,14 +55,44 @@ The report is not accepted. The form stays open and shows: "A report without a l
 
 ## See pending barrier reports
 
-An administrator uses this list so a barrier report is not missed. Only reports that are still waiting for review appear on the Pending tab.
+An administrator uses this list so a barrier report is not missed. Only reports that are still waiting for review appear on the **Pending** tab. Only reports sent from the app are listed. There are no sample reports.
 
-1. Open CampusAssist and choose **Administrator**.
-2. Sign in. The demo account is `admin@campus.test` / `admin123`.
-3. On **Admin Home**, choose **Review Barrier Reports**. The row shows how many reports are pending, and a badge shows that count when it is above zero.
-4. The **Pending** tab is selected. It lists each waiting report with its number, type, location, and description.
+1. Open CampusAssist. On **Home**, choose **Administrator**.
+2. On **Admin Home**, choose **Review Barrier Reports**. The row says how many reports are pending, such as "1 report is pending" or "2 reports are pending". A red badge shows that count when it is above zero. When none are waiting, the row says "No reports are waiting" and there is no badge.
+3. **Barrier Reports** opens with the **Pending** tab selected. The tabs show a count: **Pending (2)**, **Approved (0)**, **Closed (0)**.
+4. The Pending tab says how many reports are waiting, such as "2 reports are waiting for review, oldest first". It lists each waiting report with its title, **Location**, and **Description**, for example **Report 001 · Broken Elevator**. A report with no description says "No description".
+5. Choose **View Details** to open one report. It shows **Status**, **Type**, **Location**, **Details**, and, when there is one, **Reported by** and **Photo**. Choose **Back to reports** to return to the list.
 
-The demo data starts with **Report 001 · Broken Elevator** at Block A, Elevator 2 near Cafeteria, and **Report 002 · Blocked Entrance** at Block A Main Entrance. A Campus User report, such as R-003, appears in this same list. **View Details** opens that one report. Approved reports are on the **Approved** tab, and rejected or resolved reports are on the **Closed** tab, so they are not in Pending.
+Reports are listed in the order they arrived, so the report that has waited longest is first. Approved reports are on the **Approved** tab. Rejected or resolved reports are on the **Closed** tab, so they are not in Pending. The screen notes: "Reports sent from the app appear here until the app is reloaded."
+
+### Examples
+
+- **No reports sent yet.** Open **Review Barrier Reports**. The row says "No reports are waiting" with no badge. The **Pending** tab says "No reports are waiting." and shows **Pending (0)**.
+- **A Campus User sends a report.** On **Home**, choose **Report Barrier**, choose **Broken Elevator**, enter the location `Near room B230, Block B`, and choose **Submit for review**. The app shows **Report sent**: "Your barrier report was saved successfully and is Pending review. An administrator will review it before any routes change." Go to **Administrator**, then **Review Barrier Reports**. The row says "1 report is pending" with a badge of 1. The Pending tab lists **Report 001 · Broken Elevator**, Location: Near room B230, Block B.
+- **Two reports wait.** After a second report is sent, the badge shows 2 and the Pending tab says "2 reports are waiting for review, oldest first". **Report 001** is listed first, then **Report 002**.
+- **A report that is not pending.** A report that is approved, rejected, or resolved is not in the Pending list and does not count in the badge. It appears under **Approved** or **Closed**.
+
+
+## Mark a barrier as resolved
+
+An administrator marks a barrier as resolved once it is cleared, so it no longer counts as an open barrier. Only a barrier that has been approved can be marked resolved.
+
+1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
+2. Choose **View Details** on the report. Reports that are waiting for approval are on **Pending**, and approved reports are on **Approved**.
+3. On an approved report, choose **Mark as Resolved**. The screen asks: "Mark Report 001 · Broken Elevator as resolved?" It explains: "The barrier is cleared. It moves to Closed and no longer counts as an open barrier. You cannot undo this here."
+4. Choose **Yes, mark resolved**. To keep the report as it was, choose **Cancel**.
+5. The screen shows "Report 001 · Broken Elevator was marked resolved. It is now listed under Closed." The **Status** is **Resolved** and **Mark as Resolved** is gone. Choose **Back to reports**: the count on **Approved** goes down by one and the count on **Closed** goes up by one.
+
+Approving a report is not in the app yet, so for now no report has the status Approved. When one does, it follows the steps above.
+
+### Examples
+
+- **An approved barrier is resolved.** Report 001 · Broken Elevator is on the **Approved** tab, so the tabs read **Pending (0)**, **Approved (1)** and **Closed (0)**. Choose **View Details**, **Mark as Resolved**, then **Yes, mark resolved**. The screen shows "Report 001 · Broken Elevator was marked resolved. It is now listed under Closed." The tabs now read **Pending (0)**, **Approved (0)** and **Closed (1)**, and Report 001 is on **Closed**.
+- **Cancel.** On the question "Mark Report 001 · Broken Elevator as resolved?", choose **Cancel**. The **Status** is still **Approved**, and **Mark as Resolved** is still there.
+- **A barrier that is not approved.** Open a report on the **Pending** tab with **View Details**. **Mark as Resolved** is not available, and the screen says "Only approved barriers can be marked resolved."
+- **A barrier that is already resolved.** A report on the **Closed** tab has no **Mark as Resolved** button, so it cannot be resolved twice.
+
+Routes are not changed by resolving a barrier yet. The app does not block a route because of a barrier report.
 
 
 ## See open help requests
