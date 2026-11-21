@@ -20,7 +20,17 @@ const clean = (value) => (typeof value === "string" ? value.trim() : "");
 // Story 12: Save a barrier report for an administrator to review.
 export async function createBarrierReport(req, res) {
   try {
-    const { type, location, description, photoName } = req.body || {};
+    const { role, type, location, description, photoName } = req.body || {};
+    // Story 38 - Accept faculty staff and campus user submissions.
+    const reporterRole = role || "campus-user";
+
+    if (!["campus-user", "faculty-staff"].includes(reporterRole)) {
+      return res.status(400).json({
+        success: false,
+        message: "Choose a valid reporter role."
+      });
+    }
+
     const place = clean(location);
     const details = clean(description);
 

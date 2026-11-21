@@ -94,6 +94,7 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          role,
           type,
           location: location.trim(),
           description: description.trim(),
@@ -112,6 +113,7 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
       // The backend has successfully saved the report.
       const savedReport = {
         ...result.report,
+        number: result.report.id,
         id: String(data.report._id),
         status: data.report.status,
         location: data.report.location,

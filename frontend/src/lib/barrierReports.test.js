@@ -2,13 +2,21 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildBarrierReport } from './barriers.js';
 import {
+  ALREADY_APPROVED_MESSAGE,
+  ALREADY_REJECTED_MESSAGE,
   ALREADY_RESOLVED_MESSAGE,
+  APPROVE_BLOCKED_MESSAGE,
+  REJECT_BLOCKED_MESSAGE,
   REPORT_NOT_FOUND_MESSAGE,
   REPORT_TABS,
   RESOLVE_BLOCKED_MESSAGE,
+  approveReport,
+  canApprove,
+  canReject,
   canResolve,
   emptyMessage,
   pendingCount,
+  rejectReport,
   reportTitle,
   reportsForTab,
   resolveBarrierReport,
@@ -208,4 +216,111 @@ test('Mark as Resolved says when the server cannot be reached', async () => {
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test('only a pending report can be approved', () => {
+  assert.equal(canApprove(report('R-001', 'Pending')), true);
+  assert.equal(canApprove({ id: 'R-002', typeLabel: 'Other' }), true);
+  for (const status of ['Approved', 'Rejected', 'Resolved']) {
+    assert.equal(canApprove(report('R-001', status)), false, status);
+  }
+  assert.equal(canApprove(undefined), false);
+});
+
+test('approving a pending report moves it to Approved and out of the pending count', () => {
+  const all = [report('R-001', 'Pending'), report('R-002', 'Pending')];
+  const result = approveReport(all, 'R-001');
+
+  assert.equal(result.ok, true);
+  assert.equal(result.report.status, 'Approved');
+  assert.deepEqual(reportsForTab(result.reports, 'approved').map((r) => r.id), ['R-001']);
+  assert.deepEqual(reportsForTab(result.reports, 'pending').map((r) => r.id), ['R-002']);
+  assert.equal(pendingCount(result.reports), 1);
+  assert.deepEqual(tabCounts(result.reports), { pending: 1, approved: 1, closed: 0 });
+});
+
+test('approving leaves every other report as it was, and the list untouched', () => {
+  const all = [report('R-001', 'Pending'), report('R-002', 'Rejected')];
+  const copy = JSON.parse(JSON.stringify(all));
+  const result = approveReport(all, 'R-001');
+
+  assert.deepEqual(all, copy);
+  assert.deepEqual(result.reports[1], all[1]);
+});
+
+test('a report that is not pending cannot be approved, and each case has its own message', () => {
+  assert.equal(approveReport([report('R-001', 'Rejected')], 'R-001').error, APPROVE_BLOCKED_MESSAGE);
+  assert.equal(approveReport([report('R-001', 'Resolved')], 'R-001').error, APPROVE_BLOCKED_MESSAGE);
+  assert.equal(approveReport([report('R-001', 'Approved')], 'R-001').error, ALREADY_APPROVED_MESSAGE);
+  assert.equal(approveReport([report('R-001', 'Pending')], 'R-009').error, REPORT_NOT_FOUND_MESSAGE);
+});
+
+test('an approved report can then be resolved, and a pending one cannot', () => {
+  const all = [report('R-001', 'Pending'), report('R-002', 'Pending')];
+  const approved = approveReport(all, 'R-001');
+
+  assert.equal(resolveReport(all, 'R-001').ok, false);
+  const resolved = resolveReport(approved.reports, 'R-001');
+  assert.equal(resolved.ok, true);
+  assert.deepEqual(reportsForTab(resolved.reports, 'closed').map((r) => r.id), ['R-001']);
+  assert.equal(pendingCount(resolved.reports), 1);
+});
+
+test('a report saved on the server keeps its short number in the title', () => {
+  const saved = { id: '6a1f0c2b9d3e4f5a6b7c8d9e', number: 'R-004', typeLabel: 'Broken Elevator' };
+
+  assert.equal(reportTitle(saved), 'Report 004 \u00b7 Broken Elevator');
+  assert.equal(reportTitle({ id: 'R-002', typeLabel: 'Other' }), 'Report 002 \u00b7 Other');
+});
+
+test('only a pending report can be rejected', () => {
+  assert.equal(canReject(report('R-001', 'Pending')), true);
+  assert.equal(canReject({ id: 'R-002', typeLabel: 'Other' }), true);
+  for (const status of ['Approved', 'Rejected', 'Resolved']) {
+    assert.equal(canReject(report('R-001', status)), false, status);
+  }
+  assert.equal(canReject(undefined), false);
+});
+
+test('rejecting a false report moves it to Closed and out of the pending count', () => {
+  const all = [report('R-001', 'Pending'), report('R-002', 'Pending')];
+  const result = rejectReport(all, 'R-001');
+
+  assert.equal(result.ok, true);
+  assert.equal(result.report.status, 'Rejected');
+  assert.deepEqual(reportsForTab(result.reports, 'closed').map((r) => r.id), ['R-001']);
+  assert.deepEqual(reportsForTab(result.reports, 'pending').map((r) => r.id), ['R-002']);
+  assert.deepEqual(reportsForTab(result.reports, 'approved'), []);
+  assert.equal(pendingCount(result.reports), 1);
+  assert.deepEqual(tabCounts(result.reports), { pending: 1, approved: 0, closed: 1 });
+});
+
+test('rejecting leaves every other report as it was, and the list untouched', () => {
+  const all = [report('R-001', 'Pending'), report('R-002', 'Approved')];
+  const copy = JSON.parse(JSON.stringify(all));
+  const result = rejectReport(all, 'R-001');
+
+  assert.deepEqual(all, copy);
+  assert.deepEqual(result.reports[1], all[1]);
+});
+
+test('a report that is not pending cannot be rejected, and each case has its own message', () => {
+  assert.equal(rejectReport([report('R-001', 'Approved')], 'R-001').error, REJECT_BLOCKED_MESSAGE);
+  assert.equal(rejectReport([report('R-001', 'Resolved')], 'R-001').error, REJECT_BLOCKED_MESSAGE);
+  assert.equal(rejectReport([report('R-001', 'Rejected')], 'R-001').error, ALREADY_REJECTED_MESSAGE);
+  assert.equal(rejectReport([report('R-001', 'Pending')], 'R-009').error, REPORT_NOT_FOUND_MESSAGE);
+});
+
+test('a rejected report cannot be approved or resolved afterwards', () => {
+  const rejected = rejectReport([report('R-001', 'Pending')], 'R-001').reports;
+
+  assert.equal(approveReport(rejected, 'R-001').ok, false);
+  assert.equal(resolveReport(rejected, 'R-001').ok, false);
+  assert.equal(rejectReport(rejected, 'R-001').ok, false);
+});
+
+test('an approved report cannot be rejected, and a rejected one cannot be approved', () => {
+  const approved = approveReport([report('R-001', 'Pending')], 'R-001').reports;
+
+  assert.equal(rejectReport(approved, 'R-001').error, REJECT_BLOCKED_MESSAGE);
 });

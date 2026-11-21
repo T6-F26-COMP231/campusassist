@@ -13,7 +13,7 @@ import AccessibilityFeatures from './pages/AccessibilityFeatures';
 import ReportBarrier from './pages/ReportBarrier';
 import AdminHome from './pages/AdminHome';
 import ReviewReports from './pages/ReviewReports';
-import { resolveBarrierReport } from './lib/barrierReports';
+import { approveReport, rejectReport, resolveBarrierReport } from './lib/barrierReports';
 import './pages/RequestHelp.css';
 
 function Home({
@@ -182,7 +182,20 @@ export default function App() {
       <ReviewReports
         onBack={() => setPage('admin')}
         reports={barrierReports}
+        onApprove={(reportId) => {
+          // Story 25: approve a pending barrier report.
+          const result = approveReport(barrierReports, reportId);
+          if (result.ok) setBarrierReports(result.reports);
+          return result;
+        }}
+        onReject={(reportId) => {
+          // Story 26: reject a false barrier report.
+          const result = rejectReport(barrierReports, reportId);
+          if (result.ok) setBarrierReports(result.reports);
+          return result;
+        }}
         onResolve={async (reportId) => {
+          // Story 27: Mark as Resolved saves through the barrier report route.
           const result = await resolveBarrierReport(reportId);
           if (result.ok) {
             setBarrierReports((list) => list.map((report) => (

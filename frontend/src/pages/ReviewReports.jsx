@@ -3,6 +3,8 @@ import AppHeader from '../components/AppHeader';
 import {
   REPORT_TABS,
   RESOLVE_BLOCKED_MESSAGE,
+  canApprove,
+  canReject,
   canResolve,
   emptyMessage,
   reportTitle,
@@ -12,10 +14,10 @@ import {
 import './RequestHelp.css';
 import './ReviewReports.css';
 
-export default function ReviewReports({ onBack, reports, onResolve }) {
+export default function ReviewReports({ onBack, reports, onApprove, onReject, onResolve }) {
   const [tab, setTab] = useState('pending');
   const [openId, setOpenId] = useState(null);
-  const [confirming, setConfirming] = useState(false);
+  const [confirming, setConfirming] = useState(null); // 'approve', 'reject', 'resolve' or null
   const [resolving, setResolving] = useState(false);
   const [outcome, setOutcome] = useState(null);
   const tabRefs = useRef({});
@@ -36,17 +38,32 @@ export default function ReviewReports({ onBack, reports, onResolve }) {
 
   const closeDetails = () => {
     setOpenId(null);
-    setConfirming(false);
+    setConfirming(null);
     setResolving(false);
     setOutcome(null);
+  };
+
+  const approve = () => {
+    const result = onApprove?.(open.id);
+    setConfirming(null);
+    setOutcome({ kind: 'approved', ...(result ?? { ok: false, error: 'This report could not be approved.' }) });
+  };
+
+  const reject = () => {
+    const result = onReject?.(open.id);
+    setConfirming(null);
+    setOutcome({ kind: 'rejected', ...(result ?? { ok: false, error: 'This report could not be rejected.' }) });
   };
 
   const resolve = async () => {
     setResolving(true);
     const result = await onResolve?.(open.id);
     setResolving(false);
-    setConfirming(false);
-    setOutcome(result ?? { ok: false, error: 'This barrier could not be marked resolved.' });
+    setConfirming(null);
+    setOutcome({
+      kind: 'resolved',
+      ...(result ?? { ok: false, error: 'This barrier could not be marked resolved.' }),
+    });
   };
 
   if (open) {
@@ -68,7 +85,11 @@ export default function ReviewReports({ onBack, reports, onResolve }) {
             {outcome?.ok && (
               <div className="notice notice--success">
                 <span className="notice__icon" aria-hidden="true">&#10003;</span>
-                {reportTitle(open)} was marked resolved. It is now listed under Closed.
+                {{
+                  approved: `${reportTitle(open)} was approved. It is now listed under Approved.`,
+                  rejected: `${reportTitle(open)} was rejected. It is now listed under Closed.`,
+                  resolved: `${reportTitle(open)} was marked resolved. It is now listed under Closed.`,
+                }[outcome.kind]}
               </div>
             )}
           </div>
@@ -79,16 +100,42 @@ export default function ReviewReports({ onBack, reports, onResolve }) {
             </div>
           )}
 
+          {canApprove(open) && !confirming && (
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={() => {
+                setOutcome(null);
+                setConfirming('approve');
+              }}
+            >
+              Approve
+            </button>
+          )}
+
+          {canReject(open) && !confirming && (
+            <button
+              type="button"
+              className="btn btn--secondary"
+              onClick={() => {
+                setOutcome(null);
+                setConfirming('reject');
+              }}
+            >
+              Reject
+            </button>
+          )}
+
           {open.status !== 'Resolved' && open.status !== 'Rejected' && !confirming && (
             <>
               <button
                 type="button"
-                className="btn btn--primary"
+                className={`btn ${canApprove(open) ? 'btn--secondary' : 'btn--primary'}`}
                 disabled={!canResolve(open)}
                 aria-describedby={canResolve(open) ? undefined : 'resolve-help'}
                 onClick={() => {
                   setOutcome(null);
-                  setConfirming(true);
+                  setConfirming('resolve');
                 }}
               >
                 Mark as Resolved
@@ -99,7 +146,43 @@ export default function ReviewReports({ onBack, reports, onResolve }) {
             </>
           )}
 
-          {confirming && (
+          {confirming === 'approve' && (
+            <section className="resolve__confirm" role="group" aria-labelledby="approve-title">
+              <h3 id="approve-title">Approve {reportTitle(open)}?</h3>
+              <p>
+                The report moves to Approved and no longer counts as pending. Only an approved barrier can
+                be marked resolved later.
+              </p>
+              <div className="resolve__actions">
+                <button type="button" className="btn btn--primary" onClick={approve} autoFocus>
+                  Yes, approve
+                </button>
+                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(null)}>
+                  Cancel
+                </button>
+              </div>
+            </section>
+          )}
+
+          {confirming === 'reject' && (
+            <section className="resolve__confirm" role="group" aria-labelledby="reject-title">
+              <h3 id="reject-title">Reject {reportTitle(open)}?</h3>
+              <p>
+                Use this for a report that is false or a mistake. It moves to Closed and no longer counts as
+                pending. You cannot undo this here.
+              </p>
+              <div className="resolve__actions">
+                <button type="button" className="btn btn--primary" onClick={reject} autoFocus>
+                  Yes, reject
+                </button>
+                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(null)}>
+                  Cancel
+                </button>
+              </div>
+            </section>
+          )}
+
+          {confirming === 'resolve' && (
             <section className="resolve__confirm" role="group" aria-labelledby="resolve-title">
               <h3 id="resolve-title">Mark {reportTitle(open)} as resolved?</h3>
               <p>
@@ -110,7 +193,7 @@ export default function ReviewReports({ onBack, reports, onResolve }) {
                 <button type="button" className="btn btn--primary" onClick={resolve} disabled={resolving} autoFocus>
                   Yes, mark resolved
                 </button>
-                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(false)} disabled={resolving}>
+                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(null)} disabled={resolving}>
                   Cancel
                 </button>
               </div>

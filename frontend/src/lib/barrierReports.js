@@ -7,7 +7,9 @@ export const REPORT_TABS = [
 
 // "Report 001 · Broken Elevator"
 export function reportTitle(report) {
-  const number = String(report.id ?? '').replace(/^R-/, '');
+  // A report saved on the server has a long database id, so it also keeps the short number
+  // (R-001) it was given when it was sent.
+  const number = String(report.number ?? report.id ?? '').replace(/^R-/, '');
   return `Report ${number} · ${report.typeLabel}`;
 }
 
@@ -81,4 +83,48 @@ export async function resolveBarrierReport(reportId) {
   } catch {
     return { ok: false, error: 'Could not reach the server. Please try again.' };
   }
+}
+
+export const APPROVE_BLOCKED_MESSAGE = 'Only pending reports can be approved.';
+export const ALREADY_APPROVED_MESSAGE = 'This report is already approved.';
+
+// Only a report that is still waiting for review can be approved.
+export const canApprove = (report) => Boolean(report) && (report.status ?? 'Pending') === 'Pending';
+
+// Marks one pending report as Approved. Returns the new list, or why it could not be done.
+// The list that was passed in is not changed.
+export function approveReport(reports, reportId) {
+  const report = reports.find((entry) => entry.id === reportId);
+
+  if (!report) return { ok: false, error: REPORT_NOT_FOUND_MESSAGE };
+  if (report.status === 'Approved') return { ok: false, error: ALREADY_APPROVED_MESSAGE };
+  if (!canApprove(report)) return { ok: false, error: APPROVE_BLOCKED_MESSAGE };
+
+  return {
+    ok: true,
+    report: { ...report, status: 'Approved' },
+    reports: reports.map((entry) => (entry.id === reportId ? { ...entry, status: 'Approved' } : entry)),
+  };
+}
+
+export const REJECT_BLOCKED_MESSAGE = 'Only pending reports can be rejected.';
+export const ALREADY_REJECTED_MESSAGE = 'This report is already rejected.';
+
+// Only a report that is still waiting for review can be rejected.
+export const canReject = (report) => Boolean(report) && (report.status ?? 'Pending') === 'Pending';
+
+// Marks one pending report as Rejected, for a report that is false or a mistake. Returns the new
+// list, or why it could not be done. The list that was passed in is not changed.
+export function rejectReport(reports, reportId) {
+  const report = reports.find((entry) => entry.id === reportId);
+
+  if (!report) return { ok: false, error: REPORT_NOT_FOUND_MESSAGE };
+  if (report.status === 'Rejected') return { ok: false, error: ALREADY_REJECTED_MESSAGE };
+  if (!canReject(report)) return { ok: false, error: REJECT_BLOCKED_MESSAGE };
+
+  return {
+    ok: true,
+    report: { ...report, status: 'Rejected' },
+    reports: reports.map((entry) => (entry.id === reportId ? { ...entry, status: 'Rejected' } : entry)),
+  };
 }
