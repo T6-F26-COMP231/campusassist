@@ -13,7 +13,7 @@ import AccessibilityFeatures from './pages/AccessibilityFeatures';
 import ReportBarrier from './pages/ReportBarrier';
 import AdminHome from './pages/AdminHome';
 import ReviewReports from './pages/ReviewReports';
-import { approveReport, resolveReport } from './lib/barrierReports';
+import { approveReport, rejectReport, resolveReport } from './lib/barrierReports';
 import './pages/RequestHelp.css';
 
 function Home({
@@ -185,6 +185,12 @@ export default function App() {
         onApprove={(reportId) => {
           // Story 25: approve a pending barrier report.
           const result = approveReport(barrierReports, reportId);
+          if (result.ok) setBarrierReports(result.reports);
+          return result;
+        }}
+        onReject={(reportId) => {
+          // Story 26: reject a false barrier report.
+          const result = rejectReport(barrierReports, reportId);
           if (result.ok) setBarrierReports(result.reports);
           return result;
         }}
