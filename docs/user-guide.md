@@ -124,7 +124,7 @@ The form displays an error instead of the **Report sent** confirmation. Your ent
 
 ## See pending barrier reports
 
-An administrator can view reports submitted during the current app visit. Only reports waiting for review appear on the **Pending** tab. There are no sample reports.
+An administrator can view reports submitted to CampusAssist. The Pending tab loads pending reports from the server. There are no sample reports.
 
 1. On **Home**, choose **Administrator**.
 2. Choose **Review Barrier Reports**.
