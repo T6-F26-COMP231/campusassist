@@ -191,9 +191,31 @@ A Campus User can use CampusAssist to find walking directions between campus loc
 5. Leave **Step-free route** turned **Off** for regular walking directions.
 6. Select **Show directions**.
 
-CampusAssist displays the starting location, destination, and step-by-step walking instructions. Depending on the route, the instructions may include corridors, turns, bridges, stairs, or elevators.
+CampusAssist displays the starting location, destination, and step-by-step walking instructions. The page also shows the route under **Route on the map**, with the walking distance and the estimated time on foot.
 
-The page also displays a campus floor-plan route, approximate walking distance, and estimated walking time.
+### Bookstore to Student Hub
+
+1. Under **I am at**, select **Bookstore (B2-02) (Floor 2)**.
+2. Under **I am going to**, select **Student Hub (Floor 2)**.
+3. Leave **Step-free route** turned **Off**.
+4. Select **Show directions**.
+
+The walk stays inside the B, C, D & E Blocks, so it does not cross the bridge. The steps are:
+
+1. Start at Bookstore (B2-02) on Floor 2
+2. Walk 65 m north-east to Student Hub
+3. Arrive at Student Hub
+
+The last step is "Arrive at Student Hub".
+
+### A walk between two blocks
+
+1. Under **I am at**, select **A2-65A (Floor 2)**.
+2. Under **I am going to**, select **Bookstore (B2-02) (Floor 2)**.
+3. Leave **Step-free route** turned **Off**.
+4. Select **Show directions**.
+
+This walk crosses the bridge. The steps include "Cross the bridge from Block A to the B, C, D & E Blocks", and the last step is "Arrive at Bookstore (B2-02)". The return walk includes "Cross the bridge from the B, C, D & E Blocks to Block A."
 
 ### If a route is unavailable
 
