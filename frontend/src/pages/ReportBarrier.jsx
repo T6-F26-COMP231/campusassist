@@ -3,6 +3,7 @@ import AppHeader from '../components/AppHeader';
 import {
   BARRIER_TYPES,
   DESCRIPTION_LIMIT,
+  REPORTER_ROLES,
   buildBarrierReport,
   validatePhoto,
 } from '../lib/barriers';
@@ -18,6 +19,7 @@ const PLACE_SUGGESTIONS = routeGroups().flatMap((group) =>
 );
 
 export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
+  const [role, setRole] = useState('campus-user');
   const [type, setType] = useState('');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
@@ -28,6 +30,7 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const summary = useRef(null);
+  const faculty = role === 'faculty-staff';
   const fileInput = useRef(null);
 
   // A preview of the chosen photo, released when it changes or the screen closes.
@@ -64,13 +67,13 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
   const submit = async (event) => {
     event.preventDefault();
 
-    if (submitting) return;
+  if (submitting) return;
 
-    const result = buildBarrierReport(
-      { type, location, description },
-      reportCount,
-      photo?.name ?? ''
-    );
+  const result = buildBarrierReport(
+    { role, type, location, description },
+    reportCount,
+    photo?.name ?? ''
+  );
 
     if (!result.ok) {
       setErrors(result.errors);
@@ -129,6 +132,7 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
   };
 
   const reportAnother = () => {
+    setRole('campus-user');
     setType('');
     setLocation('');
     setDescription('');
@@ -152,8 +156,9 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
             review it before any routes change.
           </p>
           <dl className="request-details barrier__summary">
+            <div><dt>Reported by</dt><dd>{sent.roleLabel}</dd></div>
             <div><dt>Type</dt><dd>{sent.typeLabel}</dd></div>
-            <div><dt>Location</dt><dd>{sent.location}</dd></div>
+            <div><dt>{faculty ? 'Classroom' : 'Location'}</dt><dd>{sent.location}</dd></div>
             {sent.description && <div><dt>Details</dt><dd>{sent.description}</dd></div>}
             {sent.photoName && <div><dt>Photo</dt><dd>{sent.photoName}</dd></div>}
           </dl>
@@ -195,6 +200,31 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
           </div>
         )}
 
+        <fieldset className="field">
+          <legend>Who is reporting?</legend>
+          <div className="options options--row">
+            {REPORTER_ROLES.map((option) => (
+              <label key={option.value} className={`option ${role === option.value ? 'option--selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="reporter-role"
+                  value={option.value}
+                  checked={role === option.value}
+                  onChange={() => {
+                    setRole(option.value);
+                    setErrors({});
+                  }}
+                />
+                <span className="option__radio" aria-hidden="true" />
+                <span className="option__text">
+                  <strong>{option.label}</strong>
+                  <small>{option.hint}</small>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
         <fieldset className="field" aria-describedby={errors.type ? 'type-error' : undefined}>
           <legend>Barrier type <span className="barrier__required">(required)</span></legend>
           <div className="options">
@@ -220,14 +250,14 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
 
         <div className="field">
           <label htmlFor="barrier-location">
-            Location <span className="barrier__required">(required)</span>
+            {faculty ? 'Classroom' : 'Location'} <span className="barrier__required">(required)</span>
           </label>
           <input
             id="barrier-location"
             type="text"
             list="barrier-places"
             value={location}
-            placeholder="e.g. Near room B230, Block B"
+            placeholder={faculty ? 'e.g. B230, or the hallway outside B230' : 'e.g. Near room B230, Block B'}
             autoComplete="off"
             onChange={(e) => setLocation(e.target.value)}
             aria-invalid={Boolean(errors.location)}
@@ -239,7 +269,9 @@ export default function ReportBarrier({ onBack, onReported, reportCount = 0 }) {
             ))}
           </datalist>
           <small id="location-help" className="barrier__help">
-            Type a place, or pick a suggestion as you type.
+            {faculty
+              ? 'Enter the classroom the barrier is near, or pick a suggestion as you type.'
+              : 'Type a place, or pick a suggestion as you type.'}
           </small>
           {errors.location && <p id="location-error" className="barrier__error">{errors.location}</p>}
         </div>
