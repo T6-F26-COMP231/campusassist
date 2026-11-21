@@ -75,6 +75,29 @@ An Authorized Helper can see the open help requests for a campus block and choos
 4. Choose **Accept Request** on a card to open that request.
 5. Choose **Message User** to contact the person. For now, the app shows: "Messaging is coming soon."
 
+### Accept a help request
+
+An Authorized Helper can accept one open request so the campus user sees that help is assigned.
+
+1. On **Home**, choose **View Open Requests (Volunteer)**.
+2. Choose **Accept Request** on a waiting request.
+3. On **Accept this request**, review **Location**, **Needs**, and **Status**. **Status** starts as **Pending**. **Details** appears when the person described what they need.
+4. Choose **Accept Request**. While it is saving, the button says **Accepting…**.
+
+When the request is saved, the button says **Accepted**, **Status** shows **Accepted**, and the page says "Help request accepted successfully."
+
+Choose **Back to open requests** to return to the list. That request no longer appears there.
+
+### What the campus user sees
+
+On **Home**, choose **My Help Request Status**. **Current Status** shows **Accepted**, and the page says "A helper has accepted your request." **Assigned Helper** no longer says **Not assigned yet**.
+
+### If another helper already accepted it
+
+The page says "Request is unavailable or already accepted." **Status** stays **Pending** on that screen, and the button stays **Accept Request**. Choose **Back to open requests**.
+
+If this device has no helper account set up, the page says "This device has no helper account set up, so a request cannot be accepted."
+
 ### If a block has no open requests
 
 The page shows "No open requests in Block A right now."  Choose another block to look for requests there.
