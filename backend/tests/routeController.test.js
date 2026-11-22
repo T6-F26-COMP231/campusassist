@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { getRoute } from "../controllers/routeController.js";
 import { describeStep } from "../services/routeService.js";
 import Location from "../models/Location.js";
+import BarrierReport from "../models/BarrierReport.js";
 
 // Mock Express response, following the team's existing test style.
 function mockResponse() {
@@ -22,8 +23,18 @@ function mockResponse() {
 }
 
 // Replace the MongoDB lookup temporarily (null = no matching Location record).
+function approvedQuery(reports) {
+  return {
+    select() {
+      return this;
+    },
+    lean: async () => reports
+  };
+}
+
 async function withLocation(record, runTest) {
   const originalFindOne = Location.findOne;
+  const originalFind = BarrierReport.find;
 
   try {
     Location.findOne = () => ({
@@ -31,10 +42,12 @@ async function withLocation(record, runTest) {
         return record;
       }
     });
+    BarrierReport.find = () => approvedQuery([]);
 
     await runTest();
   } finally {
     Location.findOne = originalFindOne;
+    BarrierReport.find = originalFind;
   }
 }
 
