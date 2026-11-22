@@ -2,6 +2,34 @@
 
 This guide explains how to use CampusAssist.
 
+## Start from Home
+
+**Home** is the starting point for everything in CampusAssist. It says "Find your way around campus and request in-person assistance when needed." and groups its buttons by what you want to do. Each button has a line underneath that says what it does.
+
+**Get help**
+- **Request In-Person Help**: "A volunteer walks with you to your destination". This is the main button.
+- **My Help Request Status**: "See how your request is going"
+
+**Find your way**
+- **Get Step-by-Step Directions**: "Walking directions with a map"
+- **Search Location**: "Find a place by name"
+- **Find Accessible Facilities**: "Elevators, accessible washrooms and more"
+- **Check Destination Accessibility**: "See what a place offers before you go"
+
+**Report a problem**
+- **Report Barrier**: "A broken elevator or a blocked path, with its location"
+
+**Volunteers and staff**
+- **View Open Requests (Volunteer)**: "Accept a request from someone near you"
+- **Administrator**: "Review barrier reports"
+
+### Examples
+
+- **Ask for help.** On **Home**, under **Get help**, choose **Request In-Person Help**. The request form opens.
+- **Find a route.** On **Home**, under **Find your way**, choose **Get Step-by-Step Directions**. **Get Directions** opens.
+- **Report a broken elevator.** On **Home**, under **Report a problem**, choose **Report Barrier**. **Report a Barrier** opens.
+- **Go back.** Every screen has a back arrow at the top that returns to the screen before it, and **Home** has no back arrow because it is the start.
+
 ## Request in-person help
 
 A Campus User can request in-person navigation assistance. This is for non-emergency navigation help.
@@ -104,6 +132,12 @@ If no barrier type is selected, it shows:
 
 "Choose a barrier type."
 
+A location or classroom that is longer than 120 characters is not accepted either. The form shows:
+
+"Keep the location to 120 characters or fewer."
+
+Each message appears twice: in a box at the top of the form that says "Please fix this before sending:" (or "Please fix these before sending:" when there is more than one problem), and under the field it belongs to. The field is marked as needing correction, and the cursor moves to the box so a screen reader announces the problems. When anything is missing, nothing is sent and no report is saved.
+
 Correct the listed problems and choose **Submit for review** again.
 
 ### Field and photo limits
@@ -115,6 +149,15 @@ Correct the listed problems and choose **Submit for review** again.
 ### If submission fails
 
 The form displays an error instead of the **Report sent** confirmation. Your entered information remains on the form. Check the connection, correct any reported problem, and try again.
+
+### Campus User reporting examples
+
+- **A broken elevator is reported with its location.** Leave **Who is reporting?** on **Campus User**, choose **Broken Elevator**, and enter `Near room B230, Block B` in **Location (required)**. Choose **Submit for review**. **Report sent** appears with **Pending review**, and the summary shows **Reported by: Campus User**, **Type: Broken Elevator**, and **Location: Near room B230, Block B**.
+- **Nothing is filled in.** Choose **Submit for review** with an empty form. The box at the top says "Please fix these before sending:" and lists "Choose a barrier type." and "A report without a location is not accepted. Tell us where the barrier is." The location message also appears under **Location (required)**. Nothing is sent.
+- **The location is missing.** Choose **Broken Elevator**, leave **Location (required)** empty, and choose **Submit for review**. The box says "Please fix this before sending:" and lists only "A report without a location is not accepted. Tell us where the barrier is."
+- **The location is only spaces.** Enter spaces in **Location (required)** and choose **Submit for review**. The same location message appears, because spaces do not count as a location.
+- **The location is too long.** Enter 121 characters. The form shows "Keep the location to 120 characters or fewer." A location of exactly 120 characters is accepted.
+- **Fixing the problem.** Enter a location such as `Near room B230, Block B` and choose **Submit for review** again. The messages go away and **Report sent** appears.
 
 ### Faculty reporting examples
 
@@ -269,6 +312,32 @@ When the request is saved, the button says **Accepted**, **Status** shows **Acce
 
 Choose **Back to open requests** to return to the list. That request no longer appears there.
 
+### See the user's location on the floor plan
+
+On **Accept this request**, below **Location**, **Needs**, **Details**, and **Status**, the page shows where the person is on the Progress Campus floor plan, so you can see the room before you set off.
+
+1. On **Home**, choose **View Open Requests (Volunteer)**.
+2. Choose **Accept Request** on a waiting request.
+3. Below the request details, find the floor plan. Its title names the floor and the room, such as "Third Floor · Room A3-74".
+4. The plan shows a marker on that room. The plan is wider than the screen, so it opens with the marker in view. Scroll the plan to look around. The page says "Scroll the plan to look around."
+
+The floor and the marker come from the **Location** on the request. A different location shows a different floor and room. The map is for the helper to see where the person is. It does not give a walking route. For walking directions, choose **Directions to this user**.
+
+### If the room is not on the floor plan
+
+When the **Location** does not name a room on the plan, the page says:
+
+"That room is not on the Progress Campus floor plan."
+
+No marker is shown, and nothing is guessed. **Accept Request** still works. This happens when the location has no room number, such as `A Block, hallway`, or the room is not on the plan, such as `Room B101`.
+
+### Floor plan examples
+
+- **A request at A3-74.** **Location** says `A3-74`. The plan is titled "Third Floor · Room A3-74" and shows one marker on that room.
+- **A request at A1-96.** The plan is titled "First Floor · Room A1-96". This room appears in two places on the plan, so it shows two markers.
+- **A request with no room.** **Location** says `A Block, hallway`. The page says "That room is not on the Progress Campus floor plan." and shows no marker.
+- **Another request.** Go back to **View Open Requests (Volunteer)** and choose **Accept Request** on a request at `B2-04`. The plan changes to "Second Floor · Room B2-04", and the marker moves to that room.
+
 ### What the campus user sees
 
 On **Home**, choose **My Help Request Status**. **Current Status** shows **Accepted**, and the page says "A helper has accepted your request." **Assigned Helper** no longer says **Not assigned yet**.
@@ -364,24 +433,26 @@ The page shows: "Pick a destination to see what it offers." Choose a destination
 
 ## Find a step-free route
 
-A Campus User can use CampusAssist to find walking directions that avoid stairs. When step-free routing is selected, the app uses recorded walkable corridors and elevators instead of stairs.
+A Campus User can use CampusAssist to find walking directions that avoid stairs. When **Step-free** is on, the app uses recorded walkable corridors and elevators instead of stairs.
 
 ### Get step-free directions
 
 1. Open CampusAssist.
 2. On **Home**, choose **Get Step-by-Step Directions**.
-3. On the **Get Directions** page, select your current location under **I am at**.
-4. Under **I am going to**, select your destination.
-5. Turn **Step-free route** to **On**.
-6. Choose **Show step-free route**.
+3. On the **Get Directions** page, turn **Step-free** on. The line says **Avoids stairs** when it is on and **Stairs allowed** when it is off.
+4. Under **From**, choose where you are. Under **To**, choose where you are going.
 
-If a step-free route is available, CampusAssist displays walking instructions that avoid recorded stairs. The route may use elevators to travel between floors.
+The directions appear as soon as both places are chosen. You do not need to press a button. If a step-free route is available, the page shows a **No stairs** label with a tick, the distance and time such as "137 m · 2 min", and the steps. The route may use elevators to travel between floors. Choose **Show map** to see the route on the campus map.
 
-The page also displays the route on the campus map, the approximate walking distance, and the estimated walking time. If the step-free route is longer than the usual route, the additional distance is displayed.
+If the step-free route is longer than the usual route, the page says how much longer, such as "52 m longer than the stairs route".
+
+### If your route uses stairs
+
+When **Step-free** is off and the route uses stairs, the page shows a **Uses stairs** label and says "This route uses stairs." Choose **Show step-free route** to turn **Step-free** on and see a route without stairs.
 
 ### If no step-free route is available
 
-When the selected locations cannot be connected without stairs, the app displays:
+When the selected places cannot be connected without stairs, the app displays:
 
 "No step-free route is available between these two places."
 
@@ -389,7 +460,7 @@ If a route using stairs exists, the page also displays:
 
 "A route with stairs does exist."
 
-Choose **Show route with stairs** to view that alternative. Only choose this option if using stairs is suitable for your needs.
+Choose **Show route with stairs** to turn **Step-free** off and see that route. Only choose this option if using stairs is suitable for your needs.
 
 ### If no walking route is available
 
@@ -397,13 +468,11 @@ If the campus map contains no connected walking route between the selected place
 
 "The map shows no walkable route between these two places."
 
-Choose different locations or seek assistance.
+Choose different places or seek assistance.
 
 ### Remembering your preference
 
-CampusAssist remembers your Step-free route setting on your device when browser storage is available. You can turn the option on or off at any time.
-
-**Note:** Step-free routing avoids stairs recorded in the campus routing data. It does not guarantee that every corridor, elevator, doorway, or other part of the route is currently accessible. Actual conditions may change because of maintenance, construction, or temporary barriers.
+CampusAssist remembers your **Step-free** setting on your device when browser storage is available. You can turn the option on or off at any time.
 
 ## Search for a location by name
 
@@ -435,25 +504,28 @@ The current search list contains **Bookstore**, **Student HUB**, **Student Centr
 
 ## Get step-by-step directions
 
-A Campus User can use CampusAssist to find walking directions between campus locations. The instructions are displayed in walking order to help users reach their destination.
+A Campus User can use CampusAssist to find walking directions between campus locations. The steps are shown in walking order and end at the destination.
 
 ### Find directions
 
 1. Open CampusAssist.
 2. On **Home**, choose **Get Step-by-Step Directions**.
-3. On the **Get Directions** page, select your starting location under **I am at**.
-4. Under **I am going to**, select your destination.
-5. Leave **Step-free route** turned **Off** for regular walking directions.
-6. Select **Show directions**.
+3. On the **Get Directions** page, under **From**, choose where you are. Each place shows its name and floor, such as "A1-51 · Floor 1".
+4. Under **To**, choose where you are going.
+5. Leave **Step-free** off for regular walking directions. The line says **Stairs allowed**.
 
-CampusAssist displays the starting location, destination, and step-by-step walking instructions. The page also shows the route under **Route on the map**, with the walking distance and the estimated time on foot.
+The directions appear as soon as both places are chosen. The page shows the distance and time on foot, such as "85 m · 1 min", and a numbered list of steps. Choose **Show map** to see the walking path on the floor plan, and **Hide map** to close it. A route that changes floor has a button for each floor under the map, such as **Floor 1** and **Floor 5**.
+
+Before you choose both places, the page says "Choose where you are and where you are going."
+
+### Swap the start and the destination
+
+Choose the swap button between **From** and **To** to change the direction of the walk. The directions update straight away.
 
 ### Bookstore to Student Hub
 
-1. Under **I am at**, select **Bookstore (B2-02) (Floor 2)**.
-2. Under **I am going to**, select **Student Hub (Floor 2)**.
-3. Leave **Step-free route** turned **Off**.
-4. Select **Show directions**.
+1. Under **From**, choose **Bookstore (B2-02) · Floor 2**.
+2. Under **To**, choose **Student Hub · Floor 2**.
 
 The walk stays inside the B, C, D & E Blocks, so it does not cross the bridge. The steps are:
 
@@ -465,12 +537,10 @@ The last step is "Arrive at Student Hub".
 
 ### A walk between two blocks
 
-1. Under **I am at**, select **A2-65A (Floor 2)**.
-2. Under **I am going to**, select **Bookstore (B2-02) (Floor 2)**.
-3. Leave **Step-free route** turned **Off**.
-4. Select **Show directions**.
+1. Under **From**, choose **A2-65A · Floor 2**.
+2. Under **To**, choose **Bookstore (B2-02) · Floor 2**.
 
-This walk crosses the bridge. The steps include "Cross the bridge from Block A to the B, C, D & E Blocks", and the last step is "Arrive at Bookstore (B2-02)". The return walk includes "Cross the bridge from the B, C, D & E Blocks to Block A."
+This walk crosses the bridge. The steps include "Cross the bridge from Block A to the B, C, D & E Blocks", and the last step is "Arrive at Bookstore (B2-02)". The return walk includes "Cross the bridge from the B, C, D & E Blocks to Block A".
 
 ### If a route is unavailable
 
@@ -478,7 +548,7 @@ If no connected walking route exists between the selected locations, the app dis
 
 "The map shows no walkable route between these two places."
 
-Choose another starting location or destination and try again.
+Choose another start or destination and try again.
 
 If both selected locations are the same, the app displays:
 
@@ -486,9 +556,9 @@ If both selected locations are the same, the app displays:
 
 ### Change your route
 
-To find a different route, change either location using the dropdown menus and select **Show directions** again.
+To find a different route, change **From** or **To**. The directions update as soon as you choose.
 
-If you need a route that avoids stairs, turn **Step-free route** to **On**, then select **Show step-free route**. See the *Find a step-free route* section for more information.
+If you need a route that avoids stairs, turn **Step-free** on. See the *Find a step-free route* section for more information.
 
 **Note:** CampusAssist calculates directions using its recorded campus walking data. Temporary barriers, construction, and maintenance may affect actual route accessibility.
 

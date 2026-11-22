@@ -11,6 +11,11 @@ import {
   getHelpRequestStatus
 } from "../controllers/helpRequestStatusController.js";
 
+import {
+  sendHelpRequestMessage,
+  getHelpRequestMessages
+} from "../controllers/messageController.js";
+
 const router = Router();
 
 // Story 8: Submit help request
@@ -24,5 +29,9 @@ router.patch("/:id/accept", acceptHelpRequest);
 
 // Story 10: Retrieve request status
 router.get("/:id/status", getHelpRequestStatus);
+
+// Story 11: Send and retrieve messages for a help request
+router.post("/:id/messages", sendHelpRequestMessage);
+router.get("/:id/messages", getHelpRequestMessages);
 
 export default router;
