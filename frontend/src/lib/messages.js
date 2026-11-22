@@ -9,8 +9,18 @@ export const CLOSED_MESSAGE = 'This request is closed, so messages can no longer
 export const EMPTY_MESSAGE = 'Write a message before sending.';
 export const TOO_LONG_MESSAGE = `Keep the message to ${MESSAGE_LIMIT} characters or fewer.`;
 export const SENT_MESSAGE = 'Message sent.';
+export const DELIVERY_FAILED_MESSAGE = 'Message could not be delivered. Your message remains in the text box.';
+
+const API_BASE = (import.meta.env?.VITE_API_URL ?? '').replace(/\/$/, '');
 
 const clean = (value) => (typeof value === 'string' ? value.trim() : '');
+
+// The server sends some failures without a final period. Show each one as a sentence.
+const asSentence = (value) => {
+  const text = clean(value);
+  if (!text) return '';
+  return /[.!?]$/.test(text) ? text : `${text}.`;
+};
 
 // Whether this request can be messaged now, and the reason when it cannot. A message cannot be
 // written before a helper is assigned or after the request is completed or cancelled.
@@ -55,4 +65,41 @@ export function sendMessage(thread, request, text, now = new Date()) {
     sentAt: now.toISOString(),
   };
   return { ok: true, message, messages: [...thread, message] };
+}
+
+// Story 11: save one message on the help request. The typed text stays in the box when this fails.
+export async function deliverMessage(request, text, fetchImpl = globalThis.fetch) {
+  const id = request?._id ?? request?.id;
+  if (!id) return { ok: false, error: DELIVERY_FAILED_MESSAGE };
+
+  try {
+    const response = await fetchImpl(
+      `${API_BASE}/api/help-requests/${encodeURIComponent(id)}/messages`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, senderRole: 'campus-user' }),
+      }
+    );
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.success || !data.sentMessage?.text) {
+      return { ok: false, error: asSentence(data.message) || DELIVERY_FAILED_MESSAGE };
+    }
+
+    const sentAt = data.sentMessage.sentAt
+      ? new Date(data.sentMessage.sentAt).toISOString()
+      : new Date().toISOString();
+
+    return {
+      ok: true,
+      message: {
+        id: String(data.sentMessage.id),
+        text: data.sentMessage.text,
+        sentAt,
+      },
+    };
+  } catch {
+    return { ok: false, error: DELIVERY_FAILED_MESSAGE };
+  }
 }

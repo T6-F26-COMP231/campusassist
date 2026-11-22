@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   MESSAGE_LIMIT,
   SENT_MESSAGE,
+  deliverMessage,
   locationMessage,
   messagingState,
   sendMessage,
@@ -27,7 +28,7 @@ export default function MessageHelper({ request, messages = [], onSend }) {
     if (thread.current) thread.current.scrollTop = thread.current.scrollHeight;
   }, [messages.length]);
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
     const result = sendMessage(messages, request, text);
     if (!result.ok) {
@@ -35,7 +36,15 @@ export default function MessageHelper({ request, messages = [], onSend }) {
       setError(result.error);
       return;
     }
-    onSend?.(result.messages);
+
+    const saved = await deliverMessage(request, text);
+    if (!saved.ok) {
+      setSent(false);
+      setError(saved.error);
+      return;
+    }
+
+    onSend?.([...messages, saved.message]);
     setText('');
     setError('');
     setSent(true);
