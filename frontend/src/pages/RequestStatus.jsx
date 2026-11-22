@@ -3,9 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import MessageHelper from '../components/MessageHelper';
 import { fetchRequestStatus, isFinalStatus } from '../lib/helpRequests';
+import { addChange, describeChange, detectStatusChange, newestFirst } from '../lib/statusChanges';
 import './RequestStatus.css';
 
 const POLL_MS = 10000;
+
+const timeOf = (iso) =>
+  new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
 const steps = [
   'Request Submitted',
@@ -30,6 +34,9 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
   const [error, setError] = useState('');
   const [checkedAt, setCheckedAt] = useState(null);
   const [attempt, setAttempt] = useState(0);
+  const [changes, setChanges] = useState([]);
+  const [notice, setNotice] = useState(null);
+  const lastStatus = useRef(null);
   const refreshNow = useRef(() => {});
 
   // Retrieve request details from MongoDB through Express, and check again every few
@@ -37,6 +44,11 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
   useEffect(() => {
     let active = true;
     let timer = null;
+
+    // A new request starts with no changes.
+    lastStatus.current = null;
+    setChanges([]);
+    setNotice(null);
 
     async function loadStatus(silent) {
       if (!silent) {
@@ -49,6 +61,14 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
       if (!active) return;
 
       if (result.ok) {
+        // The first status seen is the starting point. Later checks that find a different status
+        // tell the user what changed and when.
+        const change = detectStatusChange(lastStatus.current, result.request.status);
+        lastStatus.current = result.request.status ?? lastStatus.current;
+        if (change) {
+          setChanges((history) => addChange(history, change));
+          setNotice(change);
+        }
         setRequest(result.request);
         setError('');
         setCheckedAt(new Date());
@@ -127,6 +147,21 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
 
         {!loading && !error && request && (
           <>
+            {notice && (
+              <div className="notice notice--success status-change" role="status">
+                <span className="notice__icon" aria-hidden="true">&#10003;</span>
+                <div>
+                  <strong>{describeChange(notice)}</strong>
+                  <small>
+                    {statusMessages[notice.to] ?? 'Status information unavailable.'} &middot; {timeOf(notice.at)}
+                  </small>
+                </div>
+                <button type="button" className="status-change__close" onClick={() => setNotice(null)}>
+                  Dismiss
+                </button>
+              </div>
+            )}
+
             <section className="status-details">
               <p>
                 <strong>Assistance Type:</strong>{' '}
@@ -215,6 +250,20 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
                   : 'Status information unavailable. Please check again shortly.'}
               </p>
             </section>
+
+            {changes.length > 0 && (
+              <section className="status-history" aria-labelledby="status-history-title">
+                <h3 id="status-history-title">Status changes</h3>
+                <ol>
+                  {newestFirst(changes).map((change) => (
+                    <li key={change.at + change.to}>
+                      <span>{change.from} &rarr; {change.to}</span>
+                      <small>{timeOf(change.at)}</small>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
 
             <MessageHelper
               request={request}
