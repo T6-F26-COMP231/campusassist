@@ -35,10 +35,8 @@ export default function MessageHelper({ request, messages = [], onSend }) {
       setError(result.error);
       return;
     }
-    onSend?.(result.messages);
-    setText('');
-    setError('');
-    setSent(true);
+        setSent(false);
+    setError('Message could not be delivered. Messaging is not yet connected. Your message remains in the text box.');
   };
 
   const change = (value) => {
