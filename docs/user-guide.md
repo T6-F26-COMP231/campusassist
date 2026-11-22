@@ -104,6 +104,12 @@ If no barrier type is selected, it shows:
 
 "Choose a barrier type."
 
+A location or classroom that is longer than 120 characters is not accepted either. The form shows:
+
+"Keep the location to 120 characters or fewer."
+
+Each message appears twice: in a box at the top of the form that says "Please fix this before sending:" (or "Please fix these before sending:" when there is more than one problem), and under the field it belongs to. The field is marked as needing correction, and the cursor moves to the box so a screen reader announces the problems. When anything is missing, nothing is sent and no report is saved.
+
 Correct the listed problems and choose **Submit for review** again.
 
 ### Field and photo limits
@@ -115,6 +121,15 @@ Correct the listed problems and choose **Submit for review** again.
 ### If submission fails
 
 The form displays an error instead of the **Report sent** confirmation. Your entered information remains on the form. Check the connection, correct any reported problem, and try again.
+
+### Campus User reporting examples
+
+- **A broken elevator is reported with its location.** Leave **Who is reporting?** on **Campus User**, choose **Broken Elevator**, and enter `Near room B230, Block B` in **Location (required)**. Choose **Submit for review**. **Report sent** appears with **Pending review**, and the summary shows **Reported by: Campus User**, **Type: Broken Elevator**, and **Location: Near room B230, Block B**.
+- **Nothing is filled in.** Choose **Submit for review** with an empty form. The box at the top says "Please fix these before sending:" and lists "Choose a barrier type." and "A report without a location is not accepted. Tell us where the barrier is." The location message also appears under **Location (required)**. Nothing is sent.
+- **The location is missing.** Choose **Broken Elevator**, leave **Location (required)** empty, and choose **Submit for review**. The box says "Please fix this before sending:" and lists only "A report without a location is not accepted. Tell us where the barrier is."
+- **The location is only spaces.** Enter spaces in **Location (required)** and choose **Submit for review**. The same location message appears, because spaces do not count as a location.
+- **The location is too long.** Enter 121 characters. The form shows "Keep the location to 120 characters or fewer." A location of exactly 120 characters is accepted.
+- **Fixing the problem.** Enter a location such as `Near room B230, Block B` and choose **Submit for review** again. The messages go away and **Report sent** appears.
 
 ### Faculty reporting examples
 

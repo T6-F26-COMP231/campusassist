@@ -153,3 +153,51 @@ test('every missing field is reported at once', () => {
 
   assert.deepEqual(Object.keys(result.errors).sort(), ['location', 'type']);
 });
+
+// The examples in the user guide, "Campus User reporting examples".
+test('a Campus User report with nothing filled in lists both problems at once', () => {
+  const result = validateBarrierReport({});
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.errors, { type: MISSING_TYPE_MESSAGE, location: MISSING_LOCATION_MESSAGE });
+});
+
+test('a Campus User report with a type but no location lists only the location', () => {
+  const result = validateBarrierReport({ type: 'broken-elevator', location: '' });
+
+  assert.deepEqual(result.errors, { location: MISSING_LOCATION_MESSAGE });
+  assert.equal(MISSING_LOCATION_MESSAGE, 'A report without a location is not accepted. Tell us where the barrier is.');
+});
+
+test('a location of only spaces, tabs or new lines is not a location', () => {
+  for (const location of ['     ', '\t', ' \n ']) {
+    const result = validateBarrierReport({ type: 'broken-elevator', location });
+
+    assert.equal(result.errors.location, MISSING_LOCATION_MESSAGE);
+  }
+});
+
+test('a location of 120 characters is accepted and 121 is not, with the length message', () => {
+  assert.equal(LOCATION_LIMIT, 120);
+  assert.equal(validateBarrierReport({ type: 'broken-elevator', location: 'x'.repeat(120) }).ok, true);
+  const long = validateBarrierReport({ type: 'broken-elevator', location: 'x'.repeat(121) });
+
+  assert.equal(long.errors.location, LOCATION_TOO_LONG_MESSAGE);
+  assert.equal(LOCATION_TOO_LONG_MESSAGE, 'Keep the location to 120 characters or fewer.');
+});
+
+test('a Campus User report with a type and a location is built with that location', () => {
+  const result = buildBarrierReport({ type: 'broken-elevator', location: ' Near room B230, Block B ' }, 0);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.report.location, 'Near room B230, Block B');
+  assert.equal(result.report.roleLabel, 'Campus User');
+  assert.equal(result.report.typeLabel, 'Broken Elevator');
+});
+
+test('a report with a problem is never built, so nothing can be sent', () => {
+  for (const fields of [{}, { type: 'broken-elevator' }, { type: 'broken-elevator', location: '  ' }, { location: 'A Block' }]) {
+    assert.equal(buildBarrierReport(fields, 0).ok, false, JSON.stringify(fields));
+    assert.equal(buildBarrierReport(fields, 0).report, undefined);
+  }
+});
