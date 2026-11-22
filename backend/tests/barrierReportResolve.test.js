@@ -37,7 +37,13 @@ test("Story 27 marks an approved barrier resolved", async () => {
 
   try {
     BarrierReport.findOneAndUpdate = async (filter, update, options) => {
-      assert.deepEqual(filter, { _id: REPORT_ID, status: "Approved" });
+      const query = filter;
+      assert.equal(query._id, REPORT_ID);
+      assert.ok(query.status instanceof RegExp);
+      assert.equal(query.status.test("Approved"), true);
+      assert.equal(query.status.test(" approved "), true);
+      assert.equal(query.status.test("APPROVED"), true);
+      assert.equal(query.status.test("Pending"), false);
       assert.deepEqual(update, { $set: { status: "Resolved" } });
       assert.equal(options.new, true);
       assert.equal(options.runValidators, true);
