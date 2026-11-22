@@ -1,6 +1,5 @@
 
 import { useCallback, useState } from 'react';
-import AppHeader from './components/AppHeader';
 import RequestHelp from './pages/RequestHelp';
 import AcceptRequest from './pages/AcceptRequest';
 import DirectionsToUser from './pages/DirectionsToUser';
@@ -20,97 +19,8 @@ import {
 } from './lib/barrierReports';
 import { mergePendingReports } from './lib/pendingReports';
 import { approveBarrierReport, rejectBarrierReport } from './lib/reviewDecisions';
+import Home from './pages/Home';
 import './pages/RequestHelp.css';
-
-function Home({
-  onRequestHelp,
-  onOpenRequests,
-  onRequestStatus,
-  onFacilities,
-  onSearch,
-  onGetDirections,
-  onFeatures,
-  onReportBarrier,
-  onAdmin
-}) {
-  return (
-    <div className="screen">
-      <AppHeader subtitle="Centennial College Navigation & Support" />
-
-      <main className="content home">
-        <h2 className="page-title">Welcome</h2>
-
-        <p>
-          Find your way around campus and request
-          in-person assistance when needed.
-        </p>
-
-        <button
-          className="btn btn--primary"
-          onClick={onRequestHelp}
-        >
-          Request In-Person Help
-        </button>
-
-        <button
-          className="btn btn--secondary"
-          onClick={onRequestStatus}
-        >
-          My Help Request Status
-        </button>
-
-        <button
-          className="btn btn--secondary"
-          onClick={onOpenRequests}
-        >
-          View Open Requests (Volunteer)
-        </button>
-
-        <button
-          className="btn btn--secondary"
-          onClick={onFacilities}
-        >
-          Find Accessible Facilities
-        </button>
-
-        <button
-          className="btn btn--secondary"
-          onClick={onSearch}
-        >
-          Search Location
-        </button>
-
-        <button
-          className="btn btn--secondary"
-          onClick={onFeatures}
-        >
-          Check Destination Accessibility
-        </button>
-
-        <button
-          className="btn btn--secondary"
-          onClick={onGetDirections}
-        >
-          Get Step-by-Step Directions
-        </button>
-
-        <button
-          className="btn btn--secondary"
-          onClick={onReportBarrier}
-        >
-          Report Barrier
-        </button>
-
-        <button
-          className="btn btn--secondary"
-          onClick={onAdmin}
-        >
-          Administrator
-        </button>
-      </main>
-    </div>
-  );
-}
 
 export default function App() {
   const [page, setPage] = useState('home');
@@ -301,15 +211,17 @@ export default function App() {
 
   return (
     <Home
-      onRequestHelp={() => setPage('help')}
-      onOpenRequests={() => setPage('open')}
-      onRequestStatus={() => setPage('status')}
-      onFacilities={() => setPage('facilities')}
-      onSearch={() => setPage('search')}
-      onGetDirections={() => setPage('route')}
-      onReportBarrier={() => setPage('barrier')}
-      onAdmin={() => setPage('admin')}
-      onFeatures={() => setPage('features')}
+      actions={{
+        requestHelp: () => setPage('help'),
+        requestStatus: () => setPage('status'),
+        getDirections: () => setPage('route'),
+        searchLocation: () => setPage('search'),
+        facilities: () => setPage('facilities'),
+        features: () => setPage('features'),
+        reportBarrier: () => setPage('barrier'),
+        openRequests: () => setPage('open'),
+        admin: () => setPage('admin'),
+      }}
     />
   );
 }
