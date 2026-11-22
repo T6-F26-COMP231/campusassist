@@ -11,7 +11,7 @@ import {
   reportsForTab,
   tabCounts,
 } from '../lib/barrierReports';
-import { fetchPendingReports } from '../lib/pendingReports';
+import { fetchReviewReports } from '../lib/reviewReportsLoader';
 import './RequestHelp.css';
 import './ReviewReports.css';
 
@@ -25,19 +25,29 @@ export default function ReviewReports({ onBack, reports, onLoaded, onApprove, on
 
   // Story 24: load the pending reports from the backend each time this page opens.
   // `onLoaded` must stay the same function between renders, or the reports load again.
-  const [load, setLoad] = useState({ loading: true, error: '', attempt: 0 });
+  const [load, setLoad] = useState({ loading: true, error: '', approvedError: '', attempt: 0 });
 
   useEffect(() => {
     let cancelled = false;
 
-    fetchPendingReports().then((result) => {
+    fetchReviewReports().then((result) => {
       if (cancelled) return;
 
       if (result.ok) {
         onLoaded?.(result.reports);
-        setLoad((current) => ({ ...current, loading: false, error: '' }));
+        setLoad((current) => ({
+          ...current,
+          loading: false,
+          error: '',
+          approvedError: result.approvedError || '',
+        }));
       } else {
-        setLoad((current) => ({ ...current, loading: false, error: result.error }));
+        setLoad((current) => ({
+          ...current,
+          loading: false,
+          error: result.error,
+          approvedError: result.approvedError || '',
+        }));
       }
     });
 
@@ -46,7 +56,12 @@ export default function ReviewReports({ onBack, reports, onLoaded, onApprove, on
     };
   }, [load.attempt, onLoaded]);
 
-  const retry = () => setLoad((current) => ({ loading: true, error: '', attempt: current.attempt + 1 }));
+  const retry = () => setLoad((current) => ({
+    loading: true,
+    error: '',
+    approvedError: '',
+    attempt: current.attempt + 1,
+  }));
 
   // Only the Pending tab depends on the backend, so Approved and Closed stay usable.
   const pendingUnavailable = tab === 'pending' && Boolean(load.loading || load.error);
@@ -267,6 +282,18 @@ export default function ReviewReports({ onBack, reports, onLoaded, onApprove, on
         </div>
 
         <div id="reports-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="reports__panel">
+          {tab === 'approved' && load.approvedError && (
+            <>
+              <div className="notice notice--error" role="alert">
+                <span className="notice__icon" aria-hidden="true">!</span>
+                {load.approvedError}
+              </div>
+              <button type="button" className="btn btn--secondary" onClick={retry}>
+                Try again
+              </button>
+            </>
+          )}
+
           <p className="reports__summary" role="status" aria-live="polite">
             {shown.length === 0 || pendingUnavailable
               ? ''

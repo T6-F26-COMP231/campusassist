@@ -6,6 +6,7 @@ import {
   getApprovedBarrierReports
 } from "../controllers/barrierReportController.js";
 import { getPendingBarrierReports } from "../controllers/pendingBarrierReportController.js";
+import { getApprovedBarrierReportsForAdmin } from "../controllers/approvedBarrierReportAdminController.js";
 import {
   approveBarrierReport,
   rejectBarrierReport
@@ -19,14 +20,19 @@ router.post("/", createBarrierReport);
 // Story 24: Retrieve pending barrier reports.
 router.get("/pending", getPendingBarrierReports);
 
-// Story 25: Retrieve approved barrier reports.
+// Story 25: Retrieve approved barriers for navigation.
 router.get("/approved", getApprovedBarrierReports);
 
-// Story 25 and 26: Approve or reject pending barrier reports.
+// Administrator: Retrieve approved barrier reports.
+router.get("/approved/admin", getApprovedBarrierReportsForAdmin);
+
+// Story 25: Approve a pending barrier report.
 router.patch("/:id/approve", approveBarrierReport);
+
+// Story 26: Reject a pending barrier report.
 router.patch("/:id/reject", rejectBarrierReport);
 
-// Story 27: Mark approved barriers as resolved.
+// Story 27: Resolve an approved barrier report.
 router.patch("/:id/resolve", resolveBarrierReport);
 
 export default router;
