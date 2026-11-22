@@ -86,40 +86,51 @@ const ALREADY_RESOLVED_MESSAGE = "This barrier is already resolved.";
 // Story 27: Mark one approved barrier resolved in the existing collection.
 export async function resolveBarrierReport(req, res) {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
     if (!mongoose.isValidObjectId(id)) {
       return res.status(404).json({
         success: false,
-        message: NOT_FOUND_MESSAGE
+        message: "That report was not found."
       });
     }
 
-    const report = await BarrierReport.findById(id);
+    const report = await BarrierReport.findOneAndUpdate(
+      {
+        _id: id,
+        status: "Approved"
+      },
+      {
+        $set: { status: "Resolved" }
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
 
     if (!report) {
-      return res.status(404).json({
-        success: false,
-        message: NOT_FOUND_MESSAGE
-      });
-    }
+      const existing = await BarrierReport.findById(id);
 
-    if (report.status === "Resolved") {
+      if (!existing) {
+        return res.status(404).json({
+          success: false,
+          message: "That report was not found."
+        });
+      }
+
+      if (existing.status === "Resolved") {
+        return res.status(400).json({
+          success: false,
+          message: "This barrier is already resolved."
+        });
+      }
+
       return res.status(400).json({
         success: false,
-        message: ALREADY_RESOLVED_MESSAGE
+        message: "Only approved barriers can be marked resolved."
       });
     }
-
-    if (report.status !== "Approved") {
-      return res.status(400).json({
-        success: false,
-        message: ONLY_APPROVED_MESSAGE
-      });
-    }
-
-    report.status = "Resolved";
-    await report.save();
 
     return res.status(200).json({
       success: true,

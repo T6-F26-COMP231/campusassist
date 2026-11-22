@@ -13,20 +13,20 @@ import {
 
 const router = Router();
 
-// Story 12: Submit a barrier report.
+// Story 12: Submit barrier reports.
 router.post("/", createBarrierReport);
 
 // Story 24: Retrieve pending barrier reports.
 router.get("/pending", getPendingBarrierReports);
 
-// Story 25: Retrieve approved barriers for navigation.
+// Story 25: Retrieve approved barrier reports.
 router.get("/approved", getApprovedBarrierReports);
 
-// Story 25 and 26: Approve or reject a pending barrier report.    // NEW (25–28)
+// Story 25 and 26: Approve or reject pending barrier reports.
 router.patch("/:id/approve", approveBarrierReport);
 router.patch("/:id/reject", rejectBarrierReport);
 
-// Story 27: Mark an approved barrier as resolved.
+// Story 27: Mark approved barriers as resolved.
 router.patch("/:id/resolve", resolveBarrierReport);
 
 export default router;

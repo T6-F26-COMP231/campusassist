@@ -33,6 +33,11 @@ export default function StepByStepDirections({ onBack }) {
   const [stepFree, setStepFree] = useState(savedChoice);
   const [result, setResult] = useState(null);
   const [showMap, setShowMap] = useState(false);
+  const [refreshCount, setRefreshCount] = useState(0);
+
+  const refreshRoute = () => {
+    setRefreshCount((count) => count + 1);
+  };
 
   // The directions appear as soon as both places are chosen, and follow every change.
   useEffect(() => {
@@ -40,6 +45,7 @@ export default function StepByStepDirections({ onBack }) {
       setResult(null);
       return undefined;
     }
+    setResult(null);
     let current = true;
     approvedBarrierLocations()
       .then((locations) => routeDirections(from, to, { avoidStairs: stepFree, blocked: blockedPlaceIds(locations) }))
@@ -50,7 +56,7 @@ export default function StepByStepDirections({ onBack }) {
     return () => {
       current = false;
     };
-  }, [from, to, stepFree]);
+  }, [from, to, stepFree, refreshCount]);
 
   const choose = (value) => {
     setStepFree(value);
@@ -123,6 +129,16 @@ export default function StepByStepDirections({ onBack }) {
         {!from || !to ? (
           <p className="route__intro">Choose where you are and where you are going.</p>
         ) : null}
+
+        {from && to && (
+          <button
+            type="button"
+            className="btn btn--secondary"
+            onClick={refreshRoute}
+          >
+            Refresh route
+          </button>
+        )}
 
         <div role="status" aria-live="polite">
           {result?.ok && (

@@ -32,12 +32,15 @@ function savedReport(status) {
 }
 
 test("Story 27 marks an approved barrier resolved", async () => {
-  const originalFind = BarrierReport.findById;
-  const report = savedReport("Approved");
+  const originalUpdate = BarrierReport.findOneAndUpdate;
+  const report = savedReport("Resolved");
 
   try {
-    BarrierReport.findById = async (id) => {
-      assert.equal(id, REPORT_ID);
+    BarrierReport.findOneAndUpdate = async (filter, update, options) => {
+      assert.deepEqual(filter, { _id: REPORT_ID, status: "Approved" });
+      assert.deepEqual(update, { $set: { status: "Resolved" } });
+      assert.equal(options.new, true);
+      assert.equal(options.runValidators, true);
       return report;
     };
 
@@ -50,16 +53,18 @@ test("Story 27 marks an approved barrier resolved", async () => {
     assert.equal(report.status, "Resolved");
     assert.equal(res.body.report.status, "Resolved");
   } finally {
-    BarrierReport.findById = originalFind;
+    BarrierReport.findOneAndUpdate = originalUpdate;
   }
 });
 
 test("Story 27 does not resolve a barrier that was never approved", async () => {
+  const originalUpdate = BarrierReport.findOneAndUpdate;
   const originalFind = BarrierReport.findById;
 
   try {
     for (const status of ["Pending", "Rejected"]) {
       const report = savedReport(status);
+      BarrierReport.findOneAndUpdate = async () => null;
       BarrierReport.findById = async () => report;
 
       const res = mockResponse();
@@ -71,14 +76,17 @@ test("Story 27 does not resolve a barrier that was never approved", async () => 
       assert.equal(report.status, status);
     }
   } finally {
+    BarrierReport.findOneAndUpdate = originalUpdate;
     BarrierReport.findById = originalFind;
   }
 });
 
 test("Story 27 does not resolve a barrier that is already resolved", async () => {
+  const originalUpdate = BarrierReport.findOneAndUpdate;
   const originalFind = BarrierReport.findById;
 
   try {
+    BarrierReport.findOneAndUpdate = async () => null;
     BarrierReport.findById = async () => savedReport("Resolved");
 
     const res = mockResponse();
@@ -87,14 +95,17 @@ test("Story 27 does not resolve a barrier that is already resolved", async () =>
     assert.equal(res.statusCode, 400);
     assert.equal(res.body.message, "This barrier is already resolved.");
   } finally {
+    BarrierReport.findOneAndUpdate = originalUpdate;
     BarrierReport.findById = originalFind;
   }
 });
 
 test("Story 27 says when the report is not in the collection", async () => {
+  const originalUpdate = BarrierReport.findOneAndUpdate;
   const originalFind = BarrierReport.findById;
 
   try {
+    BarrierReport.findOneAndUpdate = async () => null;
     BarrierReport.findById = async () => null;
 
     const res = mockResponse();
@@ -109,6 +120,7 @@ test("Story 27 says when the report is not in the collection", async () => {
     assert.equal(badId.statusCode, 404);
     assert.equal(badId.body.message, "That report was not found.");
   } finally {
+    BarrierReport.findOneAndUpdate = originalUpdate;
     BarrierReport.findById = originalFind;
   }
 });
