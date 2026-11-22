@@ -365,7 +365,7 @@ A Campus User can use CampusAssist to find walking directions that avoid stairs.
 ### Get step-free directions
 
 1. Open CampusAssist.
-2. On **Home**, under **Find your way**, choose **Get Step-by-Step Directions**.
+2. On **Home**, choose **Get Step-by-Step Directions**.
 3. On the **Get Directions** page, turn **Step-free** on. The line says **Avoids stairs** when it is on and **Stairs allowed** when it is off.
 4. Under **From**, choose where you are. Under **To**, choose where you are going.
 
@@ -436,7 +436,7 @@ A Campus User can use CampusAssist to find walking directions between campus loc
 ### Find directions
 
 1. Open CampusAssist.
-2. On **Home**, under **Find your way**, choose **Get Step-by-Step Directions**.
+2. On **Home**, choose **Get Step-by-Step Directions**.
 3. On the **Get Directions** page, under **From**, choose where you are. Each place shows its name and floor, such as "A1-51 · Floor 1".
 4. Under **To**, choose where you are going.
 5. Leave **Step-free** off for regular walking directions. The line says **Stairs allowed**.
