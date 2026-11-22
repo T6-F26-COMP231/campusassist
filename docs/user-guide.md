@@ -7,19 +7,23 @@ This guide explains how to use CampusAssist.
 **Home** is the starting point for everything in CampusAssist. It says "Find your way around campus and request in-person assistance when needed." and groups its buttons by what you want to do. Each button has a line underneath that says what it does.
 
 **Get help**
+
 - **Request In-Person Help**: "A volunteer walks with you to your destination". This is the main button.
 - **My Help Request Status**: "See how your request is going"
 
 **Find your way**
+
 - **Get Step-by-Step Directions**: "Walking directions with a map"
 - **Search Location**: "Find a place by name"
 - **Find Accessible Facilities**: "Elevators, accessible washrooms and more"
 - **Check Destination Accessibility**: "See what a place offers before you go"
 
 **Report a problem**
+
 - **Report Barrier**: "A broken elevator or a blocked path, with its location"
 
 **Volunteers and staff**
+
 - **View Open Requests (Volunteer)**: "Accept a request from someone near you"
 - **Administrator**: "Review barrier reports"
 
@@ -183,8 +187,6 @@ Report titles use the saved report ID, for example **Report [report ID] · Broke
 
 Reports with status **Approved** appear on **Approved**. Reports with status **Rejected** or **Resolved** appear on **Closed**.
 
-
-
 The screen says:
 
 "Reports sent from the app appear here until the app is reloaded."
@@ -223,7 +225,6 @@ An approved report can then be marked resolved. See "Mark a barrier as resolved"
 
 Approving a barrier report causes walking routes to avoid the approved barrier.
 
-
 ## Reject a false barrier report
 
 An administrator rejects a barrier report that is false or a mistake, so the barriers on record stay accurate. A rejected report leaves **Pending** and appears on **Closed**.
@@ -247,7 +248,6 @@ Rejecting a pending report does not add it to the approved barriers that walking
 - **A rejected report is final.** It has no **Approve**, **Reject**, or **Mark as Resolved** button.
 
 Routes are not changed by rejecting a report. An approved barrier is kept off the walking route. A rejected report does not change the route.
-
 
 ## Mark a barrier as resolved
 
@@ -614,7 +614,6 @@ Your messages stay in the list while you move around the app. The screen notes: 
 
 Your helper does not receive these messages yet, and a helper's replies do not appear. Sending, storing and receiving messages are not in the app yet.
 
-
 ### If the status cannot be loaded
 
 If no request is selected, the page says "No request selected."
@@ -624,3 +623,32 @@ If the request cannot be found, the page says "Request not found."
 If the request has no status, the page says "Current Status: Unavailable" and "Status information unavailable. Please check again shortly."
 
 Choose **Back to Dashboard** to return to Home.
+
+### Open Home
+
+1. Open CampusAssist. **Home** opens first.
+2. Read the header. It shows **CampusAssist** with "Centennial College Navigation & Support" under it, and the page heading is **Welcome**.
+3. Find the group that matches what you want to do: **Get help**, **Find your way**, **Report a problem**, or **Volunteers and staff**.
+4. Choose a button. The screen for that feature opens.
+
+### Where each button leads
+
+- **Request In-Person Help**: opens **Request In-Person Help**.
+- **My Help Request Status**: opens **My Help Request Status**.
+- **Get Step-by-Step Directions**: opens **Get Directions**.
+- **Search Location**: opens **Search Location**.
+- **Find Accessible Facilities**: opens **Find Accessible Facilities**.
+- **Check Destination Accessibility**: opens **Check a Destination**.
+- **Report Barrier**: opens **Report a Barrier**.
+- **View Open Requests (Volunteer)**: opens **Open Requests Nearby**.
+- **Administrator**: opens **Admin Home**.
+
+### Return to Home
+
+- **Back arrow**: Choose the back arrow at the top left. On a screen opened from **Home**, it returns to **Home**. On a screen opened from another screen, such as **Accept this request**, it goes back one step, so choose it again until you reach **Home**.
+- **Back to home**: Choose **Back to home** after you send a help request or a barrier report. It returns to **Home**.
+- **Back to Dashboard**: Choose **Back to Dashboard** at the bottom of **My Help Request Status**. It returns to **Home**.
+
+### If you choose the menu icon
+
+The menu icon at the top right does not open a menu yet. A message says "The menu is not yet available. Please use the buttons on Home to choose a feature." Choose a button on **Home** instead.
