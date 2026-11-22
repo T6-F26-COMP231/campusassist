@@ -88,9 +88,10 @@ const normalizeStatus = (value) =>
   typeof value === "string" ? value.trim().toLowerCase() : "";
 
 // Story 27: Mark one approved barrier resolved in the existing collection.
+
 export async function resolveBarrierReport(req, res) {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
     if (!mongoose.isValidObjectId(id)) {
       return res.status(404).json({
@@ -99,37 +100,54 @@ export async function resolveBarrierReport(req, res) {
       });
     }
 
-    const report = await BarrierReport.findById(id);
+    // Story 27: Atomically resolve an approved barrier.
+    // Accept "Approved", "approved", " APPROVED ", etc.
+    const report = await BarrierReport.findOneAndUpdate(
+      {
+        _id: id,
+        status: /^\s*approved\s*$/i
+      },
+      {
+        $set: { status: "Resolved" }
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
 
-    if (!report) {
+    if (report) {
+      return res.status(200).json({
+        success: true,
+        message: "Barrier report marked resolved",
+        report
+      });
+    }
+
+    // If no update occurred, check why.
+    const existing = await BarrierReport.findById(id);
+
+    if (!existing) {
       return res.status(404).json({
         success: false,
         message: NOT_FOUND_MESSAGE
       });
     }
 
-    if (normalizeStatus(report.status) === "resolved") {
+    // Already resolved, regardless of spaces or capitalization.
+    if (normalizeStatus(existing.status) === "resolved") {
       return res.status(400).json({
         success: false,
         message: ALREADY_RESOLVED_MESSAGE
       });
     }
 
-    if (normalizeStatus(report.status) !== "approved") {
-      return res.status(400).json({
-        success: false,
-        message: ONLY_APPROVED_MESSAGE
-      });
-    }
-
-    report.status = "Resolved";
-    await report.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Barrier report marked resolved",
-      report
+    // Pending and Rejected barriers cannot be resolved.
+    return res.status(400).json({
+      success: false,
+      message: ONLY_APPROVED_MESSAGE
     });
+
   } catch (error) {
     console.error("Error resolving barrier report:", error.message);
 
@@ -139,6 +157,7 @@ export async function resolveBarrierReport(req, res) {
     });
   }
 }
+
 
 // Story 25: The walking route reads approved barriers only.
 // Pending, rejected and resolved reports are excluded.
