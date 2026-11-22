@@ -1,6 +1,16 @@
+
 import { Router } from "express";
-import { createBarrierReport, rejectBarrierReport } from "../controllers/barrierReportController.js";
+import {
+  createBarrierReport,
+  resolveBarrierReport,
+  getApprovedBarrierReports
+} from "../controllers/barrierReportController.js";
 import { getPendingBarrierReports } from "../controllers/pendingBarrierReportController.js";
+import { getApprovedBarrierReportsForAdmin } from "../controllers/approvedBarrierReportAdminController.js";
+import {
+  approveBarrierReport,
+  rejectBarrierReport
+} from "../controllers/barrierReportReviewController.js";
 
 const router = Router();
 
@@ -10,7 +20,17 @@ router.post("/", createBarrierReport);
 // Story 24: Retrieve pending barrier reports.
 router.get("/pending", getPendingBarrierReports);
 
-// Story 26: Change a pending report to Rejected.
+// Story 25: Retrieve approved barriers for navigation.
+router.get("/approved", getApprovedBarrierReports);
+
+// Story 27: Approved barriers with ids, so the Administrator can mark one resolved.
+router.get("/approved/admin", getApprovedBarrierReportsForAdmin);
+
+// Story 25 and 26: Approve or reject a pending barrier report.    // NEW (25–28)
+router.patch("/:id/approve", approveBarrierReport);
 router.patch("/:id/reject", rejectBarrierReport);
+
+// Story 27: Mark an approved barrier as resolved.
+router.patch("/:id/resolve", resolveBarrierReport);
 
 export default router;

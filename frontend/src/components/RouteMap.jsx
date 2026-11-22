@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { PLAN_IMAGES } from '../assets/floorplans';
 import { FLOOR_PLAN_TITLES } from '../lib/floorPlan';
 import { planLeg } from '../lib/routeMap';
+import { floorLabels } from '../lib/routeSummary';
 import './FloorPlan.css';
 import './RouteMap.css';
 
@@ -27,6 +28,7 @@ export default function RouteMap({ legs, building, fromName, toName }) {
     box.scrollTop = box.scrollHeight * midY - box.clientHeight / 2;
   }, [plan, loaded]);
 
+  const labels = floorLabels(legs);
   const first = index === 0;
   const last = index === legs.length - 1;
   const line = plan ? plan.points.map((p) => `${p.x},${p.y}`).join(' ') : '';
@@ -34,22 +36,6 @@ export default function RouteMap({ legs, building, fromName, toName }) {
   return (
     <section className="routemap" aria-labelledby="routemap-title">
       <h3 id="routemap-title" className="routemap__title">Route on the map</h3>
-
-      {legs.length > 1 && (
-        <div className="routemap__tabs" role="group" aria-label="Choose a floor of the route">
-          {legs.map((l, i) => (
-            <button
-              key={`${l.floor}-${i}`}
-              type="button"
-              className={`routemap__tab ${i === index ? 'routemap__tab--on' : ''}`}
-              aria-pressed={i === index}
-              onClick={() => setChosen(i)}
-            >
-              {i + 1}. Floor {l.floor}
-            </button>
-          ))}
-        </div>
-      )}
 
       {plan ? (
         <>
@@ -95,6 +81,22 @@ export default function RouteMap({ legs, building, fromName, toName }) {
         </>
       ) : (
         <p className="routemap__empty">The floor plan does not cover Floor {leg.floor}, so the path is not drawn.</p>
+      )}
+
+      {legs.length > 1 && (
+        <div className="routemap__tabs" role="group" aria-label="Choose a floor of the route">
+          {legs.map((l, i) => (
+            <button
+              key={`${l.floor}-${i}`}
+              type="button"
+              className={`routemap__tab ${i === index ? 'routemap__tab--on' : ''}`}
+              aria-pressed={i === index}
+              onClick={() => setChosen(i)}
+            >
+              {labels[i]}
+            </button>
+          ))}
+        </div>
       )}
     </section>
   );

@@ -34,6 +34,8 @@ export function emptyMessage(tabId) {
   }[tabId];
 }
 
+const API_BASE = (import.meta.env?.VITE_API_URL ?? '').replace(/\/$/, '');
+
 export const RESOLVE_BLOCKED_MESSAGE = 'Only approved barriers can be marked resolved.';
 export const ALREADY_RESOLVED_MESSAGE = 'This barrier is already resolved.';
 export const REPORT_NOT_FOUND_MESSAGE = 'That report was not found.';
@@ -55,6 +57,32 @@ export function resolveReport(reports, reportId) {
     report: { ...report, status: 'Resolved' },
     reports: reports.map((entry) => (entry.id === reportId ? { ...entry, status: 'Resolved' } : entry)),
   };
+}
+
+// Story 27: The Mark as Resolved button asks the backend to save the change.
+export async function resolveBarrierReport(reportId) {
+  if (!reportId) {
+    return { ok: false, error: REPORT_NOT_FOUND_MESSAGE };
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/api/barrier-reports/${encodeURIComponent(reportId)}/resolve`,
+      { method: 'PATCH' }
+    );
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.success) {
+      return {
+        ok: false,
+        error: data.message || 'This barrier could not be marked resolved.',
+      };
+    }
+
+    return { ok: true, report: data.report, message: data.message };
+  } catch {
+    return { ok: false, error: 'Could not reach the server. Please try again.' };
+  }
 }
 
 export const APPROVE_BLOCKED_MESSAGE = 'Only pending reports can be approved.';

@@ -78,12 +78,17 @@ export async function createBarrierReport(req, res) {
   }
 }
 
-const NOT_FOUND_MESSAGE = "That report was not found.";
-const ONLY_PENDING_MESSAGE = "Only pending reports can be rejected.";
-const ALREADY_REJECTED_MESSAGE = "This report is already rejected.";
 
-// Story 26: Change one saved report from Pending to Rejected.
-export async function rejectBarrierReport(req, res) {
+const NOT_FOUND_MESSAGE = "That report was not found.";
+const ONLY_APPROVED_MESSAGE = "Only approved barriers can be marked resolved.";
+const ALREADY_RESOLVED_MESSAGE = "This barrier is already resolved.";
+
+// Compare statuses ignoring case and stray spaces, like the pending list and review service do.
+const normalizeStatus = (value) =>
+  typeof value === "string" ? value.trim().toLowerCase() : "";
+
+// Story 27: Mark one approved barrier resolved in the existing collection.
+export async function resolveBarrierReport(req, res) {
   try {
     const id = req.params.id;
 
@@ -103,34 +108,61 @@ export async function rejectBarrierReport(req, res) {
       });
     }
 
-    if (report.status === "Rejected") {
+    if (normalizeStatus(report.status) === "resolved") {
       return res.status(400).json({
         success: false,
-        message: ALREADY_REJECTED_MESSAGE
+        message: ALREADY_RESOLVED_MESSAGE
       });
     }
 
-    if (report.status !== "Pending") {
+    if (normalizeStatus(report.status) !== "approved") {
       return res.status(400).json({
         success: false,
-        message: ONLY_PENDING_MESSAGE
+        message: ONLY_APPROVED_MESSAGE
       });
     }
 
-    report.status = "Rejected";
+    report.status = "Resolved";
     await report.save();
 
     return res.status(200).json({
       success: true,
-      message: "Barrier report rejected",
+      message: "Barrier report marked resolved",
       report
     });
   } catch (error) {
-    console.error("Error rejecting barrier report:", error.message);
+    console.error("Error resolving barrier report:", error.message);
 
     return res.status(500).json({
       success: false,
-      message: "Unable to reject the barrier report"
+      message: "Unable to mark the barrier resolved"
+    });
+  }
+}
+
+// Story 25: The walking route reads approved barriers only.
+// Pending, rejected and resolved reports are excluded.
+export async function getApprovedBarrierReports(req, res) {
+  try {
+    const reports = await BarrierReport.find({ status: "Approved" })
+      .select("location status")
+      .sort({ createdAt: 1 })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      count: reports.length,
+      reports: reports.map((report) => ({
+        location: report.location,
+        status: "Approved"
+      }))
+    });
+  } catch (error) {
+    console.error("Error reading approved barrier reports:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load approved barrier reports"
     });
   }
 }

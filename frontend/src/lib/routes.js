@@ -9,6 +9,9 @@ import { WALK_FLOORS } from './walkMap.js';
 export const NO_PATH_MESSAGE = 'The map shows no walkable route between these two places.';
 export const NO_STEP_FREE_MESSAGE = 'No step-free route is available between these two places.';
 export const NOT_ON_MAP_MESSAGE = 'One of these places is not connected to the walkable map.';
+export const BARRIER_BLOCKS_ROUTE_MESSAGE = 'An approved barrier blocks the walk between these two places.';
+
+export const barrierPlaceMessage = (name) => `An approved barrier blocks ${name}.`;
 
 const BUILDINGS = [
   { id: 'A', label: 'A Block' },
@@ -22,6 +25,38 @@ const PLACES = MAP_PLACES.map(([id, name, building, floor, lon, lat]) => ({
   id: String(id), name, building, floor, lon, lat,
 }));
 const BY_ID = new Map(PLACES.map((place) => [place.id, place]));
+
+// A barrier location matches a map place only by its exact name, its place id, or one room
+// code written in the text. Anything else is left unmatched, so a vague note cannot move a route.
+export function placeIdForLocation(text) {
+  const value = String(text ?? '').trim();
+  if (!value) return null;
+
+  const byName = PLACES.filter((place) => place.name.toLowerCase() === value.toLowerCase());
+  if (byName.length === 1) return byName[0].id;
+  if (byName.length > 1) return null;
+
+  if (BY_ID.has(value)) return value;
+
+  const codes = [...new Set(value.toUpperCase().match(/\b[A-Z]\d-\d{1,3}[A-Z]?\b/g) ?? [])];
+  if (codes.length !== 1) return null;
+  const code = codes[0];
+  const byCode = PLACES.filter((place) => {
+    const name = place.name.toUpperCase();
+    return name === code || name.endsWith(`(${code})`);
+  });
+  return byCode.length === 1 ? byCode[0].id : null;
+}
+
+// Place ids an approved barrier list should keep off the walk. Unmatched locations are skipped.
+export function blockedPlaceIds(locations) {
+  const ids = [];
+  for (const location of locations ?? []) {
+    const id = placeIdForLocation(location);
+    if (id && !ids.includes(id)) ids.push(id);
+  }
+  return ids;
+}
 
 const FLOOR_ORDER = ['B', '1', '2', '3', '4', '5', '6', '7', '8'];
 const floorRank = (floor) => FLOOR_ORDER.indexOf(floor);
@@ -104,6 +139,39 @@ const cellPoint = (cx, cy) => {
   };
 };
 
+// Cells within this distance of an approved barrier are not walked through.
+const BARRIER_RADIUS_M = 8;
+let blockedCells = null;
+
+function setBlockedPlaces(places) {
+  if (!places.length) {
+    blockedCells = null;
+    return;
+  }
+  const { width, height } = gridBounds();
+  const reach = Math.ceil(BARRIER_RADIUS_M / CELL);
+  const cells = new Map();
+  for (const place of places) {
+    if (!cells.has(place.floor)) cells.set(place.floor, new Set());
+    const set = cells.get(place.floor);
+    const { cx, cy } = toCell(place.lon, place.lat);
+    for (let y = cy - reach; y <= cy + reach; y += 1) {
+      for (let x = cx - reach; x <= cx + reach; x += 1) {
+        if (x < 0 || y < 0 || x >= width || y >= height) continue;
+        if (distanceMetres(place, cellPoint(x, y)) <= BARRIER_RADIUS_M) set.add(y * width + x);
+      }
+    }
+  }
+  blockedCells = cells;
+}
+
+function cellBlocked(floor, x, y) {
+  if (!blockedCells) return false;
+  const set = blockedCells.get(floor);
+  if (!set) return false;
+  return set.has(y * gridBounds().width + x);
+}
+
 const rasters = new Map();
 
 // A step-free search leaves the stairs out of the walkable ground, so no path can cross them.
@@ -172,7 +240,7 @@ function nearestWalkable(floor, lon, lat, limit) {
   let best = null;
   for (let y = Math.max(0, cy - reach); y <= Math.min(height - 1, cy + reach); y += 1) {
     for (let x = Math.max(0, cx - reach); x <= Math.min(width - 1, cx + reach); x += 1) {
-      if (!walk[y * width + x]) continue;
+      if (!walk[y * width + x] || cellBlocked(floor, x, y)) continue;
       const dist = Math.hypot(x - cx, y - cy);
       if (dist <= reach && (!best || dist < best.dist)) best = { x, y, dist };
     }
@@ -301,10 +369,17 @@ function shortestPath(startNode, endNode, avoidStairs) {
     for (const [dx, dy, step] of NEIGHBOURS) {
       const x = cx + dx, y = cy + dy;
       if (x < 0 || y < 0 || x >= width || y >= height || !walk[y * width + x]) continue;
+      if (cellBlocked(floor, x, y)) continue;
       if (dx !== 0 && dy !== 0 && (!walk[cy * width + x] || !walk[y * width + cx])) continue;
+      if (dx !== 0 && dy !== 0 && (cellBlocked(floor, x, cy) || cellBlocked(floor, cx, y))) continue;
       relax(node - index + y * width + x, step * CELL);
     }
-    for (const link of links.get(node) ?? []) relax(link.to, link.cost, link.kind);
+    for (const link of links.get(node) ?? []) {
+      const linkFloor = FLOOR_ORDER[Math.floor(link.to / size)];
+      const linkIndex = link.to % size;
+      if (cellBlocked(linkFloor, linkIndex % width, Math.floor(linkIndex / width))) continue;
+      relax(link.to, link.cost, link.kind);
+    }
   }
   if (!dist.has(endNode)) return null;
   const nodes = [endNode];
@@ -313,12 +388,12 @@ function shortestPath(startNode, endNode, avoidStairs) {
 }
 
 // True when the straight line between two cells stays on walkable ground.
-function clearLine(walk, width, a, b) {
+function clearLine(walk, width, a, b, floor) {
   const steps = Math.max(Math.abs(b.x - a.x), Math.abs(b.y - a.y));
   for (let i = 1; i < steps; i += 1) {
     const x = Math.round(a.x + ((b.x - a.x) * i) / steps);
     const y = Math.round(a.y + ((b.y - a.y) * i) / steps);
-    if (!walk[y * width + x]) return false;
+    if (!walk[y * width + x] || cellBlocked(floor, x, y)) return false;
   }
   return true;
 }
@@ -334,7 +409,7 @@ function straighten(floor, cells, forced = []) {
   for (const stop of stops) {
     while (i < stop) {
       let j = stop;
-      while (j > i + 1 && !clearLine(walk, width, cells[i], cells[j])) j -= 1;
+      while (j > i + 1 && !clearLine(walk, width, cells[i], cells[j], floor)) j -= 1;
       kept.push(cells[j]);
       i = j;
     }
@@ -402,12 +477,18 @@ function simplifyPoints(points) {
   return out;
 }
 
-function computeRoute(fromId, toId, avoidStairs) {
+function computeRoute(fromId, toId, avoidStairs, blockedPlaces = []) {
   const from = BY_ID.get(String(fromId));
   const to = BY_ID.get(String(toId));
 
   if (!from || !to) {
     return { ok: false, error: 'Choose where you are and where you are going.' };
+  }
+  if (blockedPlaces.some((place) => place.id === from.id)) {
+    return { ok: false, error: barrierPlaceMessage(from.name) };
+  }
+  if (blockedPlaces.some((place) => place.id === to.id)) {
+    return { ok: false, error: barrierPlaceMessage(to.name) };
   }
   if (from.id === to.id) {
     return { ok: false, error: 'You are already at your destination.' };
@@ -417,16 +498,24 @@ function computeRoute(fromId, toId, avoidStairs) {
   }
 
   const { width, size } = gridBounds();
+  setBlockedPlaces(blockedPlaces);
+  try {
   const start = nearestWalkable(from.floor, from.lon, from.lat, 40);
   const end = nearestWalkable(to.floor, to.lon, to.lat, 40);
   if (!start || !end) {
-    return { ok: false, error: NOT_ON_MAP_MESSAGE };
+    return {
+      ok: false,
+      error: blockedPlaces.length > 0 ? BARRIER_BLOCKS_ROUTE_MESSAGE : NOT_ON_MAP_MESSAGE,
+    };
   }
   const startNode = floorRank(from.floor) * size + start.y * width + start.x;
   const endNode = floorRank(to.floor) * size + end.y * width + end.x;
   const found = shortestPath(startNode, endNode, avoidStairs);
   if (!found) {
-    return { ok: false, error: NO_PATH_MESSAGE };
+    return {
+      ok: false,
+      error: blockedPlaces.length > 0 ? BARRIER_BLOCKS_ROUTE_MESSAGE : NO_PATH_MESSAGE,
+    };
   }
 
   // Split the path into one leg per floor, with the elevator or stairs between them.
@@ -518,6 +607,9 @@ function computeRoute(fromId, toId, avoidStairs) {
     totalMetres: Math.round(total),
     minutes: Math.max(1, Math.round(total / 72)),
   };
+  } finally {
+    blockedCells = null;
+  }
 }
 
 // Runs `work` with the stairs either left in or out of the walkable ground.
@@ -533,15 +625,26 @@ function withStairs(avoidStairs, work) {
 // Directions from one place to another. With `avoidStairs` the route is step-free: it never
 // uses stairs, only corridors and elevators. The result says how much longer a step-free route
 // is, and when none exists it says whether a route with stairs does.
+function placesForIds(ids) {
+  if (!Array.isArray(ids)) return [];
+  const places = [];
+  for (const id of ids) {
+    const place = BY_ID.get(String(id));
+    if (place && !places.some((entry) => entry.id === place.id)) places.push(place);
+  }
+  return places;
+}
+
 export function routeDirections(fromId, toId, options = {}) {
   const avoidStairs = Boolean(options.avoidStairs);
-  const result = withStairs(avoidStairs, () => computeRoute(fromId, toId, avoidStairs));
+  const blockedPlaces = placesForIds(options.blocked);
+  const result = withStairs(avoidStairs, () => computeRoute(fromId, toId, avoidStairs, blockedPlaces));
 
   if (!avoidStairs) {
     return result.ok ? { ...result, stepFree: false, usesStairs: result.steps.some((step) => /stairs/i.test(step)) } : result;
   }
 
-  const usual = withStairs(false, () => computeRoute(fromId, toId, false));
+  const usual = withStairs(false, () => computeRoute(fromId, toId, false, blockedPlaces));
   if (!result.ok) {
     return result.error === NO_PATH_MESSAGE && usual.ok
       ? { ok: false, error: NO_STEP_FREE_MESSAGE, stairsRouteExists: true }

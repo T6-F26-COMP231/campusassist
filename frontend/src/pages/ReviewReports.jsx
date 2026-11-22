@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import {
   REPORT_TABS,
@@ -11,15 +11,60 @@ import {
   reportsForTab,
   tabCounts,
 } from '../lib/barrierReports';
+import { fetchReviewReports } from '../lib/reviewReportsLoader';
 import './RequestHelp.css';
 import './ReviewReports.css';
 
-export default function ReviewReports({ onBack, reports, onApprove, onReject, onResolve }) {
+export default function ReviewReports({ onBack, reports, onLoaded, onApprove, onReject, onResolve }) {
   const [tab, setTab] = useState('pending');
   const [openId, setOpenId] = useState(null);
   const [confirming, setConfirming] = useState(null); // 'approve', 'reject', 'resolve' or null
+  const [resolving, setResolving] = useState(false);
   const [outcome, setOutcome] = useState(null);
   const tabRefs = useRef({});
+
+  // Story 24: load the pending reports from the backend each time this page opens.
+  // `onLoaded` must stay the same function between renders, or the reports load again.
+  const [load, setLoad] = useState({ loading: true, error: '', approvedError: '', attempt: 0 });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchReviewReports().then((result) => {
+      if (cancelled) return;
+
+      if (result.ok) {
+        onLoaded?.(result.reports);
+        setLoad((current) => ({
+          ...current,
+          loading: false,
+          error: '',
+          approvedError: result.approvedError || '',
+        }));
+      } else {
+        setLoad((current) => ({
+          ...current,
+          loading: false,
+          error: result.error,
+          approvedError: result.approvedError || '',
+        }));
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [load.attempt, onLoaded]);
+
+  const retry = () => setLoad((current) => ({
+    loading: true,
+    error: '',
+    approvedError: '',
+    attempt: current.attempt + 1,
+  }));
+
+  // Only the Pending tab depends on the backend, so Approved and Closed stay usable.
+  const pendingUnavailable = tab === 'pending' && Boolean(load.loading || load.error);
 
   const counts = tabCounts(reports);
   const shown = reportsForTab(reports, tab);
@@ -38,25 +83,33 @@ export default function ReviewReports({ onBack, reports, onApprove, onReject, on
   const closeDetails = () => {
     setOpenId(null);
     setConfirming(null);
+    setResolving(false);
     setOutcome(null);
   };
 
-  const approve = () => {
-    const result = onApprove?.(open.id);
+  const approve = async () => {
+    const id = open.id;
     setConfirming(null);
+    const result = await onApprove?.(id);
     setOutcome({ kind: 'approved', ...(result ?? { ok: false, error: 'This report could not be approved.' }) });
   };
 
-  const reject = () => {
-    const result = onReject?.(open.id);
+  const reject = async () => {
+    const id = open.id;
     setConfirming(null);
+    const result = await onReject?.(id);
     setOutcome({ kind: 'rejected', ...(result ?? { ok: false, error: 'This report could not be rejected.' }) });
   };
 
-  const resolve = () => {
-    const result = onResolve?.(open.id);
+  const resolve = async () => {
+    setResolving(true);
+    const result = await onResolve?.(open.id);
+    setResolving(false);
     setConfirming(null);
-    setOutcome({ kind: 'resolved', ...(result ?? { ok: false, error: 'This barrier could not be marked resolved.' }) });
+    setOutcome({
+      kind: 'resolved',
+      ...(result ?? { ok: false, error: 'This barrier could not be marked resolved.' }),
+    });
   };
 
   if (open) {
@@ -183,10 +236,10 @@ export default function ReviewReports({ onBack, reports, onApprove, onReject, on
                 cannot undo this here.
               </p>
               <div className="resolve__actions">
-                <button type="button" className="btn btn--primary" onClick={resolve} autoFocus>
+                <button type="button" className="btn btn--primary" onClick={resolve} disabled={resolving} autoFocus>
                   Yes, mark resolved
                 </button>
-                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(null)}>
+                <button type="button" className="btn btn--secondary" onClick={() => setConfirming(null)} disabled={resolving}>
                   Cancel
                 </button>
               </div>
@@ -229,15 +282,41 @@ export default function ReviewReports({ onBack, reports, onApprove, onReject, on
         </div>
 
         <div id="reports-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="reports__panel">
+          {tab === 'approved' && load.approvedError && (
+            <>
+              <div className="notice notice--error" role="alert">
+                <span className="notice__icon" aria-hidden="true">!</span>
+                {load.approvedError}
+              </div>
+              <button type="button" className="btn btn--secondary" onClick={retry}>
+                Try again
+              </button>
+            </>
+          )}
+
           <p className="reports__summary" role="status" aria-live="polite">
-            {shown.length === 0
+            {shown.length === 0 || pendingUnavailable
               ? ''
               : tab === 'pending'
                 ? `${counts.pending} ${counts.pending === 1 ? 'report is' : 'reports are'} waiting for review, oldest first`
                 : `${shown.length} ${shown.length === 1 ? 'report' : 'reports'}`}
           </p>
 
-          {shown.length === 0 ? (
+          {pendingUnavailable && load.loading ? (
+            <div className="reports__empty" role="status">
+              <p>Loading barrier reports...</p>
+            </div>
+          ) : pendingUnavailable ? (
+            <>
+              <div className="notice notice--error" role="alert">
+                <span className="notice__icon" aria-hidden="true">!</span>
+                {load.error}
+              </div>
+              <button type="button" className="btn btn--secondary" onClick={retry}>
+                Try again
+              </button>
+            </>
+          ) : shown.length === 0 ? (
             <div className="reports__empty">
               <p>{emptyMessage(tab)}</p>
             </div>
