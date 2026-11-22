@@ -1,5 +1,8 @@
 .routemap { display: flex; flex-direction: column; gap: 10px; }
-.routemap__title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+.routemap__title {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 .routemap__tabs { display: flex; flex-wrap: wrap; gap: 8px; }
 .routemap__tab {

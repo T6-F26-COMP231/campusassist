@@ -364,24 +364,26 @@ The page shows: "Pick a destination to see what it offers." Choose a destination
 
 ## Find a step-free route
 
-A Campus User can use CampusAssist to find walking directions that avoid stairs. When step-free routing is selected, the app uses recorded walkable corridors and elevators instead of stairs.
+A Campus User can use CampusAssist to find walking directions that avoid stairs. When **Step-free** is on, the app uses recorded walkable corridors and elevators instead of stairs.
 
 ### Get step-free directions
 
 1. Open CampusAssist.
 2. On **Home**, choose **Get Step-by-Step Directions**.
-3. On the **Get Directions** page, select your current location under **I am at**.
-4. Under **I am going to**, select your destination.
-5. Turn **Step-free route** to **On**.
-6. Choose **Show step-free route**.
+3. On the **Get Directions** page, turn **Step-free** on. The line says **Avoids stairs** when it is on and **Stairs allowed** when it is off.
+4. Under **From**, choose where you are. Under **To**, choose where you are going.
 
-If a step-free route is available, CampusAssist displays walking instructions that avoid recorded stairs. The route may use elevators to travel between floors.
+The directions appear as soon as both places are chosen. You do not need to press a button. If a step-free route is available, the page shows a **No stairs** label with a tick, the distance and time such as "137 m · 2 min", and the steps. The route may use elevators to travel between floors. Choose **Show map** to see the route on the campus map.
 
-The page also displays the route on the campus map, the approximate walking distance, and the estimated walking time. If the step-free route is longer than the usual route, the additional distance is displayed.
+If the step-free route is longer than the usual route, the page says how much longer, such as "52 m longer than the stairs route".
+
+### If your route uses stairs
+
+When **Step-free** is off and the route uses stairs, the page shows a **Uses stairs** label and says "This route uses stairs." Choose **Show step-free route** to turn **Step-free** on and see a route without stairs.
 
 ### If no step-free route is available
 
-When the selected locations cannot be connected without stairs, the app displays:
+When the selected places cannot be connected without stairs, the app displays:
 
 "No step-free route is available between these two places."
 
@@ -389,7 +391,7 @@ If a route using stairs exists, the page also displays:
 
 "A route with stairs does exist."
 
-Choose **Show route with stairs** to view that alternative. Only choose this option if using stairs is suitable for your needs.
+Choose **Show route with stairs** to turn **Step-free** off and see that route. Only choose this option if using stairs is suitable for your needs.
 
 ### If no walking route is available
 
@@ -397,13 +399,11 @@ If the campus map contains no connected walking route between the selected place
 
 "The map shows no walkable route between these two places."
 
-Choose different locations or seek assistance.
+Choose different places or seek assistance.
 
 ### Remembering your preference
 
-CampusAssist remembers your Step-free route setting on your device when browser storage is available. You can turn the option on or off at any time.
-
-**Note:** Step-free routing avoids stairs recorded in the campus routing data. It does not guarantee that every corridor, elevator, doorway, or other part of the route is currently accessible. Actual conditions may change because of maintenance, construction, or temporary barriers.
+CampusAssist remembers your **Step-free** setting on your device when browser storage is available. You can turn the option on or off at any time.
 
 ## Search for a location by name
 
@@ -435,25 +435,28 @@ The current search list contains **Bookstore**, **Student HUB**, **Student Centr
 
 ## Get step-by-step directions
 
-A Campus User can use CampusAssist to find walking directions between campus locations. The instructions are displayed in walking order to help users reach their destination.
+A Campus User can use CampusAssist to find walking directions between campus locations. The steps are shown in walking order and end at the destination.
 
 ### Find directions
 
 1. Open CampusAssist.
 2. On **Home**, choose **Get Step-by-Step Directions**.
-3. On the **Get Directions** page, select your starting location under **I am at**.
-4. Under **I am going to**, select your destination.
-5. Leave **Step-free route** turned **Off** for regular walking directions.
-6. Select **Show directions**.
+3. On the **Get Directions** page, under **From**, choose where you are. Each place shows its name and floor, such as "A1-51 · Floor 1".
+4. Under **To**, choose where you are going.
+5. Leave **Step-free** off for regular walking directions. The line says **Stairs allowed**.
 
-CampusAssist displays the starting location, destination, and step-by-step walking instructions. The page also shows the route under **Route on the map**, with the walking distance and the estimated time on foot.
+The directions appear as soon as both places are chosen. The page shows the distance and time on foot, such as "85 m · 1 min", and a numbered list of steps. Choose **Show map** to see the walking path on the floor plan, and **Hide map** to close it. A route that changes floor has a button for each floor under the map, such as **Floor 1** and **Floor 5**.
+
+Before you choose both places, the page says "Choose where you are and where you are going."
+
+### Swap the start and the destination
+
+Choose the swap button between **From** and **To** to change the direction of the walk. The directions update straight away.
 
 ### Bookstore to Student Hub
 
-1. Under **I am at**, select **Bookstore (B2-02) (Floor 2)**.
-2. Under **I am going to**, select **Student Hub (Floor 2)**.
-3. Leave **Step-free route** turned **Off**.
-4. Select **Show directions**.
+1. Under **From**, choose **Bookstore (B2-02) · Floor 2**.
+2. Under **To**, choose **Student Hub · Floor 2**.
 
 The walk stays inside the B, C, D & E Blocks, so it does not cross the bridge. The steps are:
 
@@ -465,12 +468,10 @@ The last step is "Arrive at Student Hub".
 
 ### A walk between two blocks
 
-1. Under **I am at**, select **A2-65A (Floor 2)**.
-2. Under **I am going to**, select **Bookstore (B2-02) (Floor 2)**.
-3. Leave **Step-free route** turned **Off**.
-4. Select **Show directions**.
+1. Under **From**, choose **A2-65A · Floor 2**.
+2. Under **To**, choose **Bookstore (B2-02) · Floor 2**.
 
-This walk crosses the bridge. The steps include "Cross the bridge from Block A to the B, C, D & E Blocks", and the last step is "Arrive at Bookstore (B2-02)". The return walk includes "Cross the bridge from the B, C, D & E Blocks to Block A."
+This walk crosses the bridge. The steps include "Cross the bridge from Block A to the B, C, D & E Blocks", and the last step is "Arrive at Bookstore (B2-02)". The return walk includes "Cross the bridge from the B, C, D & E Blocks to Block A".
 
 ### If a route is unavailable
 
@@ -478,7 +479,7 @@ If no connected walking route exists between the selected locations, the app dis
 
 "The map shows no walkable route between these two places."
 
-Choose another starting location or destination and try again.
+Choose another start or destination and try again.
 
 If both selected locations are the same, the app displays:
 
@@ -486,9 +487,9 @@ If both selected locations are the same, the app displays:
 
 ### Change your route
 
-To find a different route, change either location using the dropdown menus and select **Show directions** again.
+To find a different route, change **From** or **To**. The directions update as soon as you choose.
 
-If you need a route that avoids stairs, turn **Step-free route** to **On**, then select **Show step-free route**. See the *Find a step-free route* section for more information.
+If you need a route that avoids stairs, turn **Step-free** on. See the *Find a step-free route* section for more information.
 
 **Note:** CampusAssist calculates directions using its recorded campus walking data. Temporary barriers, construction, and maintenance may affect actual route accessibility.
 

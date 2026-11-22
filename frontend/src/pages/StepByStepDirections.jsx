@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import RouteMap from '../components/RouteMap';
 import { approvedBarrierLocations, BARRIERS_UNAVAILABLE_MESSAGE } from '../lib/approvedBarriers';
+import { distanceAndTime, extraDistance, placeOption, stairsChip } from '../lib/routeSummary';
 import { blockedPlaceIds, routeDirections, routeGroups } from '../lib/routes';
 import './RequestHelp.css';
 import './StepByStepDirections.css';
@@ -31,105 +32,114 @@ export default function StepByStepDirections({ onBack }) {
   const [to, setTo] = useState('');
   const [stepFree, setStepFree] = useState(savedChoice);
   const [result, setResult] = useState(null);
+  const [showMap, setShowMap] = useState(false);
 
-  const show = async (avoidStairs) => {
-    try {
-      const locations = await approvedBarrierLocations();
-      setResult(routeDirections(from, to, { avoidStairs, blocked: blockedPlaceIds(locations) }));
-    } catch {
-      setResult({
-        ok: false,
-        error: BARRIERS_UNAVAILABLE_MESSAGE,
-      });
+  // The directions appear as soon as both places are chosen, and follow every change.
+  useEffect(() => {
+    if (!from || !to) {
+      setResult(null);
+      return undefined;
     }
-  };
+    let current = true;
+    approvedBarrierLocations()
+      .then((locations) => routeDirections(from, to, { avoidStairs: stepFree, blocked: blockedPlaceIds(locations) }))
+      .catch(() => ({ ok: false, error: BARRIERS_UNAVAILABLE_MESSAGE }))
+      .then((next) => {
+        if (current) setResult(next);
+      });
+    return () => {
+      current = false;
+    };
+  }, [from, to, stepFree]);
 
   const choose = (value) => {
     setStepFree(value);
     saveChoice(value);
-    if (result) show(value); // keep the screen up to date with the choice
   };
 
-  const submit = (event) => {
-    event.preventDefault();
-    show(stepFree);
+  const swap = () => {
+    setFrom(to);
+    setTo(from);
   };
 
-  const picker = (label, value, setValue) => (
-    <label className="route__field">
-      <span>{label}</span>
-      <select
-        value={value}
-        onChange={(event) => {
-          setValue(event.target.value);
-          setResult(null);
-        }}
-      >
+  const picker = (id, label, value, setValue) => (
+    <div className="route__pick">
+      <label htmlFor={id}>{label}</label>
+      <select id={id} value={value} onChange={(event) => setValue(event.target.value)}>
         <option value="">Choose a place</option>
         {GROUPS.map((group) => (
           <optgroup key={group.id} label={group.label}>
-            {group.places.map(({ id, name, floor }) => (
-              <option key={id} value={id}>{`${name} (Floor ${floor})`}</option>
+            {group.places.map((place) => (
+              <option key={place.id} value={place.id}>{placeOption(place)}</option>
             ))}
           </optgroup>
         ))}
       </select>
-    </label>
+    </div>
   );
+
+  const chip = result?.ok ? stairsChip(result) : '';
+  const extra = result?.ok ? extraDistance(result) : '';
 
   return (
     <div className="screen">
       <AppHeader subtitle="Directions" onBack={onBack} />
 
-      <main className="content">
+      <main className="content route">
         <h2 className="page-title">Get Directions</h2>
-        <p className="route__intro">Choose where you are and where you are going.</p>
 
-        <form className="route__form" onSubmit={submit}>
-          {picker('I am at', from, setFrom)}
-          {picker('I am going to', to, setTo)}
-
-          <div className={`stepfree ${stepFree ? 'stepfree--on' : ''}`}>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={stepFree}
-              aria-labelledby="stepfree-label"
-              aria-describedby="stepfree-help"
-              className="stepfree__switch"
-              onClick={() => choose(!stepFree)}
-            >
-              <span className="stepfree__knob" aria-hidden="true" />
-            </button>
-            <div>
-              <strong id="stepfree-label">Step-free route</strong>
-              <span className="stepfree__state">{stepFree ? 'On' : 'Off'}</span>
-              <p id="stepfree-help">Avoids stairs. Uses level corridors and elevators only.</p>
-            </div>
-          </div>
-
-          <button className="btn btn--primary" type="submit" disabled={!from || !to}>
-            {stepFree ? 'Show step-free route' : 'Show directions'}
+        <div className="route__places">
+          {picker('route-from', 'From', from, setFrom)}
+          <button
+            type="button"
+            className="route__swap"
+            onClick={swap}
+            disabled={!from && !to}
+            aria-label="Swap From and To"
+          >
+            <span aria-hidden="true">&#8644;</span>
           </button>
-        </form>
+          {picker('route-to', 'To', to, setTo)}
+        </div>
+
+        <div className={`stepfree ${stepFree ? 'stepfree--on' : ''}`}>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={stepFree}
+            aria-labelledby="stepfree-label"
+            aria-describedby="stepfree-help"
+            className="stepfree__switch"
+            onClick={() => choose(!stepFree)}
+          >
+            <span className="stepfree__knob" aria-hidden="true" />
+          </button>
+          <strong id="stepfree-label" className="stepfree__name">Step-free</strong>
+          <span id="stepfree-help" className="stepfree__help">
+            {stepFree ? 'Avoids stairs' : 'Stairs allowed'}
+          </span>
+        </div>
+
+        {!from || !to ? (
+          <p className="route__intro">Choose where you are and where you are going.</p>
+        ) : null}
 
         <div role="status" aria-live="polite">
           {result?.ok && (
             <section aria-labelledby="route-title">
-              {result.stepFree && (
-                <p className="route__badge">
-                  <span aria-hidden="true">✓</span> Step-free route: no stairs
-                </p>
-              )}
-              <h3 id="route-title" className="route__title">
+              <h3 id="route-title" className="route__title route__title--hidden">
                 {result.from} to {result.to}
               </h3>
-              <p className="route__note">
-                About {result.totalMetres} m, about {result.minutes} {result.minutes === 1 ? 'minute' : 'minutes'} on
-                foot.
-                {result.stepFree && result.extraMetres > 0 &&
-                  ` About ${result.extraMetres} m longer than the shortest route, which uses stairs.`}
-              </p>
+              <div className="route__summary">
+                {chip && (
+                  <span className={`route__chip ${result.stepFree ? '' : 'route__chip--stairs'}`}>
+                    {result.stepFree && <span aria-hidden="true">&#10003; </span>}
+                    {chip}
+                  </span>
+                )}
+                <strong>{distanceAndTime(result)}</strong>
+              </div>
+              {extra && <p className="route__note">{extra}</p>}
               {result.usesStairs && (
                 <div className="route__notice">
                   <p>This route uses stairs.</p>
@@ -138,11 +148,6 @@ export default function StepByStepDirections({ onBack }) {
                   </button>
                 </div>
               )}
-              <ol className="route__steps">
-                {result.steps.map((step, index) => (
-                  <li key={index} className={/stairs/i.test(step) ? 'route__step--stairs' : ''}>{step}</li>
-                ))}
-              </ol>
             </section>
           )}
 
@@ -162,13 +167,36 @@ export default function StepByStepDirections({ onBack }) {
         </div>
 
         {result?.ok && (
-          <RouteMap
-            key={`${from}-${to}-${stepFree}`}
-            legs={result.legs}
-            building={result.fromBuilding}
-            fromName={result.from}
-            toName={result.to}
-          />
+          <>
+            <button
+              type="button"
+              className="btn btn--secondary route__mapbtn"
+              aria-expanded={showMap}
+              aria-controls="route-map"
+              onClick={() => setShowMap((open) => !open)}
+            >
+              <span aria-hidden="true">{showMap ? '▲' : '▼'} </span>
+              {showMap ? 'Hide map' : 'Show map'}
+            </button>
+
+            {showMap && (
+              <div id="route-map">
+                <RouteMap
+                  key={`${from}-${to}-${stepFree}`}
+                  legs={result.legs}
+                  building={result.fromBuilding}
+                  fromName={result.from}
+                  toName={result.to}
+                />
+              </div>
+            )}
+
+            <ol className="route__steps" aria-label="Directions">
+              {result.steps.map((step, index) => (
+                <li key={index} className={/stairs/i.test(step) ? 'route__step--stairs' : ''}>{step}</li>
+              ))}
+            </ol>
+          </>
         )}
       </main>
     </div>
