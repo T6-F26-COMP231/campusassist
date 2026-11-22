@@ -92,3 +92,23 @@
 
 .status-refresh { display: flex; flex-direction: column; gap: 8px; }
 .status-refresh small { color: var(--charcoal-soft); }
+
+/* What changed, shown when a check finds a different status */
+.status-change { align-items: flex-start; }
+.status-change strong { display: block; }
+.status-change small { display: block; margin-top: 2px; color: var(--charcoal-soft); }
+.status-change__close {
+  margin-left: auto; min-height: 44px; padding: 0 4px;
+  font-size: 0.9rem; font-weight: 700; font-family: inherit; color: var(--charcoal);
+  text-decoration: underline; background: none; border: 0; cursor: pointer;
+}
+.status-change__close:focus-visible { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+
+.status-history h3 { margin: 0 0 8px; font-size: 1rem; font-weight: 700; }
+.status-history ol {
+  list-style: none; margin: 0; padding: 0;
+  background: var(--surface); border: 2px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.status-history li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; }
+.status-history li + li { border-top: 1px solid var(--border); }
+.status-history small { color: var(--charcoal-soft); }

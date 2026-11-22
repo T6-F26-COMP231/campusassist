@@ -522,6 +522,27 @@ Automatic checks stop when the request is completed or cancelled.
 
 If a background check fails, the page keeps showing the last known status. An unchanged status does not necessarily mean a new check succeeded; check the last checked time.
 
+### Status changes
+
+When a check finds a different status, the page tells you what changed. A notice appears above your request details, for example:
+
+"Status changed from Pending to Accepted"
+
+Under it, the notice shows what the new status means, such as "A helper has accepted your request.", and the time of the change. Choose **Dismiss** to close the notice. Dismissing it does not remove the change from **Status changes**.
+
+**Status changes** lists every change since you opened the page, newest first, such as "Accepted → On the Way" with its time. It only appears after a change.
+
+The first status you see when you open the page is not a change, so no notice appears. A check that finds the same status shows nothing new. If you leave the page and come back, it starts again from the current status.
+
+### Examples
+
+- **You open the page.** The status is **Pending**. There is no notice and no **Status changes** list.
+- **A helper accepts.** On the next check, the notice says "Status changed from Pending to Accepted" with "A helper has accepted your request." and the time. **Status changes** lists "Pending → Accepted".
+- **Your helper is on the way.** The notice says "Status changed from Accepted to On the Way" with "Your helper is on the way." **Status changes** lists "Accepted → On the Way" above "Pending → Accepted".
+- **Your helper arrives.** The notice says "Status changed from On the Way to Arrived" with "Your helper has arrived."
+- **Dismiss.** Choose **Dismiss**. The notice closes and **Status changes** keeps the list.
+- **Nothing changed.** Choose **Check now** and the status is the same. The page shows no notice and adds nothing to **Status changes**.
+
 ### Message your helper
 
 Once a helper accepts your request, you can tell them exactly where you are. **Message your helper** is on **My Help Request Status**, below the status.
