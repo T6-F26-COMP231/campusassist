@@ -83,6 +83,10 @@ const NOT_FOUND_MESSAGE = "That report was not found.";
 const ONLY_APPROVED_MESSAGE = "Only approved barriers can be marked resolved.";
 const ALREADY_RESOLVED_MESSAGE = "This barrier is already resolved.";
 
+// Compare statuses ignoring case and stray spaces, like the pending list and review service do.
+const normalizeStatus = (value) =>
+  typeof value === "string" ? value.trim().toLowerCase() : "";
+
 // Story 27: Mark one approved barrier resolved in the existing collection.
 export async function resolveBarrierReport(req, res) {
   try {
@@ -104,14 +108,14 @@ export async function resolveBarrierReport(req, res) {
       });
     }
 
-    if (report.status === "Resolved") {
+    if (normalizeStatus(report.status) === "resolved") {
       return res.status(400).json({
         success: false,
         message: ALREADY_RESOLVED_MESSAGE
       });
     }
 
-    if (report.status !== "Approved") {
+    if (normalizeStatus(report.status) !== "approved") {
       return res.status(400).json({
         success: false,
         message: ONLY_APPROVED_MESSAGE

@@ -11,7 +11,7 @@ import {
   reportsForTab,
   tabCounts,
 } from '../lib/barrierReports';
-import { fetchPendingReports } from '../lib/pendingReports';
+import { fetchReviewReports } from '../lib/reviewReportsLoader';
 import './RequestHelp.css';
 import './ReviewReports.css';
 
@@ -30,7 +30,7 @@ export default function ReviewReports({ onBack, reports, onLoaded, onApprove, on
   useEffect(() => {
     let cancelled = false;
 
-    fetchPendingReports().then((result) => {
+    fetchReviewReports().then((result) => {
       if (cancelled) return;
 
       if (result.ok) {
