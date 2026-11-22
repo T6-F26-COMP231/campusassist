@@ -269,6 +269,32 @@ When the request is saved, the button says **Accepted**, **Status** shows **Acce
 
 Choose **Back to open requests** to return to the list. That request no longer appears there.
 
+### See the user's location on the floor plan
+
+On **Accept this request**, below **Location**, **Needs**, **Details**, and **Status**, the page shows where the person is on the Progress Campus floor plan, so you can see the room before you set off.
+
+1. On **Home**, choose **View Open Requests (Volunteer)**.
+2. Choose **Accept Request** on a waiting request.
+3. Below the request details, find the floor plan. Its title names the floor and the room, such as "Third Floor · Room A3-74".
+4. The plan shows a marker on that room. The plan is wider than the screen, so it opens with the marker in view. Scroll the plan to look around. The page says "Scroll the plan to look around."
+
+The floor and the marker come from the **Location** on the request. A different location shows a different floor and room. The map is for the helper to see where the person is. It does not give a walking route. For walking directions, choose **Directions to this user**.
+
+### If the room is not on the floor plan
+
+When the **Location** does not name a room on the plan, the page says:
+
+"That room is not on the Progress Campus floor plan."
+
+No marker is shown, and nothing is guessed. **Accept Request** still works. This happens when the location has no room number, such as `A Block, hallway`, or the room is not on the plan, such as `Room B101`.
+
+### Floor plan examples
+
+- **A request at A3-74.** **Location** says `A3-74`. The plan is titled "Third Floor · Room A3-74" and shows one marker on that room.
+- **A request at A1-96.** The plan is titled "First Floor · Room A1-96". This room appears in two places on the plan, so it shows two markers.
+- **A request with no room.** **Location** says `A Block, hallway`. The page says "That room is not on the Progress Campus floor plan." and shows no marker.
+- **Another request.** Go back to **View Open Requests (Volunteer)** and choose **Accept Request** on a request at `B2-04`. The plan changes to "Second Floor · Room B2-04", and the marker moves to that room.
+
 ### What the campus user sees
 
 On **Home**, choose **My Help Request Status**. **Current Status** shows **Accepted**, and the page says "A helper has accepted your request." **Assigned Helper** no longer says **Not assigned yet**.
