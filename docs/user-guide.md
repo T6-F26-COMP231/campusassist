@@ -213,11 +213,15 @@ Approving a barrier report causes walking routes to avoid the approved barrier.
 
 An administrator rejects a barrier report that is false or a mistake, so the barriers on record stay accurate. A rejected report leaves **Pending** and appears on **Closed**.
 
+The report title below is an example. Your report will show its actual saved ID.
+
 1. On **Home**, choose **Administrator**, then **Review Barrier Reports**.
 2. On the **Pending** tab, choose **View Details** on the report.
 3. Choose **Reject**. The screen asks: "Reject Report 001 · Blocked Entrance?" It explains: "Use this for a report that is false or a mistake. It moves to Closed and no longer counts as pending. You cannot undo this here."
 4. Choose **Yes, reject**. To keep the report as it was, choose **Cancel**.
 5. The screen shows "Report 001 · Blocked Entrance was rejected. It is now listed under Closed." The **Status** is **Rejected** and **Approve**, **Reject**, and **Mark as Resolved** are gone. Choose **Back to reports**: the **Pending** count goes down by one, the **Closed** count goes up by one, and the badge on **Admin Home** counts one fewer report.
+
+Rejecting a pending report does not add it to the approved barriers that walking routes avoid.
 
 ### Examples
 
@@ -227,7 +231,7 @@ An administrator rejects a barrier report that is false or a mistake, so the bar
 - **A report that is not pending.** A report that is already approved, rejected, or resolved has no **Reject** button, so it cannot be rejected twice. An approved report is not rejected here. It can be marked resolved.
 - **A rejected report is final.** It has no **Approve**, **Reject**, or **Mark as Resolved** button.
 
-Routes are not changed by rejecting a report. The app does not block a route because of a barrier report, so a rejected report never affected a route.
+Routes are not changed by rejecting a report. An approved barrier is kept off the walking route. A rejected report does not change the route.
 
 
 ## Mark a barrier as resolved
@@ -545,6 +549,29 @@ While the request is active, the page checks for updates automatically every 10 
 Automatic checks stop when the request is completed or cancelled.
 
 If a background check fails, the page keeps showing the last known status. An unchanged status does not necessarily mean a new check succeeded; check the last checked time.
+
+### Message your helper
+
+Once a helper accepts your request, you can tell them exactly where you are. **Message your helper** is on **My Help Request Status**, below the status.
+
+1. On **Home**, choose **My Help Request Status**.
+2. In **Message your helper**, write your message in **Message to your helper**. It shows how many characters you have used, such as "0 of 300 characters".
+3. To send the location from your request, choose **Share my location**. It fills the message with "I am at" and the **Current Location** on your request, for example "I am at A3-74."
+4. Choose **Send message**. The screen shows "Message sent." and your message appears in the list with "You" and the time.
+
+Your messages stay in the list while you move around the app. The screen notes: "Messages are kept on this screen until the app is reloaded."
+
+### Examples
+
+- **Before a helper accepts.** The status is **Pending**. **Message your helper** says "You can message your helper once a helper accepts your request." The message box, **Share my location** and **Send message** are not available.
+- **After a helper accepts.** The status is **Accepted**. The list says "No messages yet. Tell your helper where you are." and the message box is available.
+- **Share your location.** Your request says **Current Location** A3-74. Choose **Share my location**, then **Send message**. The screen shows "Message sent." and the list shows "I am at A3-74."
+- **An empty message.** Choose **Send message** with nothing written. The screen says "Write a message before sending." and nothing is sent.
+- **A message that is too long.** More than 300 characters says "Keep the message to 300 characters or fewer." and nothing is sent.
+- **After the request is closed.** When the status is **Completed** or **Cancelled**, the screen says "This request is closed, so messages can no longer be sent." and you cannot send a message.
+
+Your helper does not receive these messages yet, and a helper's replies do not appear. Sending, storing and receiving messages are not in the app yet.
+
 
 ### If the status cannot be loaded
 

@@ -1,6 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
+import MessageHelper from '../components/MessageHelper';
 import { fetchRequestStatus, isFinalStatus } from '../lib/helpRequests';
 import './RequestStatus.css';
 
@@ -23,7 +24,7 @@ const statusMessages = {
   Cancelled: 'Your request was cancelled.'
 };
 
-export default function RequestStatus({ onBack, requestId }) {
+export default function RequestStatus({ onBack, requestId, messages, onSendMessages }) {
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -214,6 +215,12 @@ export default function RequestStatus({ onBack, requestId }) {
                   : 'Status information unavailable. Please check again shortly.'}
               </p>
             </section>
+
+            <MessageHelper
+              request={request}
+              messages={messages}
+              onSend={onSendMessages}
+            />
 
             {!isFinalStatus(currentStatus) && (
               <div className="status-refresh">

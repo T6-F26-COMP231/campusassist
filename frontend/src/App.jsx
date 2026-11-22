@@ -38,6 +38,9 @@ export default function App() {
     []
   );
 
+  // Story 11: Messages the Campus User wrote to their helper, kept per request for this visit.
+  const [messagesByRequest, setMessagesByRequest] = useState({});
+
   // Story 10: Remember the submitted help request.
   const [submittedRequestId, setSubmittedRequestId] = useState(null);
 
@@ -198,6 +201,10 @@ export default function App() {
       <RequestStatus
         onBack={goHome}
         requestId={submittedRequestId}
+        messages={messagesByRequest[submittedRequestId] ?? []}
+        onSendMessages={(thread) =>
+          setMessagesByRequest((all) => ({ ...all, [submittedRequestId]: thread }))
+        }
       />
     );
   }
