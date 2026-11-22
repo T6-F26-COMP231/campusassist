@@ -2,10 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   CLOSED_MESSAGE,
+  DELIVERY_FAILED_MESSAGE,
   EMPTY_MESSAGE,
   MESSAGE_LIMIT,
   NO_HELPER_MESSAGE,
   TOO_LONG_MESSAGE,
+  deliverMessage,
   locationMessage,
   messagingState,
   sendMessage,
@@ -78,4 +80,59 @@ test('a refused message adds nothing to the thread', () => {
 
   assert.equal(result.ok, false);
   assert.equal(result.messages, undefined);
+});
+
+const jsonResponse = (status, body) => ({
+  ok: status >= 200 && status < 300,
+  status,
+  json: async () => body,
+});
+
+test('a saved message is posted to that help request and returned for the list', async () => {
+  let called;
+  const result = await deliverMessage(
+    { _id: '507f1f77bcf86cd799439011' },
+    'I am at A3-74.',
+    async (url, options) => {
+      called = { url, options };
+      return jsonResponse(201, {
+        success: true,
+        message: 'Message sent successfully',
+        sentMessage: {
+          id: 'msg1',
+          text: 'I am at A3-74.',
+          sentAt: '2026-11-22T15:00:00.000Z',
+        },
+      });
+    }
+  );
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.message, {
+    id: 'msg1',
+    text: 'I am at A3-74.',
+    sentAt: '2026-11-22T15:00:00.000Z',
+  });
+  assert.equal(called.url, '/api/help-requests/507f1f77bcf86cd799439011/messages');
+  assert.equal(called.options.method, 'POST');
+  assert.deepEqual(JSON.parse(called.options.body), {
+    text: 'I am at A3-74.',
+    senderRole: 'campus-user',
+  });
+});
+
+test('a failed send keeps its own message and does not invent a sent message', async () => {
+  const refused = await deliverMessage(
+    { _id: '507f1f77bcf86cd799439011' },
+    'Hello',
+    async () => jsonResponse(500, { success: false, message: 'Unable to send the message' })
+  );
+  assert.deepEqual(refused, { ok: false, error: 'Unable to send the message.' });
+
+  const offline = await deliverMessage(
+    { _id: '507f1f77bcf86cd799439011' },
+    'Hello',
+    async () => { throw new Error('offline'); }
+  );
+  assert.deepEqual(offline, { ok: false, error: DELIVERY_FAILED_MESSAGE });
 });

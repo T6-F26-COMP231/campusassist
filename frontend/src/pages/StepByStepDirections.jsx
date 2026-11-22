@@ -40,6 +40,7 @@ export default function StepByStepDirections({ onBack }) {
       setResult(null);
       return undefined;
     }
+    setResult(null);
     let current = true;
     approvedBarrierLocations()
       .then((locations) => routeDirections(from, to, { avoidStairs: stepFree, blocked: blockedPlaceIds(locations) }))
