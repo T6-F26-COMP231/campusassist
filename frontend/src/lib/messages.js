@@ -103,3 +103,32 @@ export async function deliverMessage(request, text, fetchImpl = globalThis.fetch
     return { ok: false, error: DELIVERY_FAILED_MESSAGE };
   }
 }
+// Story 11: load saved messages for the helper's selected request.
+export async function fetchRequestMessages(requestId, fetchImpl = globalThis.fetch) {
+  const fallback = 'Messages could not be loaded. Please try again.';
+
+  if (!requestId) return { ok: false, error: fallback };
+
+  try {
+    const response = await fetchImpl(
+      `${API_BASE}/api/help-requests/${encodeURIComponent(requestId)}/messages`
+    );
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.success || !Array.isArray(data.messages)) {
+      return {
+        ok: false,
+        error: asSentence(data.message) || fallback,
+      };
+    }
+
+    return {
+      ok: true,
+      messages: data.messages.filter(
+        (message) => message.senderRole === 'campus-user'
+      ),
+    };
+  } catch {
+    return { ok: false, error: fallback };
+  }
+}

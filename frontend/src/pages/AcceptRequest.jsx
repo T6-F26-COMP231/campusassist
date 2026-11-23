@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchRequestMessages } from '../lib/messages';
 import AppHeader from '../components/AppHeader';
 import FloorPlan from '../components/FloorPlan';
 import { acceptHelpRequest } from '../lib/helpRequests';
@@ -13,7 +14,38 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState('Pending');
+    const [userMessages, setUserMessages] = useState([]);
+  const [messagesLoading, setMessagesLoading] = useState(true);
+  const [messagesError, setMessagesError] = useState('');
+  const [messagesAttempt, setMessagesAttempt] = useState(0);
 
+  useEffect(() => {
+    if (!accepted || !request.id) return;
+
+    let active = true;
+
+    async function loadMessages() {
+      setMessagesLoading(true);
+      setMessagesError('');
+
+      const result = await fetchRequestMessages(request.id);
+      if (!active) return;
+
+      if (result.ok) {
+        setUserMessages(result.messages);
+      } else {
+        setMessagesError(result.error);
+      }
+
+      setMessagesLoading(false);
+    }
+
+    loadMessages();
+
+    return () => {
+      active = false;
+    };
+  }, [accepted, request.id, messagesAttempt]);
   const handleAccept = async () => {
     if (!request.id) return;
     setBusy(true);
@@ -55,6 +87,47 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
             <dd>{status}</dd>
           </div>
         </dl>
+               {accepted && (
+          <section aria-labelledby="user-messages-title">
+            <h3 id="user-messages-title">Messages from the user</h3>
+
+            {messagesLoading && (
+              <p role="status">Loading messages...</p>
+            )}
+
+            {messagesError && (
+              <p className="notice notice--error" role="alert">
+                {messagesError}
+              </p>
+            )}
+
+            {!messagesLoading && !messagesError && userMessages.length === 0 && (
+              <p>No messages from the user yet.</p>
+            )}
+
+            {!messagesLoading && !messagesError && userMessages.length > 0 && (
+              <ol aria-label="Messages from the user">
+                {userMessages.map((item) => (
+                  <li key={item.id}>
+                    <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
+                      {item.text}
+                    </p>
+                    <small>{new Date(item.sentAt).toLocaleString()}</small>
+                  </li>
+                ))}
+              </ol>
+            )}
+
+            <button
+              type="button"
+              className="btn btn--secondary"
+              disabled={messagesLoading}
+              onClick={() => setMessagesAttempt((count) => count + 1)}
+            >
+              {messagesLoading ? 'Loading messages...' : 'Refresh messages'}
+            </button>
+          </section>
+        )}
         <FloorPlan location={request.location} />
         <button
           type="button"
