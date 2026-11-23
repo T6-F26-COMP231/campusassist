@@ -36,7 +36,7 @@ COMP231 Software Development Project · Team 6 · Fall 2026
 - Postman (back-end testing)
 
 ## 🚀 Test site
-🔗 *Link coming soon*
+🔗 [Link](https://campusassist-6xy.netlify.app/)
 
 ## 📖 User guide
 How a Campus User requests help, filters places, and reports a barrier, and how an administrator sees pending reports: [docs/user-guide.md](docs/user-guide.md)
