@@ -1,16 +1,24 @@
 import { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import FloorPlan from '../components/FloorPlan';
+import RouteMap from '../components/RouteMap';
 import { locateRoom } from '../lib/floorPlan.js';
-import { directionSteps } from '../lib/directions.js';
+import { directionSteps, locationNotOnMapMessage } from '../lib/directions.js';
+import { approvedBarrierLocations, BARRIERS_UNAVAILABLE_MESSAGE } from '../lib/approvedBarriers';
+import { distanceAndTime, extraDistance, placeOption, stairsChip } from '../lib/routeSummary';
+import { blockedPlaceIds, placeIdForLocation, routeGroups } from '../lib/routes';
 import { PLACES } from '../lib/routeData.js';
 import './RequestHelp.css';
+import './StepByStepDirections.css';
 
 const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const GROUPS = routeGroups();
 
 export default function DirectionsToUser({ request, onBack }) {
   const [stepFree, setStepFree] = useState(false);
   const [campusRoute, setCampusRoute] = useState(null);
+  const [from, setFrom] = useState('');
+  const [showMap, setShowMap] = useState(false);
   const [savedRequest, setSavedRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -96,8 +104,10 @@ export default function DirectionsToUser({ request, onBack }) {
   const destinationRoom = locateRoom(requestedDestination);
   const destinationPlace = findRecordedPlace(requestedDestination);
 
-  // Task #35: Generate directions to the user's current location.
-  const handleFindDirections = () => {
+  // Issue #38: the walk is made by the same route generator as Get Directions, so it needs the
+  // helper's start place and the approved barriers. A location or start that is not on the map,
+  // or no start at all, is answered by directionSteps without loading barriers.
+  const findDirections = async (avoidStairs = stepFree) => {
     if (!userLocation) {
       setCampusRoute({
         ok: false,
@@ -106,11 +116,37 @@ export default function DirectionsToUser({ request, onBack }) {
       return;
     }
 
-    const result = directionSteps(userLocation, { stepFree });
-    setCampusRoute(result);
+    setShowMap(false);
+
+    const canRoute =
+      placeIdForLocation(userLocation) && from && placeIdForLocation(from);
+
+    if (!canRoute) {
+      setCampusRoute(directionSteps(userLocation, { from, stepFree: avoidStairs }));
+      return;
+    }
+
+    try {
+      const blocked = blockedPlaceIds(await approvedBarrierLocations());
+      setCampusRoute(directionSteps(userLocation, { from, stepFree: avoidStairs, blocked }));
+    } catch {
+      setCampusRoute({ ok: false, error: BARRIERS_UNAVAILABLE_MESSAGE });
+    }
+  };
+
+  const handleFindDirections = () => findDirections();
+
+  const choose = (value) => {
+    setStepFree(value);
+    findDirections(value);
   };
 
   const displayRoom = room || locationRoom;
+
+  // The walk and its summary, shown the way Get Directions shows them.
+  const chip = campusRoute?.ok ? stairsChip(campusRoute) : '';
+  const extra = campusRoute?.ok ? extraDistance(campusRoute) : '';
+  const locationNotOnMap = Boolean(userLocation) && !placeIdForLocation(userLocation);
 
   return (
     <div className="screen">
@@ -156,6 +192,28 @@ export default function DirectionsToUser({ request, onBack }) {
                     requestedDestination}
                 </p>
               )}
+
+              <div className="route__pick">
+                <label htmlFor="helper-start">Where are you?</label>
+                <select
+                  id="helper-start"
+                  value={from}
+                  onChange={(event) => {
+                    setFrom(event.target.value);
+                    setCampusRoute(null);
+                    setShowMap(false);
+                  }}
+                >
+                  <option value="">Choose a place</option>
+                  {GROUPS.map((group) => (
+                    <optgroup key={group.id} label={group.label}>
+                      {group.places.map((place) => (
+                        <option key={place.id} value={place.id}>{placeOption(place)}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
 
               <button
                 type="button"
@@ -204,34 +262,84 @@ export default function DirectionsToUser({ request, onBack }) {
               <h3>Campus Walking Directions</h3>
 
               {!campusRoute ? (
-                <p className="directions-note">
-                  Select Find Walking Directions.
-                </p>
+                locationNotOnMap ? (
+                  <div className="route__error" role="status">
+                    <p>{locationNotOnMapMessage(userLocation)}</p>
+                  </div>
+                ) : (
+                  <p className="directions-note">
+                    Select Find Walking Directions.
+                  </p>
+                )
               ) : campusRoute.ok ? (
                 <>
-                  <p className="directions-note" role="status">
-                    Directions to{' '}
-                    {room?.code ||
-                      locationPlace?.name ||
-                      userLocation}
-                  </p>
+                  <div role="status" aria-live="polite">
+                    <section aria-labelledby="route-title">
+                      <h3 id="route-title" className="route__title route__title--hidden">
+                        {campusRoute.from} to {campusRoute.to}
+                      </h3>
+                      <div className="route__summary">
+                        {chip && (
+                          <span className={`route__chip ${campusRoute.stepFree ? '' : 'route__chip--stairs'}`}>
+                            {campusRoute.stepFree && <span aria-hidden="true">&#10003; </span>}
+                            {chip}
+                          </span>
+                        )}
+                        <strong>{distanceAndTime(campusRoute)}</strong>
+                      </div>
+                      {extra && <p className="route__note">{extra}</p>}
+                      {campusRoute.usesStairs && (
+                        <div className="route__notice">
+                          <p>This route uses stairs.</p>
+                          <button type="button" className="route__link" onClick={() => choose(true)}>
+                            Show step-free route
+                          </button>
+                        </div>
+                      )}
+                    </section>
+                  </div>
 
-                  <ol className="directions-steps">
+                  <button
+                    type="button"
+                    className="btn btn--secondary route__mapbtn"
+                    aria-expanded={showMap}
+                    aria-controls="route-map"
+                    onClick={() => setShowMap((open) => !open)}
+                  >
+                    <span aria-hidden="true">{showMap ? '▲' : '▼'} </span>
+                    {showMap ? 'Hide map' : 'Show map'}
+                  </button>
+
+                  {showMap && (
+                    <div id="route-map">
+                      <RouteMap
+                        key={`${from}-${userLocation}-${stepFree}`}
+                        legs={campusRoute.legs}
+                        building={campusRoute.fromBuilding}
+                        fromName={campusRoute.from}
+                        toName={campusRoute.to}
+                      />
+                    </div>
+                  )}
+
+                  <ol className="route__steps" aria-label="Directions">
                     {campusRoute.steps.map((step, index) => (
-                      <li key={index}>{step}</li>
+                      <li key={index} className={/stairs/i.test(step) ? 'route__step--stairs' : ''}>{step}</li>
                     ))}
                   </ol>
-
-                  <p className="directions-note">
-                    These are general directions based on the request.
-                    A physical walking route has not been automatically
-                    verified.
-                  </p>
                 </>
               ) : (
-                <p className="directions-note" role="status">
-                  {campusRoute.error}
-                </p>
+                <div className="route__error" role="status">
+                  <p>{campusRoute.error}</p>
+                  {campusRoute.stairsRouteExists && (
+                    <>
+                      <p>A route with stairs does exist.</p>
+                      <button type="button" className="route__link" onClick={() => choose(false)}>
+                        Show route with stairs
+                      </button>
+                    </>
+                  )}
+                </div>
               )}
             </section>
           </>
