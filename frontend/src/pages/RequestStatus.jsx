@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import MessageHelper from '../components/MessageHelper';
 import { fetchRequestStatus, isFinalStatus } from '../lib/helpRequests';
-import { fetchMessages, mergeMessages } from '../lib/messageHistory';
+import { applyLoadedMessages, fetchMessages } from '../lib/messageHistory';
 import { addChange, describeChange, detectStatusChange, newestFirst } from '../lib/statusChanges';
 import './RequestStatus.css';
 
@@ -37,6 +37,7 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
   const [attempt, setAttempt] = useState(0);
   const [changes, setChanges] = useState([]);
   const [notice, setNotice] = useState(null);
+  const [messagesError, setMessagesError] = useState('');
   const lastStatus = useRef(null);
   const refreshNow = useRef(() => {});
   const latest = useRef({ messages, onSendMessages });
@@ -103,15 +104,21 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
   }, [requestId, attempt]);
 
   // Story 11: Load the saved messages, so they are still there after a reload. A message sent
-  // while this loads is kept, and a failed load keeps what is already on screen.
+  // while this loads is kept. A failed load keeps those messages and shows its own message.
   useEffect(() => {
     if (!requestId) return undefined;
     let active = true;
+    setMessagesError('');
 
     fetchMessages(requestId).then((result) => {
-      if (active && result.ok) {
-        latest.current.onSendMessages?.(mergeMessages(result.messages, latest.current.messages));
+      if (!active) return;
+      const applied = applyLoadedMessages(result, latest.current.messages);
+      if (applied.error) {
+        setMessagesError(applied.error);
+        return;
       }
+      setMessagesError('');
+      latest.current.onSendMessages?.(applied.messages);
     });
 
     return () => {
@@ -287,6 +294,12 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
                   ))}
                 </ol>
               </section>
+            )}
+
+            {messagesError && (
+              <div className="notice notice--error" role="alert">
+                {messagesError}
+              </div>
             )}
 
             <MessageHelper

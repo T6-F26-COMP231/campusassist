@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { LOAD_FAILED_MESSAGE, fetchMessages, mergeMessages } from './messageHistory.js';
+import { LOAD_FAILED_MESSAGE, applyLoadedMessages, fetchMessages, mergeMessages } from './messageHistory.js';
 
 const stored = (id, senderRole, text, sentAt) => ({
   id,
@@ -117,4 +117,29 @@ test('mergeMessages counts a message once and puts the thread oldest first', () 
   assert.deepEqual(mergeMessages([b, a], [a, b]), [a, b]);
   assert.deepEqual(mergeMessages([], []), []);
   assert.deepEqual(mergeMessages(undefined, undefined), []);
+});
+
+test('a failed load keeps the messages on screen and shows its own message', () => {
+  const current = [{ id: 'm1', text: 'I am at A3-74.', sentAt: '2026-11-23T12:00:00.000Z' }];
+
+  assert.deepEqual(
+    applyLoadedMessages({ ok: false, error: LOAD_FAILED_MESSAGE }, current),
+    { messages: current, error: LOAD_FAILED_MESSAGE }
+  );
+});
+
+test('a saved load shows the server messages and clears the failure', () => {
+  const current = [{ id: 'm2', text: 'Just sent', sentAt: '2026-11-23T12:05:00.000Z' }];
+  const loaded = [{ id: 'm1', text: 'First', sentAt: '2026-11-23T12:00:00.000Z' }];
+
+  assert.deepEqual(
+    applyLoadedMessages({ ok: true, messages: loaded }, current),
+    {
+      messages: [
+        loaded[0],
+        current[0],
+      ],
+      error: '',
+    }
+  );
 });

@@ -7,7 +7,9 @@ import {
   MESSAGE_LIMIT,
   NO_HELPER_MESSAGE,
   TOO_LONG_MESSAGE,
+  LOAD_FAILED_MESSAGE,
   deliverMessage,
+  fetchRequestMessages,
   locationMessage,
   messagingState,
   sendMessage,
@@ -135,4 +137,31 @@ test('a failed send keeps its own message and does not invent a sent message', a
     async () => { throw new Error('offline'); }
   );
   assert.deepEqual(offline, { ok: false, error: DELIVERY_FAILED_MESSAGE });
+
+});
+
+const reply = (ok, body) => async () => ({ ok, json: async () => body });
+
+test('helper loads the messages the user sent, oldest first, without helper replies', async () => {
+  const result = await fetchRequestMessages('r1', reply(true, {
+    messages: [
+      { id: 'm1', senderRole: 'campus-user', text: 'I am at A3-74.', sentAt: '2026-11-22T10:00:00Z' },
+      { id: 'm2', senderRole: 'helper', text: 'On my way', sentAt: '2026-11-22T10:01:00Z' },
+      { id: 'm3', senderRole: 'campus-user', text: 'Thanks', sentAt: '2026-11-22T10:02:00Z' },
+    ],
+  }));
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.messages.map((m) => m.text), ['I am at A3-74.', 'Thanks']);
+});
+
+test('helper gets an empty list when the user has not written yet', async () => {
+  const result = await fetchRequestMessages('r1', reply(true, { messages: [] }));
+  assert.deepEqual(result, { ok: true, messages: [] });
+});
+
+test('helper sees the server message or a fallback when loading fails', async () => {
+  assert.equal((await fetchRequestMessages('r1', reply(false, { message: 'Help request not found' }))).error, 'Help request not found');
+  assert.equal((await fetchRequestMessages('r1', reply(false, {}))).error, LOAD_FAILED_MESSAGE);
+  assert.equal((await fetchRequestMessages('r1', async () => { throw new Error('x'); })).ok, false);
+  assert.equal((await fetchRequestMessages('')).ok, false);
 });

@@ -59,3 +59,13 @@ export function mergeMessages(loaded = [], current = []) {
 
   return [...loaded, ...unsaved].sort((a, b) => timeOf(a) - timeOf(b));
 }
+
+// A failed load keeps the messages already on screen and returns its own message.
+// A saved load merges the server list with those messages and clears the failure.
+export function applyLoadedMessages(result, current = []) {
+  const kept = Array.isArray(current) ? current : [];
+  if (!result?.ok) {
+    return { messages: kept, error: result?.error || LOAD_FAILED_MESSAGE };
+  }
+  return { messages: mergeMessages(result.messages, kept), error: '' };
+}
