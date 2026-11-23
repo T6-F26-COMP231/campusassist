@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import MessageHelper from '../components/MessageHelper';
 import { fetchRequestStatus, isFinalStatus } from '../lib/helpRequests';
+import { applyLoadedMessages, fetchMessages } from '../lib/messageHistory';
 import { addChange, describeChange, detectStatusChange, newestFirst } from '../lib/statusChanges';
 import './RequestStatus.css';
 
@@ -36,8 +37,15 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
   const [attempt, setAttempt] = useState(0);
   const [changes, setChanges] = useState([]);
   const [notice, setNotice] = useState(null);
+  const [messagesError, setMessagesError] = useState('');
   const lastStatus = useRef(null);
   const refreshNow = useRef(() => {});
+  const latest = useRef({ messages, onSendMessages });
+
+  // The newest message list and setter, for the load below.
+  useEffect(() => {
+    latest.current = { messages, onSendMessages };
+  });
 
   // Retrieve request details from MongoDB through Express, and check again every few
   // seconds so the user sees when a helper accepts without reloading the page.
@@ -94,6 +102,29 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
       if (timer) clearInterval(timer);
     };
   }, [requestId, attempt]);
+
+  // Story 11: Load the saved messages, so they are still there after a reload. A message sent
+  // while this loads is kept. A failed load keeps those messages and shows its own message.
+  useEffect(() => {
+    if (!requestId) return undefined;
+    let active = true;
+    setMessagesError('');
+
+    fetchMessages(requestId).then((result) => {
+      if (!active) return;
+      const applied = applyLoadedMessages(result, latest.current.messages);
+      if (applied.error) {
+        setMessagesError(applied.error);
+        return;
+      }
+      setMessagesError('');
+      latest.current.onSendMessages?.(applied.messages);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [requestId]);
 
   // A missing or unrecognized status is shown as unavailable, not as Pending.
   const currentStatus = request?.status;
@@ -263,6 +294,12 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
                   ))}
                 </ol>
               </section>
+            )}
+
+            {messagesError && (
+              <div className="notice notice--error" role="alert">
+                {messagesError}
+              </div>
             )}
 
             <MessageHelper

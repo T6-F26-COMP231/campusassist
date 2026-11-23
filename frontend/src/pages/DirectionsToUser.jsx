@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import FloorPlan from '../components/FloorPlan';
 import RouteMap from '../components/RouteMap';
+import UserMessages from '../components/UserMessages';
 import { locateRoom } from '../lib/floorPlan.js';
 import { directionSteps, locationNotOnMapMessage } from '../lib/directions.js';
 import { approvedBarrierLocations, BARRIERS_UNAVAILABLE_MESSAGE } from '../lib/approvedBarriers';
@@ -342,6 +343,8 @@ export default function DirectionsToUser({ request, onBack }) {
                 </div>
               )}
             </section>
+
+            <UserMessages requestId={requestId} />
           </>
         )}
       </main>

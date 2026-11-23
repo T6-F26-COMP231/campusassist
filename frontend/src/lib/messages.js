@@ -103,32 +103,25 @@ export async function deliverMessage(request, text, fetchImpl = globalThis.fetch
     return { ok: false, error: DELIVERY_FAILED_MESSAGE };
   }
 }
-// Story 11: load saved messages for the helper's selected request.
-export async function fetchRequestMessages(requestId, fetchImpl = globalThis.fetch) {
-  const fallback = 'Messages could not be loaded. Please try again.';
 
-  if (!requestId) return { ok: false, error: fallback };
+export const LOAD_FAILED_MESSAGE = 'Unable to load messages. Please try again.';
+export const NO_USER_MESSAGES = 'No messages from the user yet.';
 
+// Helper side: load what the Campus User has written on this request, oldest first.
+// Replies written by the helper are left out of the "from the user" list.
+export async function fetchRequestMessages(requestId, fetcher = fetch, apiBase = '') {
+  if (!requestId) return { ok: false, error: 'No request selected.' };
   try {
-    const response = await fetchImpl(
-      `${API_BASE}/api/help-requests/${encodeURIComponent(requestId)}/messages`
-    );
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok || !data.success || !Array.isArray(data.messages)) {
-      return {
-        ok: false,
-        error: asSentence(data.message) || fallback,
-      };
+    const res = await fetcher(`${apiBase}/api/help-requests/${encodeURIComponent(requestId)}/messages`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !Array.isArray(data.messages)) {
+      return { ok: false, error: data.message || LOAD_FAILED_MESSAGE };
     }
-
-    return {
-      ok: true,
-      messages: data.messages.filter(
-        (message) => message.senderRole === 'campus-user'
-      ),
-    };
+    const messages = data.messages
+      .filter((m) => m.senderRole !== 'helper')
+      .map((m) => ({ id: m.id, text: m.text, sentAt: m.sentAt }));
+    return { ok: true, messages };
   } catch {
-    return { ok: false, error: fallback };
+    return { ok: false, error: 'Could not reach the server. Please try again.' };
   }
 }
