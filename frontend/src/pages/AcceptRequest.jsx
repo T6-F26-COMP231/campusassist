@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchRequestMessages } from '../lib/messages';
 import AppHeader from '../components/AppHeader';
 import FloorPlan from '../components/FloorPlan';
+import UserMessages from '../components/UserMessages';
 import { acceptHelpRequest } from '../lib/helpRequests';
 import './RequestHelp.css';
 
@@ -149,6 +150,7 @@ export default function AcceptRequest({ request, onBack, onDirections }) {
         >
           Directions to this user
         </button>
+        {request.id && <UserMessages requestId={request.id} />}
         {!request.id && (
           <div className="notice notice--error" role="alert">
             No request selected.

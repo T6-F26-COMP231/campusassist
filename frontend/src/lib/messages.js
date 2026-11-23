@@ -103,32 +103,40 @@ export async function deliverMessage(request, text, fetchImpl = globalThis.fetch
     return { ok: false, error: DELIVERY_FAILED_MESSAGE };
   }
 }
-// Story 11: load saved messages for the helper's selected request.
-export async function fetchRequestMessages(requestId, fetchImpl = globalThis.fetch) {
-  const fallback = 'Messages could not be loaded. Please try again.';
+export const LOAD_FAILED_MESSAGE = 'Unable to load messages. Please try again.';
+export const NO_USER_MESSAGES = 'No messages from the user yet.';
 
-  if (!requestId) return { ok: false, error: fallback };
+// Helper side: load messages from the Campus User, oldest first.
+export async function fetchRequestMessages(
+  requestId,
+  fetcher = globalThis.fetch,
+  apiBase = API_BASE
+) {
+  if (!requestId) return { ok: false, error: 'No request selected.' };
 
   try {
-    const response = await fetchImpl(
-      `${API_BASE}/api/help-requests/${encodeURIComponent(requestId)}/messages`
+    const response = await fetcher(
+      `${apiBase}/api/help-requests/${encodeURIComponent(requestId)}/messages`
     );
     const data = await response.json().catch(() => ({}));
 
-    if (!response.ok || !data.success || !Array.isArray(data.messages)) {
+    if (!response.ok || data.success === false || !Array.isArray(data.messages)) {
       return {
         ok: false,
-        error: asSentence(data.message) || fallback,
+        error: asSentence(data.message) || LOAD_FAILED_MESSAGE,
       };
     }
 
     return {
       ok: true,
-      messages: data.messages.filter(
-        (message) => message.senderRole === 'campus-user'
-      ),
+      messages: data.messages
+        .filter((m) => m.senderRole !== 'helper')
+        .map((m) => ({ id: m.id, text: m.text, sentAt: m.sentAt })),
     };
   } catch {
-    return { ok: false, error: fallback };
+    return {
+      ok: false,
+      error: 'Could not reach the server. Please try again.',
+    };
   }
 }
