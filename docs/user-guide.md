@@ -633,7 +633,19 @@ Your messages stay in the list while you move around the app. The screen notes: 
 - **A message that is too long.** More than 300 characters says "Keep the message to 300 characters or fewer." and nothing is sent.
 - **After the request is closed.** When the status is **Completed** or **Cancelled**, the screen says "This request is closed, so messages can no longer be sent." and you cannot send a message.
 
-Your helper does not receive these messages yet, and a helper's replies do not appear. Sending, storing and receiving messages are not in the app yet.
+A helper reads these messages under **Messages from the user**, described below. A helper's replies do not appear on your screen yet.
+
+### Read messages from the user (helper)
+
+A helper can read what the Campus User wrote. **Messages from the user** is on the **Accept this request** page and on the **Directions to the user** page.
+
+1. On **Home**, choose **View Open Requests (Volunteer)** and choose **Accept Request** on a card.
+2. Find **Messages from the user**. Each message shows its text, "User" and the time, oldest first.
+3. Choose **Refresh messages** to load new ones.
+
+- **The user sent a message.** The user sends "I am at A3-74." and the helper sees "I am at A3-74." under **Messages from the user**.
+- **No messages yet.** The section says "No messages from the user yet."
+- **The messages cannot be loaded.** The section shows the error, such as "Unable to load messages. Please try again." or "Could not reach the server. Please try again."
 
 ### If the status cannot be loaded
 
