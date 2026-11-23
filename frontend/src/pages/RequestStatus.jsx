@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import MessageHelper from '../components/MessageHelper';
 import { fetchRequestStatus, isFinalStatus } from '../lib/helpRequests';
+import { fetchMessages, mergeMessages } from '../lib/messageHistory';
 import { addChange, describeChange, detectStatusChange, newestFirst } from '../lib/statusChanges';
 import './RequestStatus.css';
 
@@ -38,6 +39,12 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
   const [notice, setNotice] = useState(null);
   const lastStatus = useRef(null);
   const refreshNow = useRef(() => {});
+  const latest = useRef({ messages, onSendMessages });
+
+  // The newest message list and setter, for the load below.
+  useEffect(() => {
+    latest.current = { messages, onSendMessages };
+  });
 
   // Retrieve request details from MongoDB through Express, and check again every few
   // seconds so the user sees when a helper accepts without reloading the page.
@@ -94,6 +101,23 @@ export default function RequestStatus({ onBack, requestId, messages, onSendMessa
       if (timer) clearInterval(timer);
     };
   }, [requestId, attempt]);
+
+  // Story 11: Load the saved messages, so they are still there after a reload. A message sent
+  // while this loads is kept, and a failed load keeps what is already on screen.
+  useEffect(() => {
+    if (!requestId) return undefined;
+    let active = true;
+
+    fetchMessages(requestId).then((result) => {
+      if (active && result.ok) {
+        latest.current.onSendMessages?.(mergeMessages(result.messages, latest.current.messages));
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [requestId]);
 
   // A missing or unrecognized status is shown as unavailable, not as Pending.
   const currentStatus = request?.status;

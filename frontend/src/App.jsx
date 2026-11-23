@@ -22,6 +22,25 @@ import { approveBarrierReport, rejectBarrierReport } from './lib/reviewDecisions
 import Home from './pages/Home';
 import './pages/RequestHelp.css';
 
+// Story 11: Keep the submitted request id for this browser tab, so a reload still finds it.
+const REQUEST_ID_KEY = 'campusassist.requestId';
+
+const savedRequestId = () => {
+  try {
+    return window.sessionStorage.getItem(REQUEST_ID_KEY) || null;
+  } catch {
+    return null;
+  }
+};
+
+const saveRequestId = (id) => {
+  try {
+    if (id) window.sessionStorage.setItem(REQUEST_ID_KEY, id);
+  } catch {
+    // Not remembered; the app still works.
+  }
+};
+
 export default function App() {
   const [page, setPage] = useState('home');
   const [selected, setSelected] = useState(null);
@@ -42,7 +61,7 @@ export default function App() {
   const [messagesByRequest, setMessagesByRequest] = useState({});
 
   // Story 10: Remember the submitted help request.
-  const [submittedRequestId, setSubmittedRequestId] = useState(null);
+  const [submittedRequestId, setSubmittedRequestId] = useState(savedRequestId);
 
   const goHome = () => {
     setSelected(null);
@@ -56,9 +75,11 @@ export default function App() {
         onBack={goHome}
         onRequestCreated={(requestId) => {
           setSubmittedRequestId(requestId);
+          saveRequestId(requestId);   // ← add this line
         }}
         onSubmitted={(requestId) => {
           setSubmittedRequestId(requestId);
+          saveRequestId(requestId);   // ← add this line
           setPage('status');
         }}
       />
