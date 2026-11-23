@@ -49,3 +49,6 @@
 .msg__status:not(:empty)::before { content: '\2713\00a0'; }
 .msg__hint { font-size: 0.85rem; color: var(--charcoal-soft); }
 .msg textarea[aria-invalid='true'] { border-color: #c0392b; }
+
+.msg__bubble--user { align-self: flex-start; border-radius: 12px 12px 12px 4px; }
+.msg__refresh { align-self: flex-start; }
